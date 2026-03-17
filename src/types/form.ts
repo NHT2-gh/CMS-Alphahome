@@ -217,7 +217,7 @@ export interface FormRendererProps {
 // Field renderer props
 export interface FieldRendererProps {
   field: FieldConfig;
-  form: UseFormReturn<any>;
+  form?: UseFormReturn<any>;
   disabled?: boolean;
   className?: string;
 }

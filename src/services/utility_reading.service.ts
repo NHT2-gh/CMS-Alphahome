@@ -43,20 +43,32 @@ class UtilityReadingService {
       return `${year}-${month}-01`;
     };
 
+    const getNextDate = (date: string) => {
+      const d = new Date(date);
+      d.setDate(d.getDate() + 1);
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    };
+
     const query = supabase
       .from("room_utility_readings")
       .select(
         `
     *,
     rooms!inner (
-      building_id
+      building_id,
+      code
     )
   `,
       )
       .eq("rooms.building_id", buildingId)
       .gte("month_date", getPreviousMonth(date))
-      .lt("month_date", date)
-      .order("month_date", { ascending: false });
+      .lt("month_date", getNextDate(date))
+      .order("month_date", { ascending: true });
 
     const { data: UtilityReadingResponse, error } = await query;
 
@@ -68,6 +80,19 @@ class UtilityReadingService {
     }
 
     return UtilityReadingResponse || [];
+  }
+
+  async createUtilityReading(payload: UtilityReadingDetail[]): Promise<void> {
+    const query = supabase.from("room_utility_readings").insert(payload);
+
+    const { error } = await query;
+
+    if (error) {
+      showToast.error({
+        title: "Lỗi",
+        description: error.message,
+      });
+    }
   }
 }
 

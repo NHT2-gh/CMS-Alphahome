@@ -23,9 +23,8 @@ export interface UtilityReadingResponse {
 
 export interface UtilityReadingDetail {
   type: UtilityReadingType;
-  previous_reading: string;
-  current_reading: string;
-  consumption: string;
+  previous_reading: string | number;
+  current_reading: string | number;
+  consumption: string | number;
   room_id: string;
-  month_date: string;
 }

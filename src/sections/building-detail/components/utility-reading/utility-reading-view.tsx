@@ -75,14 +75,18 @@ export default function UtilityReadingView() {
             <div className="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
               <div className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] sm:gap-6">
                 {yearData.data.map((monthData) => {
-                  const waterReading = monthData.utility_readings.reduce(
-                    (acc, reading) => acc + Number(reading.total_consumption),
-                    0,
-                  );
-                  const electricityReading = monthData.utility_readings.reduce(
-                    (acc, reading) => acc + Number(reading.total_consumption),
-                    0,
-                  );
+                  const waterReading = monthData.utility_readings
+                    .filter((item) => item.utility_type === "water")
+                    .reduce(
+                      (acc, reading) => acc + Number(reading.total_consumption),
+                      0,
+                    );
+                  const electricityReading = monthData.utility_readings
+                    .filter((item) => item.utility_type === "electricity")
+                    .reduce(
+                      (acc, reading) => acc + Number(reading.total_consumption),
+                      0,
+                    );
 
                   return (
                     <FolderCard

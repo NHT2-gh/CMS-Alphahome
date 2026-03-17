@@ -10,6 +10,7 @@ import {
 } from "..";
 import { useBuilding } from "@/context/BuildingContext";
 import { Building } from "@/types/building";
+import { stringParser, useQueryState } from "@/hooks/use-state-url";
 
 export interface TabData {
   id: string;
@@ -63,6 +64,7 @@ export default function MainContentBuildingDetail({
 }) {
   const [activeTab, setActiveTab] = useState<TabData["id"]>("overview");
   const { setBuilding } = useBuilding();
+  const [tab, setTab] = useQueryState("tab", stringParser, "overview");
 
   useEffect(() => {
     if (building) {

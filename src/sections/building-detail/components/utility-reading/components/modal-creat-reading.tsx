@@ -2,16 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { FormField } from "@/components/_cms/components/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createUtilityReadingFormSchema,
-  CreateUtilityReadingFormType,
-} from "@/schemas/validation/admin.validation";
 import useRoom from "@/hooks/queries/use-room";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/_cms/ui/input";
+import { Checkbox, Input } from "@/components/_cms/ui/input";
 import { formatDate } from "@/utils/format-data";
 import {
   UtilityReadingDetail,
@@ -19,6 +13,8 @@ import {
 } from "@/types/utility_reading";
 import { useUtilityReadingByDate } from "@/hooks/queries/use-utility-reading";
 import { useBuilding } from "@/context/BuildingContext";
+import Button from "@/components/ui/button/Button";
+import { createUtilityReading } from "@/lib/server-action/utility-action.action";
 
 export default function ModalCreatReading({
   isOpen,
@@ -28,20 +24,13 @@ export default function ModalCreatReading({
   closeModal: () => void;
 }) {
   const { building } = useBuilding();
-  const createForm = useForm<CreateUtilityReadingFormType>({
-    resolver: zodResolver(createUtilityReadingFormSchema),
-    defaultValues: {
-      month: formatDate(new Date()),
-    },
-    mode: "onTouched",
-  });
-
   if (!building) return null;
   const { data: utilityReadingByDate } = useUtilityReadingByDate(
     building.id,
     new Date().toISOString().split("T")[0],
   );
-
+  const [isFirstReading, setIsFirstReading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [readings, setReadings] = useState<
     Record<string, UtilityReadingDetail>
   >({});
@@ -52,7 +41,13 @@ export default function ModalCreatReading({
     const mapped = Object.fromEntries(
       utilityReadingByDate.map((item) => [
         `${item.room_id}-${item.type}`,
-        item,
+        {
+          type: item.type,
+          previous_reading: item.previous_reading,
+          current_reading: item.current_reading,
+          consumption: item.consumption,
+          room_id: item.room_id,
+        },
       ]),
     );
 
@@ -67,12 +62,14 @@ export default function ModalCreatReading({
     type: UtilityReadingType,
     value: string,
   ) => {
+    setIsEdit(true);
     setReadings((prev) => {
       const roomData = prev[`${roomId}-${type}`] ?? {
         type,
         previous_reading: "",
         current_reading: "",
         consumption: "",
+        room_id: roomId,
       };
 
       const updated = {
@@ -99,6 +96,14 @@ export default function ModalCreatReading({
     });
   };
 
+  const onSubmit = (
+    data: Record<string, UtilityReadingDetail>,
+    isFirstReading: boolean,
+  ) => {
+    closeModal;
+    createUtilityReading(data, isFirstReading);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -110,19 +115,36 @@ export default function ModalCreatReading({
         <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
           Thông tin bản ghi mới của tòa nhà {building.code}
         </h4>
-        <form className="grid grid-cols-2 gap-10">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(readings, isFirstReading);
+          }}
+          className="flex justify-between items-end"
+        >
           <FormField
-            form={createForm}
             field={{
               required: true,
-              name: "month",
               label: "Thời gian ghi chỉ số",
               type: "text",
               readOnly: true,
               className: "capitalize",
+              defaultValue: formatDate(new Date()),
             }}
           />
+
+          <Button disabled={!isEdit} className="w-fit h-fit" type="submit">
+            Tạo bản ghi mới
+          </Button>
         </form>
+
+        <label>
+          <Checkbox
+            checked={isFirstReading}
+            onChange={() => setIsFirstReading(!isFirstReading)}
+            label={"Đây là bản ghi đầu tiên"}
+          />
+        </label>
 
         <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
           Danh sách chỉ số
@@ -165,7 +187,7 @@ export default function ModalCreatReading({
                       className="max-w-[120px] max-h-10"
                       value={
                         readings[`${room.room_id}-electricity`]
-                          ?.previous_reading
+                          ?.previous_reading || ""
                       }
                       type="number"
                       onChange={(e) => {
@@ -184,7 +206,8 @@ export default function ModalCreatReading({
                       min="0"
                       className="max-w-[120px] max-h-10"
                       value={
-                        readings[`${room.room_id}-electricity`]?.current_reading
+                        readings[`${room.room_id}-electricity`]
+                          ?.current_reading || ""
                       }
                       type="number"
                       onChange={(e) => {
@@ -199,7 +222,7 @@ export default function ModalCreatReading({
                   </TableCell>
 
                   <TableCell>
-                    {readings[`${room.room_id}-electricity`]?.consumption}
+                    {readings[`${room.room_id}-electricity`]?.consumption || ""}
                   </TableCell>
 
                   <TableCell key="previous_reading_water">
@@ -207,7 +230,8 @@ export default function ModalCreatReading({
                       min="0"
                       className="max-w-[120px] max-h-10"
                       value={
-                        readings[`${room.room_id}-water`]?.previous_reading
+                        readings[`${room.room_id}-water`]?.previous_reading ||
+                        ""
                       }
                       type="number"
                       onChange={(e) => {
@@ -224,7 +248,9 @@ export default function ModalCreatReading({
                     <Input
                       min="0"
                       className="max-w-[120px] max-h-10"
-                      value={readings[`${room.room_id}-water`]?.current_reading}
+                      value={
+                        readings[`${room.room_id}-water`]?.current_reading || ""
+                      }
                       type="number"
                       onChange={(e) => {
                         handleChange(

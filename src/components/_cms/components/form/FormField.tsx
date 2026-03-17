@@ -49,7 +49,7 @@ export default function FormField({
   const FieldComponent = fieldComponents[field.type];
 
   const error = field.name
-    ? form.formState.errors[field.name]?.message
+    ? form?.formState.errors[field.name]?.message
     : undefined;
 
   if (!FieldComponent) {
@@ -69,7 +69,7 @@ export default function FormField({
         {field.required && <span className="text-error-500">*</span>}
       </Label>
 
-      {field.name ? (
+      {field.name && form ? (
         field.type !== "select" ? (
           <Controller
             control={form.control}
