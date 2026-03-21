@@ -1,3 +1,4 @@
+import { handlePostgresError } from "@/lib/error/postgres-error";
 import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
 import { RoomOverview } from "@/types/room";
@@ -15,10 +16,7 @@ class RoomService {
     const { data: rooms, error } = await query;
 
     if (error) {
-      showToast.error({
-        title: "Lỗi",
-        description: error.message,
-      });
+      handlePostgresError(error);
     }
 
     return rooms || [];

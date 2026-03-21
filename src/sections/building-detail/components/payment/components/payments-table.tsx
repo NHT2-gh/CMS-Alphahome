@@ -1,36 +1,31 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Bill } from "@/types/bill";
-import { Table } from "@/components/ui/table";
+import { Bill, PaymentStatus } from "@/types/bill";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
-import { Upload } from "lucide-react";
+import { Eye, Upload } from "lucide-react";
+import { useAllBillsBy } from "@/hooks/queries/use-bill";
+import { useBuilding } from "@/context/BuildingContext";
+import { formatDateTime, formatPrice } from "@/utils/format-data";
+import { Checkbox } from "@/components/_cms/ui/input";
+import Badge from "@/components/ui/badge/Badge";
+import ModalViewBill from "./modal-view-bill";
+import { useModal } from "@/hooks/useModal";
 
 const _tableHeader: { key: keyof Bill | string; title: string }[] = [
+  {
+    key: "tracking_code",
+    title: "Mã hoá đơn",
+  },
   {
     key: "room_id",
     title: "Phòng",
   },
   {
     key: "month_date",
-    title: "Tháng",
-  },
-  {
-    key: "base_rent",
-    title: "Tiền phòng",
-  },
-  {
-    key: "electricity_total",
-    title: "Tiền điện",
-  },
-  {
-    key: "water_total",
-    title: "Tiền nước",
-  },
-  {
-    key: "extra_total",
-    title: "Tiền dịch vụ",
+    title: "Kì thanh toán",
   },
   {
     key: "grand_total",
@@ -47,7 +42,7 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   },
   {
     key: "created_at",
-    title: "Tạo",
+    title: "Thời gian tạo",
   },
   {
     key: "created_by",
@@ -57,10 +52,16 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
 
 export default function PaymentsListTable() {
   const [filterStatus, setFilterStatus] = useState<string>("All");
+  const [selectedBill, setSelectedBill] = useState<string | undefined>(
+    undefined,
+  );
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState<string | undefined>(undefined);
   const [showFilter, setShowFilter] = useState<boolean>(false);
-
+  const { isOpen, openModal, closeModal } = useModal();
+  const { building } = useBuilding();
+  if (!building) return null;
+  const { data: bills } = useAllBillsBy(building.id);
   const handleSearch = useCallback((value: string) => {
     if (value.trim() === "") {
       setSearch(undefined);
@@ -69,6 +70,7 @@ export default function PaymentsListTable() {
 
     setSearch(value);
   }, []);
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
@@ -146,7 +148,70 @@ export default function PaymentsListTable() {
           handleSelectAll={() => {}}
           tableHeader={_tableHeader}
         />
+        <TableBody>
+          {bills?.map((bill) => (
+            <TableRow key={bill.id}>
+              <TableCell>
+                <Checkbox
+                  checked
+                  onChange={() => {}}
+                  label={bill.tracking_code}
+                />
+              </TableCell>
+              <TableCell>{bill.rooms.code}</TableCell>
+              <TableCell>{new Date(bill.month_date).getMonth() + 1}</TableCell>
+              <TableCell>{formatPrice(bill.grand_total)}</TableCell>
+              <TableCell className="capitalize">
+                <Badge
+                  variant="light"
+                  color={
+                    bill.payment_status === PaymentStatus.PAID
+                      ? "success"
+                      : bill.payment_status === PaymentStatus.DRAFT
+                        ? "warning"
+                        : bill.payment_status === PaymentStatus.OVERDUE
+                          ? "error"
+                          : "info"
+                  }
+                >
+                  {
+                    PaymentStatus[
+                      bill.payment_status.toUpperCase() as keyof typeof PaymentStatus
+                    ]
+                  }
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {formatDateTime(bill.updated_at, { withTime: true })}
+              </TableCell>
+              <TableCell>
+                {formatDateTime(bill.created_at, { withTime: true })}
+              </TableCell>
+              <TableCell>{bill.profiles.full_name}</TableCell>
+
+              <TableCell>
+                <button
+                  onClick={() => {
+                    setSelectedBill(bill.tracking_code);
+                    openModal();
+                  }}
+                  className="group"
+                >
+                  <Eye className="group-hover:text-brand-400" />
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
+
+      {isOpen && (
+        <ModalViewBill
+          isOpen={isOpen}
+          closeModal={closeModal}
+          trackingCode={selectedBill}
+        />
+      )}
     </div>
   );
 }

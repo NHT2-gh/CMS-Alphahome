@@ -1,4 +1,5 @@
 import { adaptUtilityData } from "@/adapters/utility_reading.adapter";
+import { handlePostgresError } from "@/lib/error/postgres-error";
 import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
 import { UtilityReadingDetail, YearData } from "@/types/utility_reading";
@@ -20,10 +21,7 @@ class UtilityReadingService {
     );
 
     if (error) {
-      showToast.error({
-        title: "Lỗi",
-        description: error.message,
-      });
+      handlePostgresError(error);
     }
 
     return utilityReadingOverview;
@@ -82,17 +80,18 @@ class UtilityReadingService {
     return UtilityReadingResponse || [];
   }
 
-  async createUtilityReading(payload: UtilityReadingDetail[]): Promise<void> {
+  async createUtilityReading(
+    payload: UtilityReadingDetail[],
+  ): Promise<boolean> {
     const query = supabase.from("room_utility_readings").insert(payload);
 
     const { error } = await query;
 
     if (error) {
-      showToast.error({
-        title: "Lỗi",
-        description: error.message,
-      });
+      handlePostgresError(error);
     }
+
+    return true;
   }
 }
 

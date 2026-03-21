@@ -96,6 +96,7 @@ export default function FormField({
                   onChange(value);
                 }}
                 disabled={disabled}
+                onChange={onChange}
                 onBlur={onBlur}
                 value={value}
                 name={name}

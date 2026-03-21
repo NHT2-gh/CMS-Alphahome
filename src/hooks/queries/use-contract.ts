@@ -1,15 +1,16 @@
 import { queryKeys } from "@/config/query-keys";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { showToast } from "@/lib/toast";
-import { roomService } from "@/services/room.service";
+import { contractService } from "@/services/contract.service";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useRoom(buildingId: string) {
+export function useContractByRoomId(roomId: string) {
   return useQuery({
-    queryKey: queryKeys.rooms.list(buildingId),
+    queryKey: queryKeys.contract.byRoomId(roomId),
     queryFn: () => {
-      return roomService.getRoomsByBuildingId(buildingId);
+      return contractService.getContractsByRoomId(roomId);
     },
+
     throwOnError(error) {
       showToast.error({
         title: "Lỗi",
@@ -18,5 +19,6 @@ export default function useRoom(buildingId: string) {
 
       return true;
     },
+    enabled: !!roomId, // fallback
   });
 }

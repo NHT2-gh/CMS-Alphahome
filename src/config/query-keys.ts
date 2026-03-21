@@ -17,4 +17,16 @@ export const queryKeys = {
       date,
     ],
   },
+  contract: {
+    byRoomId: (roomId: string) => ["contract", "room", roomId],
+  },
+  bills: {
+    allByBuildingId: (buildingId: string) => ["bills", "building", buildingId],
+    byTrackingCode: (trackingCode: string) => [
+      "bills",
+      "tracking-code",
+      trackingCode,
+    ],
+    servicesDetail: (billId: string) => ["bills", "services-detail", billId],
+  },
 };

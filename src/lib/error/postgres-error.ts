@@ -1,0 +1,20 @@
+// src/lib/errors/postgres-error.ts
+
+import { PostgrestError } from "@supabase/supabase-js";
+import { AppError, ErrorCode } from "./error-codes";
+
+export const handlePostgresError = (error: PostgrestError): never => {
+  switch (error.code) {
+    case "23505":
+      throw new AppError(ErrorCode.DUPLICATE_DATA);
+
+    case "23503":
+      throw new AppError(ErrorCode.FOREIGN_KEY_INVALID);
+
+    case "23502":
+      throw new AppError(ErrorCode.MISSING_REQUIRED_FIELD);
+
+    default:
+      throw new AppError(ErrorCode.INVALID_INPUT);
+  }
+};

@@ -15,6 +15,7 @@ import { useUtilityReadingByDate } from "@/hooks/queries/use-utility-reading";
 import { useBuilding } from "@/context/BuildingContext";
 import Button from "@/components/ui/button/Button";
 import { createUtilityReading } from "@/lib/server-action/utility-action.action";
+import { showToast } from "@/lib/toast";
 
 export default function ModalCreatReading({
   isOpen,
@@ -24,7 +25,13 @@ export default function ModalCreatReading({
   closeModal: () => void;
 }) {
   const { building } = useBuilding();
-  if (!building) return null;
+  if (!building) {
+    showToast.error({
+      title: "Không tìm thấy thôn tin toà nhà",
+      description: "Vui lòng chọn lại toà nhà muốn tạo bản ghi",
+    });
+    return null;
+  }
   const { data: utilityReadingByDate } = useUtilityReadingByDate(
     building.id,
     new Date().toISOString().split("T")[0],
@@ -34,6 +41,15 @@ export default function ModalCreatReading({
   const [readings, setReadings] = useState<
     Record<string, UtilityReadingDetail>
   >({});
+  const { data: rooms, error } = useRoom(building.id);
+
+  if (error) {
+    showToast.error({
+      title: "Lỗi",
+      description: "Không tìm thấy thông tin phòng",
+    });
+    return null;
+  }
 
   useEffect(() => {
     if (!utilityReadingByDate) return;
@@ -53,8 +69,6 @@ export default function ModalCreatReading({
 
     setReadings(mapped);
   }, [utilityReadingByDate]);
-
-  const { data: rooms, error } = useRoom(building.id);
 
   const handleChange = (
     roomId: string,
@@ -96,12 +110,23 @@ export default function ModalCreatReading({
     });
   };
 
-  const onSubmit = (
+  const onSubmit = async (
     data: Record<string, UtilityReadingDetail>,
     isFirstReading: boolean,
   ) => {
-    closeModal;
-    createUtilityReading(data, isFirstReading);
+    const result = await createUtilityReading(data, isFirstReading);
+    if (result.success) {
+      showToast.success({
+        title: "Thành công",
+        description: "Tạo bản ghi mới thành công",
+      });
+      closeModal();
+    } else {
+      showToast.error({
+        title: "Lỗi",
+        description: result.error,
+      });
+    }
   };
 
   return (

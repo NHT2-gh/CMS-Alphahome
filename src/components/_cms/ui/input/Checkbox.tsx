@@ -1,11 +1,11 @@
 import type React from "react";
 
 interface CheckboxProps {
-  label?: string;
   checked: boolean;
+  onChange: (checked: boolean) => void;
+  label?: string;
   className?: string;
   id?: string;
-  onChange: (checked: boolean) => void;
   disabled?: boolean;
 }
 

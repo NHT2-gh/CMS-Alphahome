@@ -2,73 +2,71 @@
 
 import { FormField } from "@/components/_cms/components/form";
 import InvoicePreviewModal from "@/components/ecommerce/invoices/InvoicePreviewModal";
-import CreateInvoiceTable from "@/components/invoice/CreateInvoiceTable";
+import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
-import { useBuilding } from "@/context/BuildingContext";
+import { useBill } from "@/hooks/queries/use-bill";
 import { useContractByRoomId } from "@/hooks/queries/use-contract";
-import useRoom from "@/hooks/queries/use-room";
-import { showToast } from "@/lib/toast";
-
-import {
-  createInvoiceFormSchema,
-  CreateInvoiceFormType,
-} from "@/schemas/validation/admin.validation";
-import { Contract } from "@/types/contract";
-import { generateBillCode } from "@/utils/random-bill-code";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { PaymentStatus } from "@/types/bill";
+import { formatDateTime } from "@/utils/format-data";
 import { Receipt, UserCircle } from "lucide-react";
-import React, { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import React from "react";
+import { BillDetailTable } from "./sub components/modal-bill";
 
-export default function ModalCreateBill({
+export default function ModalViewBill({
   isOpen,
   closeModal,
+  trackingCode,
 }: {
   isOpen: boolean;
   closeModal: () => void;
+  trackingCode?: string;
 }) {
-  const { building } = useBuilding();
+  const { data: bill } = useBill(trackingCode ?? "");
+  const { data: contracts } = useContractByRoomId(bill?.room_id || "");
 
-  if (!building) {
+  if (!trackingCode) {
+    closeModal();
     return null;
   }
-  const { data: rooms } = useRoom(building.id);
-
-  const form = useForm<CreateInvoiceFormType>({
-    resolver: zodResolver(createInvoiceFormSchema),
-    defaultValues: {
-      invoice_number: generateBillCode(),
-      room_code: undefined,
-      month_date: new Date(),
-    },
-  });
-
-  const {
-    handleSubmit,
-    formState: { isLoading, isSubmitted },
-    watch,
-  } = form;
-
-  const roomCode = useWatch({
-    control: form.control,
-    name: "room_code",
-  });
-
-  const { data: contracts } = useContractByRoomId(roomCode);
-
-  // const onSubmit = async (data: CreateInvoiceFormType){
-
-  // }
-
-  console.log(contracts);
-
   return (
     <Modal
       isOpen={isOpen}
       onClose={closeModal}
       className="max-w-[80%] max-h-[90vh] overflow-y-scroll p-5 lg:p-10"
     >
+      <div className="mb-5 space-y-2">
+        <h2 className="text-2xl font-bold ">Phiếu thu tiền #{trackingCode}</h2>
+        <p>
+          Ngày tạo phiếu: {formatDateTime(bill?.created_at, { withTime: true })}
+        </p>
+        <p>
+          Ngày cập nhật gần nhất:{" "}
+          {formatDateTime(bill?.updated_at, { withTime: true })}
+        </p>
+        <div className="flex gap-2">
+          <span>Trạng thái:</span>
+          <Badge
+            variant="light"
+            color={
+              bill?.payment_status === PaymentStatus.PAID
+                ? "success"
+                : bill?.payment_status === PaymentStatus.DRAFT
+                  ? "warning"
+                  : bill?.payment_status === PaymentStatus.OVERDUE
+                    ? "error"
+                    : "info"
+            }
+          >
+            {
+              PaymentStatus[
+                bill?.payment_status.toUpperCase() as keyof typeof PaymentStatus
+              ]
+            }
+          </Badge>
+        </div>
+      </div>
+
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
         <div className="border-b border-gray-200 p-6 space-y-4 dark:border-gray-800">
           <h4 className="flex items-center gap-3">
@@ -78,40 +76,28 @@ export default function ModalCreateBill({
           <form className="space-y-6">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <FormField
-                form={form}
                 field={{
-                  name: "invoice_number",
                   label: "Số hóa đơn",
                   type: "text",
                   readOnly: true,
+                  value: bill?.tracking_code ?? "",
                 }}
               />
 
               <FormField
-                form={form}
                 field={{
-                  name: "room_code",
                   label: "Mã phòng",
-                  type: "select",
-
-                  placeholder: "Chọn mã phòng",
-                  options:
-                    rooms?.map((item) => ({
-                      label: item.code,
-                      value: item.room_id,
-                    })) || [],
+                  type: "text",
+                  readOnly: true,
+                  value: bill?.rooms.code ?? "",
                 }}
               />
 
               <FormField
-                form={form}
                 field={{
-                  name: "month_date",
-                  id: "month_date",
                   label: "Kì thanh toán",
-                  type: "date",
-                  mode: "single",
-                  defaultDate: new Date(),
+                  type: "text",
+                  value: bill?.month_date ?? "",
                   readOnly: true,
                 }}
               />
@@ -131,7 +117,8 @@ export default function ModalCreateBill({
                   field={{
                     label: "Tên khách hàng",
                     type: "text",
-                    value: contracts[0].tenant_name,
+                    value: contracts[0].tenant_name ?? "",
+                    readOnly: true,
                   }}
                 />
                 <FormField
@@ -139,7 +126,8 @@ export default function ModalCreateBill({
                   field={{
                     label: "Số điện thoại",
                     type: "text",
-                    value: contracts[0].tenant_phone,
+                    value: contracts[0].tenant_phone ?? "",
+                    readOnly: true,
                   }}
                 />
                 <FormField
@@ -147,13 +135,14 @@ export default function ModalCreateBill({
                   field={{
                     label: "Số lượng người ở",
                     type: "text",
-                    value: contracts[0].occupants_count,
+                    value: contracts[0].occupants_count ?? "",
+                    readOnly: true,
                   }}
                 />
               </div>
             </div>
           )}
-          <CreateInvoiceTable />
+          {bill && <BillDetailTable billId={bill.id} />}
         </div>
         <div className="p-4 sm:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
