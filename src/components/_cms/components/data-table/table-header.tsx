@@ -1,7 +1,7 @@
-import Checkbox from "@/components/form/input/Checkbox";
 import { TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { Checkbox } from "../../ui/input";
 
 export default function CMSTableHeader({
   tableHeader,
@@ -17,7 +17,7 @@ export default function CMSTableHeader({
   }[];
   className?: string;
   selectAll?: boolean;
-  handleSelectAll?: () => void;
+  handleSelectAll?: (isSelectAll: boolean) => void;
 }) {
   return (
     <TableHeader
@@ -33,8 +33,9 @@ export default function CMSTableHeader({
             className="font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
           >
             <Checkbox
+              id={tableHeader[0].key}
               checked={selectAll}
-              onChange={handleSelectAll}
+              onChange={() => handleSelectAll?.(!selectAll)}
               label={tableHeader[0].title}
             />
           </TableCell>

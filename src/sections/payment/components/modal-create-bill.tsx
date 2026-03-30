@@ -1,0 +1,305 @@
+"use client";
+import { FormField } from "@/components/_cms/components/form";
+import { Switch } from "@/components/_cms/ui/switch";
+import Button from "@/components/ui/button/Button";
+import { Modal } from "@/components/ui/modal";
+import { useBuilding } from "@/context/BuildingContext";
+import {
+  useCreateMultipleRoomMonthlyBills,
+  useCreateSingleRoomMonthlyBill,
+} from "@/hooks/queries/use-bill";
+import { useContractByRoomId } from "@/hooks/queries/use-contract";
+import useRoom from "@/hooks/queries/use-room";
+import { useModal } from "@/hooks/useModal";
+import {
+  createInvoiceFormSchema,
+  CreateInvoiceFormType,
+} from "@/schemas/validation/admin.validation";
+import {
+  CreateMonthlyBillsResponse,
+  CreateSingleMonthlyBillResponse,
+} from "@/types/bill";
+import { Contract } from "@/types/contract";
+import { generateBillCode } from "@/utils/random-bill-code";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CheckCheck,
+  Loader2,
+  PlusIcon,
+  Receipt,
+  Save,
+  UserCircle,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { BillPreviewModal, ModalShowRes } from "./sub components/modal-bill";
+import { showToast } from "@/lib/toast";
+import { mapErrorToMessage } from "@/lib/error/app-error";
+
+export default function ModalCreateBill() {
+  const createModal = useModal();
+  const resultModal = useModal();
+  const { building } = useBuilding();
+  const { data: rooms } = useRoom(building?.id);
+  const [isMutiRoom, setIsMutiRoom] = useState(false);
+  const [contract, setContract] = useState<Contract | undefined>(undefined);
+  const [log, setLog] = useState<
+    CreateSingleMonthlyBillResponse | CreateMonthlyBillsResponse[] | null
+  >(null);
+  const form = useForm<CreateInvoiceFormType>({
+    resolver: zodResolver(createInvoiceFormSchema),
+    defaultValues: {
+      bill_code: generateBillCode(),
+    },
+  });
+  const roomCode = useWatch({
+    control: form.control,
+    name: "room_selected",
+  });
+
+  const { data: contracts, isFetching: isFetchingContract } =
+    useContractByRoomId(roomCode as string, {
+      enabled: !isMutiRoom && !!roomCode,
+    });
+  const createMultipleBills = useCreateMultipleRoomMonthlyBills();
+  const createSingleBill = useCreateSingleRoomMonthlyBill();
+  useEffect(() => {
+    if (!building) {
+      return;
+    }
+
+    if (contracts?.length) {
+      setContract(contracts[0]);
+    }
+  }, [contracts]);
+
+  const {
+    handleSubmit,
+    formState: { isLoading, isSubmitting, isSubmitted },
+    setValue,
+  } = form;
+
+  const onSubmit = async (data: CreateInvoiceFormType) => {
+    try {
+      if (isMutiRoom && Array.isArray(data.room_selected)) {
+        const res = await createMultipleBills.mutateAsync({
+          trackingCode: generateBillCode(),
+          month_date: data.month_date,
+          room_ids: data.room_selected,
+        });
+        setLog(res.results);
+        resultModal.openModal();
+      } else {
+        const res = await createSingleBill.mutateAsync({
+          trackingCode: data.bill_code,
+          month_date: data.month_date,
+          room_id: data.room_selected as string,
+        });
+        setLog(res);
+      }
+    } catch (error) {
+      showToast.error({
+        title: "Lỗi tạo phiếu",
+        description: mapErrorToMessage(error),
+      });
+    }
+  };
+
+  return (
+    <>
+      <Button onClick={createModal.openModal} variant="primary">
+        <PlusIcon className="size-4" />
+        Tạo hóa đơn
+      </Button>
+
+      <Modal
+        isOpen={createModal.isOpen}
+        onClose={createModal.closeModal}
+        className="relative max-w-[70vw] m-5 rounded-3xl bg-white dark:bg-gray-900"
+      >
+        <div className="flex items-center justify-between px-6 py-4">
+          <h3 className="text-xl font-bold text-gray-700 dark:text-gray-500">
+            Tạo phiếu thu
+          </h3>
+        </div>
+        <div className="max-h-[90vh] min-h-[50vh] overflow-y-auto p-4 sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+            <div className="p-6 space-y-4">
+              <h4 className="flex items-center gap-3 font-semibold">
+                <Receipt /> Thông tin hoá đơn
+              </h4>
+
+              <form
+                className="grid grid-cols-1 gap-5 md:grid-cols-2"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                <FormField
+                  form={form}
+                  field={{
+                    name: "bill_code",
+                    label: "Số hóa đơn",
+                    type: "text",
+                    readOnly: true,
+                  }}
+                />
+
+                <FormField
+                  form={form}
+                  field={{
+                    name: "room_selected",
+                    label: "Mã phòng",
+                    type: isMutiRoom ? "multiselect" : "select",
+                    placeholder: "Chọn mã phòng",
+                    options: [
+                      ...(rooms?.map((item) => ({
+                        label: item.code,
+                        value: item.room_id,
+                      })) || []),
+                    ],
+                  }}
+                />
+
+                <FormField
+                  form={form}
+                  field={{
+                    id: "month_date",
+                    name: "month_date",
+                    label: "Kì thanh toán",
+                    type: "date",
+                    mode: "single",
+                  }}
+                />
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="absolute bottom-10 right-10"
+                >
+                  {isLoading || isSubmitting ? (
+                    <></>
+                  ) : isSubmitted ? (
+                    <CheckCheck />
+                  ) : (
+                    <Save />
+                  )}
+                  {isLoading || isSubmitting
+                    ? "Đang xử lý..."
+                    : isSubmitted
+                      ? "Đã tạo phiếu"
+                      : "Tạo phiếu thu"}
+                </Button>
+              </form>
+
+              <Switch
+                label="Tạo phiếu thu cho nhiều phòng"
+                defaultChecked={false}
+                onChange={(checked) => setIsMutiRoom(checked)}
+              />
+            </div>
+
+            {contract && !isMutiRoom && (
+              <div className="border-t border-gray-200 p-6 dark:border-gray-800">
+                <div className="pb-5 space-y-4">
+                  <h4 className="flex items-center gap-3">
+                    <UserCircle /> Thông tin khách hàng
+                  </h4>
+
+                  {isFetchingContract ? (
+                    <div className="flex items-center gap-10 justify-center">
+                      <Loader2 className="size-4 animate-spin" /> Loading...
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-5">
+                      <FormField
+                        className="pointer-events-none"
+                        field={{
+                          label: "Tên khách hàng",
+                          type: "text",
+                          value: contract.tenant_name,
+                          readOnly: true,
+                        }}
+                      />
+                      <FormField
+                        className="pointer-events-none"
+                        field={{
+                          label: "Số điện thoại",
+                          type: "text",
+                          value: contract.tenant_phone,
+                          readOnly: true,
+                        }}
+                      />
+                      <FormField
+                        className="pointer-events-none"
+                        field={{
+                          label: "Số lượng người ở",
+                          type: "text",
+                          value: contract.occupants_count,
+                          readOnly: true,
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="p-4 sm:p-8">
+              {log &&
+                (!isMutiRoom ? (
+                  "bill" in log ? (
+                    <BillPreviewModal
+                      bill={log.bill}
+                      infoCustomer={contracts?.[0] as Contract}
+                    />
+                  ) : (
+                    <ModalShowRes
+                      title="Đã tạo phiếu"
+                      isOpen={resultModal.isOpen}
+                      closeModal={resultModal.closeModal}
+                    >
+                      <div className=""></div>
+                    </ModalShowRes>
+                  )
+                ) : (
+                  Array.isArray(log) && (
+                    <ModalShowRes
+                      title="Đã tạo phiếu"
+                      isOpen={resultModal.isOpen}
+                      closeModal={resultModal.closeModal}
+                    >
+                      <div className="">
+                        <h4>
+                          Thành công{" "}
+                          {log
+                            .filter((item) => item.status === "success")
+                            .map((item) => (
+                              <p>{item.room_id}</p>
+                            ))}
+                        </h4>
+                        <h4>
+                          Thất bại{" "}
+                          {log
+                            .filter((item) => item.status === "error")
+                            .map((item) => (
+                              <p>{item.room_id}</p>
+                            ))}
+                        </h4>
+                        <h4>
+                          Đã tồn tại{" "}
+                          {log
+                            .filter((item) => item.status === "already_exists")
+                            .map((item) => (
+                              <p>{item.room_id}</p>
+                            ))}
+                        </h4>
+                      </div>
+                    </ModalShowRes>
+                  )
+                ))}
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}

@@ -2,7 +2,9 @@
 import { useState } from "react";
 
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Query, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { showToast } from "@/lib/toast";
+import { mapErrorToMessage } from "@/lib/error/app-error";
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -23,8 +25,20 @@ export function AppProviders({ children }: AppProvidersProps) {
               return failureCount < 3;
             },
           },
+          mutations: {
+            onError: (error, query) => {
+              const q = query as Query;
+
+              if (q.meta?.showErrorToast) {
+                showToast.error({
+                  title: "Lỗi",
+                  description: mapErrorToMessage(error),
+                });
+              }
+            },
+          },
         },
-      })
+      }),
   );
 
   return (

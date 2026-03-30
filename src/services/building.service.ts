@@ -60,6 +60,19 @@ class BuildingService {
 
     return data[0];
   }
+
+  async getBuildingServices(buildingId: string): Promise<Building | null> {
+    const query = supabase
+      .from("building_services")
+      .select("*")
+      .eq("building_id", buildingId);
+
+    const { data, error } = await query;
+
+    if (!data || error) return null;
+
+    return data[0];
+  }
 }
 
 export const buildingService = new BuildingService();

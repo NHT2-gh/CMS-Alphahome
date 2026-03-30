@@ -52,7 +52,7 @@ const TableDropdown: React.FC<DropdownProps> = ({
               },
             },
           ],
-        }
+        },
       );
     }
 
@@ -76,7 +76,7 @@ const TableDropdown: React.FC<DropdownProps> = ({
           className="p-2 bg-white border border-gray-200 rounded-2xl shadow-lg dark:border-gray-800 dark:bg-gray-900 w-40"
         >
           <div
-            className="space-y-1"
+            className="space-y-3 px-3 py-2 "
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="options-menu"

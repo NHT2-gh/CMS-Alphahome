@@ -3,6 +3,7 @@ import { Building } from "@/types/building";
 import React, { createContext, useContext, useState } from "react";
 
 interface BuildingContextType {
+  initialBuilding: Building;
   building: Building | null;
   setBuilding: (building: Building) => void;
 }
@@ -16,12 +17,16 @@ export const useBuilding = () => {
 
 export const BuildingProvider = ({
   children,
+  initialBuilding,
 }: {
   children: React.ReactNode;
+  initialBuilding: Building;
 }) => {
-  const [building, setBuilding] = useState<Building | null>(null);
+  const [building, setBuilding] = useState<Building | null>(initialBuilding);
   return (
-    <BuildingContext.Provider value={{ building, setBuilding }}>
+    <BuildingContext.Provider
+      value={{ building, setBuilding, initialBuilding }}
+    >
       {children}
     </BuildingContext.Provider>
   );

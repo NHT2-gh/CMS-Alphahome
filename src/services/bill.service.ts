@@ -1,21 +1,16 @@
+import { adaptMonthlyBillsResponse } from "@/adapters/bill.adapter";
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import { supabase } from "@/supabase/supabaseClients";
-import { Bill, BillServiceDetail } from "@/types/bill";
+import {
+  Bill,
+  BillServiceDetail,
+  CreateMonthlyBillsResponse,
+  CreateSingleMonthlyBillResponse,
+  FilteredBillResponse,
+} from "@/types/bill";
 
 class BillService {
   constructor() {}
-
-  // async createBill(payload: CreateInvoiceFormType) {
-  //     const query = supabase.from("invoices").insert(payload);
-
-  //     const { error } = await query;
-
-  //     if (error) {
-  //         handlePostgresError(error);
-  //     }
-
-  //     return true;
-  // }
 
   async getAllBills(buildingId: string): Promise<Bill[]> {
     const query = supabase
@@ -92,6 +87,48 @@ class BillService {
     }
 
     return services || [];
+  }
+
+  async createMultipleBills(
+    trackingCode: string,
+    month_date: string,
+    room_id: string[],
+  ): Promise<{ results: CreateMonthlyBillsResponse[] }> {
+    const { data: response, error } = await supabase.rpc(
+      "create_multiple_room_monthly_bills",
+      {
+        p_tracking_code: trackingCode,
+        p_month_date: month_date,
+        p_room_ids: room_id,
+      },
+    );
+
+    // const response = adaptMonthlyBillsResponse(data);
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    return response || [];
+  }
+
+  async createSignleBill(
+    trackingCode: string,
+    month_date: string,
+    room_id: string,
+  ): Promise<CreateSingleMonthlyBillResponse> {
+    const { data: response, error } = await supabase.rpc(
+      "create_room_monthly_bill",
+      {
+        p_tracking_code: trackingCode,
+        p_month_date: month_date,
+        p_room_id: room_id,
+        p_return_full: true,
+      },
+    );
+    if (error) {
+      handlePostgresError(error);
+    }
+    return response;
   }
 }
 

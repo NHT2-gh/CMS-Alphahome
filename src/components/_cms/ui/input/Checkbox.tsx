@@ -1,11 +1,11 @@
 import type React from "react";
 
 interface CheckboxProps {
+  id: string;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange: (value: string) => void;
   label?: string;
   className?: string;
-  id?: string;
   disabled?: boolean;
 }
 
@@ -30,7 +30,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           className={`w-5 h-5 appearance-none cursor-pointer dark:border-gray-700 border border-gray-300 checked:border-transparent rounded-md checked:bg-brand-500 disabled:opacity-60 
           ${className}`}
           checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
+          onChange={() => onChange(id!)}
           disabled={disabled}
         />
         {checked && (

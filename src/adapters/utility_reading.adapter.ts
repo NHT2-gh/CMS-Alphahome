@@ -12,7 +12,10 @@ export function adaptUtilityData(
   rows.forEach((row) => {
     const date = new Date(row.month);
     const year = date.getFullYear();
-    const month = date.getMonth() + 1;
+    const month =
+      date.getMonth() > 9
+        ? `${date.getMonth() + 1}`
+        : `0${date.getMonth() + 1}`;
 
     if (!result.has(year)) {
       result.set(year, {

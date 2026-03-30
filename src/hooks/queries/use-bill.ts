@@ -1,8 +1,7 @@
 import { queryKeys } from "@/config/query-keys";
-import { mapErrorToMessage } from "@/lib/error/app-error";
-import { showToast } from "@/lib/toast";
+import { useBuilding } from "@/context/BuildingContext";
 import { billService } from "@/services/bill.service";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useAllBillsBy(buildingId: string) {
   return useQuery({
@@ -10,14 +9,7 @@ export function useAllBillsBy(buildingId: string) {
     queryFn: () => {
       return billService.getAllBills(buildingId);
     },
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
 
-      return false;
-    },
     enabled: !!buildingId,
   });
 }
@@ -28,14 +20,6 @@ export function useBill(trackingCode: string) {
     queryFn: () => {
       return billService.getBill(trackingCode);
     },
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
-
-      return false;
-    },
     enabled: !!trackingCode,
   });
 }
@@ -44,14 +28,65 @@ export function useBillServicesDetail(billId: string) {
   return useQuery({
     queryKey: queryKeys.bills.servicesDetail(billId),
     queryFn: () => billService.getBillServiceDetail(billId),
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
-
-      return false;
-    },
     enabled: !!billId,
+  });
+}
+
+type CreateMultipleBillsPayload = {
+  trackingCode: string;
+  month_date: string;
+  room_ids: string[];
+};
+
+type CreateOneBillsPayload = {
+  trackingCode: string;
+  month_date: string;
+  room_id: string;
+};
+
+export function useCreateMultipleRoomMonthlyBills() {
+  const queryClient = useQueryClient();
+  const { building } = useBuilding();
+  return useMutation({
+    mutationKey: queryKeys.bills.createMultipleBills(),
+    mutationFn: (payload: CreateMultipleBillsPayload) =>
+      billService.createMultipleBills(
+        payload.trackingCode,
+        payload.month_date,
+        payload.room_ids,
+      ),
+
+    onSuccess: () => {
+      if (!building?.id) {
+        return;
+      }
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.bills.allByBuildingId(building?.id),
+      });
+    },
+  });
+}
+
+export function useCreateSingleRoomMonthlyBill() {
+  const queryClient = useQueryClient();
+  const { building } = useBuilding();
+  return useMutation({
+    mutationKey: queryKeys.bills.createSignleBill(),
+    mutationFn: (payload: CreateOneBillsPayload) =>
+      billService.createSignleBill(
+        payload.trackingCode,
+        payload.month_date,
+        payload.room_id,
+      ),
+
+    onSuccess: () => {
+      if (!building?.id) {
+        return;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.bills.allByBuildingId(building?.id),
+      });
+    },
   });
 }

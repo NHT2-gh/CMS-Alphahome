@@ -11,7 +11,7 @@ import { CalenderIcon } from "@/icons";
 export type PropsType = {
   id: string;
   mode?: "single" | "multiple" | "range" | "time";
-  onChange?: Hook | Hook[];
+  handleOnChange?: Hook | Hook[];
   defaultDate?: DateOption;
   defaultValue: string;
   placeholder?: string;
@@ -21,7 +21,7 @@ export type PropsType = {
 export default function DatePicker({
   id,
   mode,
-  onChange,
+  handleOnChange,
   defaultValue,
   defaultDate,
   placeholder,
@@ -34,7 +34,7 @@ export default function DatePicker({
       monthSelectorType: "static",
       dateFormat: "Y-m-d",
       defaultDate,
-      onChange,
+      onChange: handleOnChange,
     });
 
     return () => {
@@ -42,7 +42,7 @@ export default function DatePicker({
         flatPickr.destroy();
       }
     };
-  }, [mode, onChange, id, defaultDate]);
+  }, [mode, handleOnChange, id, defaultDate]);
 
   return (
     <div className="relative">

@@ -1,9 +1,11 @@
 import z from "zod";
 
 export const createInvoiceFormSchema = z.object({
-  invoice_number: z.string().min(1, "Invoice number is required"),
-  room_code: z.string().min(1, "Room is required"),
-  month_date: z.date(),
+  bill_code: z.string().min(1, "Bill code is required"),
+  room_selected: z
+    .union([z.string(), z.array(z.string()).min(1, "Room is required")])
+    .optional(),
+  month_date: z.string(),
 });
 
 export const createUtilityReadingFormSchema = z.object({
@@ -13,6 +15,7 @@ export const createUtilityReadingFormSchema = z.object({
 export const addBillServiceDetaiFormSchema = z.object({
   service_id: z.string(),
   quantity: z.number(),
+  calculation_method: z.string(),
   unit_price: z.string(),
 });
 

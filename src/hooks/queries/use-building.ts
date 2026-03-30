@@ -11,10 +11,6 @@ export const useBuilding = (params: BuildingServiceParams) => {
     queryFn: () => {
       return buildingService.getBuildings(params);
     },
-
-    staleTime: 5 * 60 * 1000,
-    throwOnError: true,
-    refetchOnReconnect: false,
   });
 };
 
@@ -24,9 +20,5 @@ export const useBuildingDetail = (id: string) => {
     queryFn: () => {
       return buildingService.getBuildingById(id);
     },
-
-    staleTime: 5 * 60 * 1000,
-    throwOnError: true,
-    refetchOnReconnect: false,
   });
 };

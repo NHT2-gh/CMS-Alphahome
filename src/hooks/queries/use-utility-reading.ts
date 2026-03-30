@@ -1,36 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { utilityReadingService } from "@/services/utility_reading.service";
 import { queryKeys } from "@/config/query-keys";
-import { showToast } from "@/lib/toast";
-import { mapErrorToMessage } from "@/lib/error/app-error";
 
-export function useUtilityReadingOverview(buildingId: string) {
+export function useUtilityReadingOverview(
+  buildingId?: string,
+  options?: {
+    enabled?: boolean;
+  },
+) {
   return useQuery({
-    queryKey: queryKeys.utilityReading.overview(buildingId),
-    queryFn: () => utilityReadingService.getUtilityReadingOverview(buildingId),
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
-
-      return true;
-    },
+    queryKey: queryKeys.utilityReading.overview(buildingId!),
+    queryFn: () => utilityReadingService.getUtilityReadingOverview(buildingId!),
+    enabled: !!buildingId && options?.enabled,
   });
 }
 
-export function useUtilityReadingByDate(buildingId: string, date: string) {
+export function useUtilityReadingByDate(
+  buildingId?: string,
+  date?: string,
+  options?: {
+    enabled?: boolean;
+  },
+) {
   return useQuery({
-    queryKey: queryKeys.utilityReading.detail(buildingId, date),
+    queryKey: queryKeys.utilityReading.detail(buildingId!, date!),
     queryFn: () =>
-      utilityReadingService.getUtilityReadingByDate(buildingId, date),
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
-
-      return true;
-    },
+      utilityReadingService.getUtilityReadingByDate(buildingId!, date!),
+    enabled: !!buildingId && !!date && options?.enabled,
   });
 }

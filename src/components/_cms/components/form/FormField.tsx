@@ -40,6 +40,8 @@ const fieldComponents: Record<FieldType, React.ComponentType<any>> = {
   },
 };
 
+const customField = ["select", "multiselect", "date"];
+
 export default function FormField({
   field,
   form,
@@ -70,7 +72,7 @@ export default function FormField({
       </Label>
 
       {field.name && form ? (
-        field.type !== "select" ? (
+        !customField.includes(field.type) ? (
           <Controller
             control={form.control}
             name={field.name}
@@ -92,10 +94,16 @@ export default function FormField({
             name={field.name}
             render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <FieldComponent
-                handleOnChange={(value: string) => {
-                  onChange(value);
-                }}
                 disabled={disabled}
+                handleOnChange={(
+                  value: string | Date,
+                  currentDateString?: string,
+                ) => {
+                  onChange(value);
+                  if (currentDateString) {
+                    onChange(currentDateString);
+                  }
+                }}
                 onChange={onChange}
                 onBlur={onBlur}
                 value={value}

@@ -7,7 +7,6 @@ interface SelectProps {
   placeholder?: string;
   className?: string;
   defaultValue?: string;
-  value?: string;
   disabled?: boolean;
   handleOnChange?: (value: string) => void;
 }
@@ -17,7 +16,6 @@ const Select: React.FC<SelectProps> = ({
   placeholder = "Select an option",
   className = "",
   defaultValue = "",
-  value,
   disabled = false,
   handleOnChange,
 }) => {

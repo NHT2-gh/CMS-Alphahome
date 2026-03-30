@@ -28,5 +28,7 @@ export const queryKeys = {
       trackingCode,
     ],
     servicesDetail: (billId: string) => ["bills", "services-detail", billId],
+    createSignleBill: () => ["create-one-bill"],
+    createMultipleBills: () => ["create-multiple-bills"],
   },
 };

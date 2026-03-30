@@ -16,22 +16,14 @@ export const APP_ROUTES = {
     BUILDINGS: {
       BASE: "/buildings",
       ADD: () => `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/add`,
-      DETAIL: (id: string) => `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${id}`,
-      ROOMS: {
-        DETAIL: (id: string, code: string) =>
-          `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${id}/${code}`,
-      },
-      BILLS: {
-        BASE: (building_id: string) =>
-          `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${building_id}/bills`,
-        CREATE: (building_id: string) =>
-          `${APP_ROUTES.ADMIN.BUILDINGS.BILLS.BASE(building_id)}/create`,
-      },
-      UTILITY_READINGS: {
-        BASE: (building_id: string) =>
-          `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${building_id}/utility-readings`,
-        CREATE: (building_id: string) =>
-          `${APP_ROUTES.ADMIN.BUILDINGS.UTILITY_READINGS.BASE(building_id)}/create`,
+      ID: {
+        BASE: (id: string) => `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${id}`,
+        ROOMS: (id: string) =>
+          `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/rooms`,
+        PAYMENT: (id: string) =>
+          `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/payments`,
+        UTILITY_READINGS: (id: string) =>
+          `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/utility-readings`,
       },
     },
   },

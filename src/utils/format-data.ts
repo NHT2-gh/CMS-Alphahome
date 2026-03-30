@@ -17,6 +17,7 @@ export const formatDateTime = (
   dateString?: string | null,
   options?: {
     withTime?: boolean;
+    formatString?: "dd-mm-yyyy" | "yyyy-mm-dd";
   },
 ): string => {
   if (!dateString) return "-";
@@ -30,11 +31,13 @@ export const formatDateTime = (
   const year = date.getFullYear();
 
   if (!options?.withTime) {
-    return `${day}/${month}/${year}`;
+    if (options?.formatString === "dd-mm-yyyy")
+      return `${day}-${month}-${year}`;
+    else return `${year}-${month}-${day}`;
   }
 
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
+  return `${day}-${month}-${year} ${hours}:${minutes}`;
 };

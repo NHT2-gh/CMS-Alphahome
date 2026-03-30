@@ -1,3 +1,5 @@
+import { Service } from "./bill";
+
 export type UtilityReadingType = "electricity" | "water";
 
 export interface UtilityReading {
@@ -6,7 +8,7 @@ export interface UtilityReading {
 }
 
 export interface MonthData {
-  month: number;
+  month: string;
   utility_readings: UtilityReading[];
 }
 
@@ -19,6 +21,12 @@ export interface UtilityReadingResponse {
   utility_type: UtilityReadingType;
   total_consumption: string;
   total_rooms: number;
+}
+
+export interface BuildingService {
+  id: string;
+  services: Service;
+  type: UtilityReadingType;
 }
 
 export interface UtilityReadingDetail {

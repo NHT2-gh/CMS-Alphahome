@@ -4,19 +4,16 @@ import { showToast } from "@/lib/toast";
 import { roomService } from "@/services/room.service";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useRoom(buildingId: string) {
+export default function useRoom(
+  buildingId?: string,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
-    queryKey: queryKeys.rooms.list(buildingId),
+    queryKey: queryKeys.rooms.list(buildingId!),
     queryFn: () => {
-      return roomService.getRoomsByBuildingId(buildingId);
+      return roomService.getRoomsByBuildingId(buildingId!);
     },
-    throwOnError(error) {
-      showToast.error({
-        title: "Lỗi",
-        description: mapErrorToMessage(error),
-      });
 
-      return true;
-    },
+    enabled: options?.enabled ?? !!buildingId,
   });
 }

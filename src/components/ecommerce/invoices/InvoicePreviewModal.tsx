@@ -2,9 +2,16 @@
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
+import { Bill } from "@/types/bill";
 import React from "react";
 
-export default function InvoicePreviewModal() {
+interface InvoicePreviewModalProps {
+  bill: Bill;
+}
+
+export default function InvoicePreviewModal({
+  bill,
+}: InvoicePreviewModalProps) {
   const { isOpen, openModal, closeModal } = useModal();
   return (
     <>

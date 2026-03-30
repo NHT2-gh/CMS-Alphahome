@@ -1,5 +1,5 @@
 import PaginationWithIcon from "@/components/ui/pagination/PaginationWitIcon";
-import { Pagination as PaginationType } from "@/types/other";
+import { Pagination as PaginationType } from "@/types/common";
 import React from "react";
 
 interface PaginationProps {
@@ -20,7 +20,7 @@ export default function Pagination({
                 (pagination.page - 1) * pagination.limit + 1
               } to ${Math.min(
                 pagination.page * pagination.limit,
-                pagination.total
+                pagination.total,
               )} of ${pagination.total} entries`
             : `Showing ${pagination.limit} entries`}
         </p>

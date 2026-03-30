@@ -26,11 +26,7 @@ const _tableHeader = [
 export default function DataTable({}: {}) {
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const router = useRouter();
-  const {
-    isLoading,
-    isFetching,
-    data: buildings,
-  } = useBuilding({
+  const { isLoading, data: buildings } = useBuilding({
     searchText,
   });
 
@@ -166,7 +162,7 @@ export default function DataTable({}: {}) {
                   <button
                     className="group"
                     onClick={() => {
-                      router.push(APP_ROUTES.ADMIN.BUILDINGS.DETAIL(item.id));
+                      router.push(APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(item.id));
                     }}
                   >
                     <Eye className="group-hover:text-brand-400" />

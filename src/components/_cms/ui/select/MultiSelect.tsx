@@ -2,23 +2,23 @@ import React, { useState } from "react";
 
 interface Option {
   value: string;
-  text: string;
+  label: string;
   selected: boolean;
 }
 
 interface MultiSelectProps {
-  label: string;
   options: Option[];
   defaultSelected?: string[];
-  onChange?: (selected: string[]) => void;
+  placeholder?: string;
+  handleOnChange?: (selected: string[]) => void;
   disabled?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
-  label,
   options,
   defaultSelected = [],
-  onChange,
+  placeholder,
+  handleOnChange,
   disabled = false,
 }) => {
   const [selectedOptions, setSelectedOptions] =
@@ -36,17 +36,19 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       : [...selectedOptions, optionValue];
 
     setSelectedOptions(newSelectedOptions);
-    if (onChange) onChange(newSelectedOptions);
+    if (handleOnChange) handleOnChange(newSelectedOptions);
   };
 
   const removeOption = (index: number, value: string) => {
     const newSelectedOptions = selectedOptions.filter((opt) => opt !== value);
     setSelectedOptions(newSelectedOptions);
-    if (onChange) onChange(newSelectedOptions);
+    if (handleOnChange) handleOnChange(newSelectedOptions);
   };
 
   const selectedValuesText = selectedOptions.map(
-    (value) => options.find((option) => option.value === value)?.text || "",
+    (value) =>
+      options.find((option) => option.value === value)?.label ||
+      (value === "all" ? "Tất cả" : ""),
   );
 
   return (
@@ -89,10 +91,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 ))
               ) : (
                 <input
-                  placeholder="Select option"
+                  placeholder={placeholder}
                   className="w-full h-full p-1 pr-2 text-sm bg-transparent border-0 outline-hidden appearance-none placeholder:text-gray-800 focus:border-0 focus:outline-hidden focus:ring-0 dark:placeholder:text-white/90"
                   readOnly
-                  value="Select option"
                 />
               )}
             </div>
@@ -128,7 +129,21 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-lg shadow-sm top-full max-h-select dark:bg-gray-900"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col max-h-[200px]">
+              <div
+                className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800`}
+                onClick={() => handleSelect("all")}
+              >
+                <div
+                  className={`relative flex w-full items-center p-2 pl-2 ${
+                    selectedOptions.includes("all") ? "bg-primary/10" : ""
+                  }`}
+                >
+                  <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
+                    Tất cả
+                  </div>
+                </div>
+              </div>
               {options.map((option, index) => (
                 <div key={index}>
                   <div
@@ -143,7 +158,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       }`}
                     >
                       <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
-                        {option.text}
+                        {option.label}
                       </div>
                     </div>
                   </div>
