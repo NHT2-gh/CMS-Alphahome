@@ -19,6 +19,29 @@ export const addBillServiceDetaiFormSchema = z.object({
   unit_price: z.string(),
 });
 
+export const createRoomFormSchema = z.object({
+  building_id: z.string().min(1, "Building ID is required"),
+  code_room: z.string().min(1, "Code room is required"),
+  area: z.number().min(1, "Area is required"),
+  current_rent: z.number().min(1, "Current rent is required"),
+  furniture_status: z.string().min(1, "Furniture status is required"),
+  description: z.string().optional(),
+  images: z.array(z.string()),
+});
+
+export const updateRoomInfoSchema = z.object({
+  building_id: z.string().min(1, "Building ID is required"),
+  code_room: z.string().min(1, "Code room is required"),
+  area: z.number().min(1, "Area is required"),
+  furniture_status: z.string().min(1, "Furniture status is required"),
+  description: z.string().optional(),
+  images: z.array(z.string()),
+});
+
+export type UpdateRoomInfoType = z.infer<typeof updateRoomInfoSchema>;
+
+export type CreateRoomFormType = z.infer<typeof createRoomFormSchema>;
+
 export type CreateUtilityReadingFormType = z.infer<
   typeof createUtilityReadingFormSchema
 >;

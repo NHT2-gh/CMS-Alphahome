@@ -94,6 +94,7 @@ export default function FormField({
             name={field.name}
             render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <FieldComponent
+                {...field}
                 disabled={disabled}
                 handleOnChange={(
                   value: string | Date,
@@ -109,7 +110,6 @@ export default function FormField({
                 value={value}
                 name={name}
                 ref={ref}
-                {...field}
               />
             )}
           />

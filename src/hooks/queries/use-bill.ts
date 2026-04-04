@@ -56,13 +56,14 @@ export function useCreateMultipleRoomMonthlyBills() {
         payload.room_ids,
       ),
 
-    onSuccess: () => {
+    onSuccess: (data) => {
       if (!building?.id) {
         return;
+      } else if (data) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.bills.allByBuildingId(building?.id),
+        });
       }
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.bills.allByBuildingId(building?.id),
-      });
     },
   });
 }

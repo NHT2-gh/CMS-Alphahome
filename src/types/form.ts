@@ -47,7 +47,6 @@ export interface BaseFieldConfig extends Omit<
   validation?: z.ZodType<any, any, any>;
   message?: string;
   label?: string;
-
   handleOnChange?: (value: string) => void;
 }
 
@@ -74,6 +73,7 @@ export interface TextareaFieldConfig extends BaseFieldConfig {
 export interface SelectFieldConfig extends BaseFieldConfig {
   type: "select" | "multiselect" | "radio";
   options: FieldOption[];
+  defaultValue?: string;
   multiple?: boolean;
 }
 

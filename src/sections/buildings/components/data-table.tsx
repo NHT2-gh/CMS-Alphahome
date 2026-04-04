@@ -162,7 +162,9 @@ export default function DataTable({}: {}) {
                   <button
                     className="group"
                     onClick={() => {
-                      router.push(APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(item.id));
+                      router.push(
+                        APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(item.code),
+                      );
                     }}
                   >
                     <Eye className="group-hover:text-brand-400" />

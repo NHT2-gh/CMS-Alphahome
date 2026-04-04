@@ -10,10 +10,10 @@ export default async function BuildingDetailLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ building_code: string }>;
 }) {
-  const { id } = await params;
-  const currentBuilding = await buildingService.getBuildingById(id);
+  const { building_code } = await params;
+  const currentBuilding = await buildingService.getBuilding(building_code);
   if (!currentBuilding) return null;
   return (
     <BuildingProvider initialBuilding={currentBuilding}>

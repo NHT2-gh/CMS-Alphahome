@@ -7,6 +7,7 @@ export const queryKeys = {
   },
   rooms: {
     list: (buildingId: string) => ["rooms", buildingId],
+    create: () => ["rooms", "create"],
   },
 
   utilityReading: {

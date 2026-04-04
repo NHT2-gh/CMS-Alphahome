@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Blocks, ChartBar, CreditCard, NotepadText } from "lucide-react";
 import { APP_ROUTES } from "@/config/app-routes";
 import { useBuilding } from "@/context/BuildingContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 export interface TabData {
   id: string;
@@ -46,7 +46,10 @@ export default function MainLayoutBuildingDetail({
 }) {
   const router = useRouter();
   const { building } = useBuilding();
-  const [activeTab, setActiveTab] = useState<TabData["id"]>("overview");
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState<TabData["id"]>(
+    pathname.split("/")[3],
+  );
 
   useEffect(() => {
     if (!building) {
@@ -59,27 +62,27 @@ export default function MainLayoutBuildingDetail({
       id: "overview",
       label: "Thống kê",
       icon: <ChartBar />,
-      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(building?.id || ""),
+      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(building?.code || ""),
     },
     {
       id: "rooms",
       label: "Danh sách phòng",
       icon: <Blocks />,
-      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS(building?.id || ""),
+      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(building?.code || ""),
     },
     {
       id: "utility-reading",
       label: "Bản ghi số",
       icon: <NotepadText />,
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.UTILITY_READINGS(
-        building?.id || "",
+        building?.code || "",
       ),
     },
     {
       id: "bills",
       label: "Thanh toán",
       icon: <CreditCard />,
-      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.PAYMENT(building?.id || ""),
+      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.PAYMENT(building?.code || ""),
     },
   ];
 
@@ -88,9 +91,8 @@ export default function MainLayoutBuildingDetail({
       <div className="border-b border-gray-200 dark:border-gray-800">
         <nav className="flex space-x-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-600">
           {tabData.map((tab) => (
-            <Link href={tab.appRoute}>
+            <Link key={tab.id} href={tab.appRoute}>
               <TabButton
-                key={tab.id}
                 {...tab}
                 isActive={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}

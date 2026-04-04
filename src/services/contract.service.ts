@@ -3,18 +3,25 @@ import { supabase } from "@/supabase/supabaseClients";
 import { Contract } from "@/types/contract";
 
 class ContractService {
-  constructor() {}
+  private tableName: string;
+  constructor() {
+    this.tableName = "contracts";
+  }
 
-  async getContractsByRoomId(roomId: string): Promise<Contract[]> {
-    const query = supabase.from("contracts").select("*").eq("room_id", roomId);
+  async getContract(roomId: string): Promise<Contract> {
+    const query = supabase
+      .from(this.tableName)
+      .select("*")
+      .eq("room_id", roomId)
+      .single();
 
-    const { data: contracts, error } = await query;
+    const { data: contract, error } = await query;
 
     if (error) {
       handlePostgresError(error);
     }
 
-    return contracts || [];
+    return contract;
   }
 }
 

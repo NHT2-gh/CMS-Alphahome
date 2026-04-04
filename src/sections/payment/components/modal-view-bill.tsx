@@ -6,7 +6,7 @@ import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { useBill } from "@/hooks/queries/use-bill";
-import { useContractByRoomId } from "@/hooks/queries/use-contract";
+import { useContract } from "@/hooks/queries/use-contract";
 import { Bill, PaymentStatus } from "@/types/bill";
 import { formatDateTime } from "@/utils/format-data";
 import { Eye, Receipt, UserCircle } from "lucide-react";
@@ -19,7 +19,7 @@ import { Contract } from "@/types/contract";
 export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
   const { isOpen, openModal, closeModal } = useModal();
   const { data: bill } = useBill(currentBill.tracking_code ?? "");
-  const { data: contracts } = useContractByRoomId(bill?.room_id || "");
+  const { data: contract } = useContract(bill?.room_id || "");
   const [status, setStatus] = useState<PaymentStatus>(
     currentBill.payment_status,
   );
@@ -131,7 +131,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
             </form>
           </div>
           <div className="border-b border-gray-200 p-6 dark:border-gray-800">
-            {contracts && (
+            {contract && (
               <div className="pb-5 space-y-4">
                 <h4 className="flex items-center gap-3">
                   <UserCircle /> Thông tin khách hàng
@@ -143,7 +143,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                     field={{
                       label: "Tên khách hàng",
                       type: "text",
-                      value: contracts[0].tenant_name ?? "",
+                      value: contract.tenant_name ?? "",
                       readOnly: true,
                     }}
                   />
@@ -152,7 +152,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                     field={{
                       label: "Số điện thoại",
                       type: "text",
-                      value: contracts[0].tenant_phone ?? "",
+                      value: contract.tenant_phone ?? "",
                       readOnly: true,
                     }}
                   />
@@ -161,7 +161,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                     field={{
                       label: "Số lượng người ở",
                       type: "text",
-                      value: contracts[0].occupants_count ?? "",
+                      value: contract.occupants_count ?? "",
                       readOnly: true,
                     }}
                   />
@@ -181,7 +181,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
               {bill && (
                 <BillPreviewModal
                   bill={bill}
-                  infoCustomer={contracts?.[0] as Contract}
+                  infoCustomer={contract as Contract}
                 />
               )}
               <Button variant="primary">

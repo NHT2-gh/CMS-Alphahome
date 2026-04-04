@@ -51,8 +51,8 @@ class BuildingService {
     return data || [];
   }
 
-  async getBuildingById(id: string): Promise<Building | null> {
-    const query = supabase.from("buildings").select("*").eq("id", id);
+  async getBuilding(code: string): Promise<Building | null> {
+    const query = supabase.from("buildings").select("*").eq("code", code);
 
     const { data, error } = await query;
 

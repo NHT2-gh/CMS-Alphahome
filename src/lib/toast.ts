@@ -18,7 +18,7 @@ export const showToast = {
           title,
           description,
         }),
-      { duration, position: "bottom-right" }
+      { duration, position: "bottom-right" },
     );
   },
 
@@ -31,7 +31,7 @@ export const showToast = {
           title,
           description,
         }),
-      { duration }
+      { duration, position: "bottom-right" },
     );
   },
 
@@ -44,7 +44,7 @@ export const showToast = {
           title,
           description,
         }),
-      { duration }
+      { duration, position: "bottom-right" },
     );
   },
 
@@ -57,7 +57,7 @@ export const showToast = {
           title,
           description,
         }),
-      { duration }
+      { duration, position: "bottom-right" },
     );
   },
 };

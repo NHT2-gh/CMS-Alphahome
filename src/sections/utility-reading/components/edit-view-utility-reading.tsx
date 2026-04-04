@@ -23,7 +23,6 @@ interface EditViewReadingProp {
 export default function EditViewReading({
   currentDate = formatDateTime(new Date().toISOString()),
 }: EditViewReadingProp) {
-  console.log(currentDate);
   const { building } = useBuilding();
   const { data: rooms, error } = useRoom(building?.id);
   const { data: utilityReadingByDate } = useUtilityReadingByDate(

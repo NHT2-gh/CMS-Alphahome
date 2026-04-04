@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  images: {
+    domains: ["jioeyqgkaazhqeanehtt.supabase.co"],
+  },
 };
 
 export default nextConfig;

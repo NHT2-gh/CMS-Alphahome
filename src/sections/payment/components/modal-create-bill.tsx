@@ -8,7 +8,7 @@ import {
   useCreateMultipleRoomMonthlyBills,
   useCreateSingleRoomMonthlyBill,
 } from "@/hooks/queries/use-bill";
-import { useContractByRoomId } from "@/hooks/queries/use-contract";
+import { useContract } from "@/hooks/queries/use-contract";
 import useRoom from "@/hooks/queries/use-room";
 import { useModal } from "@/hooks/useModal";
 import {
@@ -57,10 +57,12 @@ export default function ModalCreateBill() {
     name: "room_selected",
   });
 
-  const { data: contracts, isFetching: isFetchingContract } =
-    useContractByRoomId(roomCode as string, {
+  const { data: contracts, isFetching: isFetchingContract } = useContract(
+    roomCode as string,
+    {
       enabled: !isMutiRoom && !!roomCode,
-    });
+    },
+  );
   const createMultipleBills = useCreateMultipleRoomMonthlyBills();
   const createSingleBill = useCreateSingleRoomMonthlyBill();
   useEffect(() => {
