@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { APP_ROUTES } from "@/config/app-routes";
 import { useBuilding } from "@/hooks/queries/use-building";
-import { formatPrice } from "@/utils/format-data";
+import { formatCurrency } from "@/utils/format-data";
 import { Eye, Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -121,9 +121,9 @@ export default function DataTable({}: {}) {
 
                 <TableCell>{item.address}</TableCell>
 
-                <TableCell>{formatPrice(item.price_rent)}</TableCell>
+                <TableCell>{formatCurrency(item.price_rent)}</TableCell>
 
-                <TableCell>{formatPrice(item.price_deposit)}</TableCell>
+                <TableCell>{formatCurrency(item.price_deposit)}</TableCell>
 
                 <TableCell>{item.start_date || "NULL"}</TableCell>
 

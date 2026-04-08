@@ -7,8 +7,8 @@ import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 interface FolderCardProps {
   id: string;
   title: string;
-  waterCount: string;
-  electricityCount: string;
+  waterCount: number;
+  electricityCount: number;
   handleDelete: (id: string) => void;
   handleViewMore: (id: string) => void;
 }

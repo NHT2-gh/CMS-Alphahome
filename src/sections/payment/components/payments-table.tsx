@@ -1,18 +1,19 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Bill, PaymentStatus } from "@/types/bill";
+import { Bill, BillStatus } from "@/types/bill";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import { Upload } from "lucide-react";
-import { useAllBillsBy } from "@/hooks/queries/use-bill";
+import { useAllBills } from "@/hooks/queries/use-bill";
 import { useBuilding } from "@/context/BuildingContext";
-import { formatDateTime, formatPrice } from "@/utils/format-data";
+import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import Badge from "@/components/ui/badge/Badge";
 import ModalViewBill from "./modal-view-bill";
 import { Checkbox } from "@/components/_cms/ui/input";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
+import { Pagination } from "@/components/_cms/common/table";
 
 const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   {
@@ -32,7 +33,7 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
     title: "Tổng tiền",
   },
   {
-    key: "payment_status",
+    key: "bill_status",
     title: "Trạng thái",
   },
 
@@ -52,13 +53,14 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
 
 export default function PaymentsListTable() {
   const { building } = useBuilding();
-  const { data: bills } = useAllBillsBy(building ? building.id : "");
-  const [filterStatus, setFilterStatus] = useState<PaymentStatus | "all">(
-    "all",
-  );
+  const [limit, setLimit] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState<string | null>(null);
-  // const [showFilter, setShowFilter] = useState<boolean>(false);
+  const { data: bills } = useAllBills(building ? building.id : "", {
+    page: currentPage,
+    limit: limit,
+  });
+  const [filterStatus, setFilterStatus] = useState<BillStatus | "all">("all");
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
 
   const handleSearch = useCallback((value: string) => {
@@ -84,12 +86,12 @@ export default function PaymentsListTable() {
           </div>
           <div className="flex gap-3.5">
             <SingleFilterButtonGroup
-              items={Object.entries(PaymentStatus).map(([value, label]) => ({
+              items={Object.entries(BillStatus).map(([value, label]) => ({
                 label,
                 value,
               }))}
               onChange={(value) => {
-                setFilterStatus(value as PaymentStatus);
+                setFilterStatus(value as BillStatus);
               }}
             />
             <div className="hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center">
@@ -99,10 +101,7 @@ export default function PaymentsListTable() {
                 handleOnChange={handleSearch}
                 debounceTime={500}
               />
-              {/* <FilterDropdown
-                    showFilter={showFilter}
-                    setShowFilter={setShowFilter}
-                  /> */}
+
               <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
                 <Upload className="size-4" />
                 Export
@@ -112,18 +111,18 @@ export default function PaymentsListTable() {
         </div>
         <Table>
           <CMSTableHeader
-            selectAll={selectedBills.length === bills?.length}
+            selectAll={selectedBills.length === bills?.data.length}
             tableHeader={_tableHeader}
             handleSelectAll={(isSelectAll) => {
               if (isSelectAll) {
-                setSelectedBills(bills?.map((bill) => bill.id) || []);
+                setSelectedBills(bills?.data.map((bill) => bill.id) || []);
               } else {
                 setSelectedBills([]);
               }
             }}
           />
           <TableBody>
-            {bills?.map((bill) => (
+            {bills?.data.map((bill) => (
               <TableRow key={bill.id}>
                 <TableCell>
                   <Checkbox
@@ -143,24 +142,23 @@ export default function PaymentsListTable() {
                 <TableCell>
                   {new Date(bill.month_date).getMonth() + 1}
                 </TableCell>
-                <TableCell>{formatPrice(bill.grand_total)}</TableCell>
+                <TableCell>{formatCurrency(bill.grand_total)}</TableCell>
                 <TableCell className="capitalize">
                   <Badge
                     variant="light"
                     color={
-                      bill?.payment_status === ("paid" as PaymentStatus)
+                      bill?.bill_status === ("paid" as BillStatus)
                         ? "success"
-                        : bill?.payment_status === ("draft" as PaymentStatus)
+                        : bill?.bill_status === ("draft" as BillStatus)
                           ? "warning"
-                          : bill?.payment_status ===
-                              ("overdue" as PaymentStatus)
+                          : bill?.bill_status === ("overdue" as BillStatus)
                             ? "error"
                             : "info"
                     }
                   >
                     {
-                      PaymentStatus[
-                        bill.payment_status as unknown as keyof typeof PaymentStatus
+                      BillStatus[
+                        bill.bill_status as unknown as keyof typeof BillStatus
                       ]
                     }
                   </Badge>
@@ -180,6 +178,16 @@ export default function PaymentsListTable() {
             ))}
           </TableBody>
         </Table>
+
+        {bills && (
+          <Pagination
+            type="default"
+            pagination={{ page: currentPage, limit: limit, total: bills.count }}
+            handlePageChange={(page) => {
+              setCurrentPage(page);
+            }}
+          />
+        )}
       </div>
     </>
   );

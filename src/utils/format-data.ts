@@ -6,7 +6,7 @@ export function formatDate(date: Date): string {
   });
 }
 
-export function formatPrice(price: number): string {
+export function formatCurrency(price: number): string {
   return Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",

@@ -20,7 +20,7 @@ export const APP_ROUTES = {
         BASE: (buildingId: string) =>
           `${APP_ROUTES.ADMIN.BUILDINGS.BASE}/${buildingId}`,
         ROOMS: {
-          BASE: (buildingId: string) =>
+          BASE: (buildingId?: string) =>
             `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(buildingId) + `/rooms` : `rooms`}`,
           ID: (roomId: string, buildingId?: string) =>
             `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(buildingId) + `/${roomId}` : `rooms/${roomId}`}`,
@@ -31,6 +31,12 @@ export const APP_ROUTES = {
           `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/payments`,
         UTILITY_READINGS: (id: string) =>
           `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/utility-readings`,
+        CONTRACTS: {
+          BASE: (buildingId: string) =>
+            `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(buildingId) + `/contracts` : `contracts`}`,
+        },
+        REVENUE_EXPENDITURE_BOOK: (id: string) =>
+          `${APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(id)}/revenue-expenditure`,
       },
     },
   },

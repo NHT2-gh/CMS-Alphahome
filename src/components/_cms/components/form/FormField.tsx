@@ -80,7 +80,20 @@ export default function FormField({
               <FieldComponent
                 {...field}
                 disabled={disabled}
-                onChange={onChange}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (field.type === "number") {
+                    const num = e.target.valueAsNumber;
+                    onChange?.({
+                      ...e,
+                      target: {
+                        ...e.target,
+                        value: isNaN(num) ? "" : num,
+                      },
+                    });
+                  } else {
+                    onChange?.(e);
+                  }
+                }}
                 onBlur={onBlur}
                 value={value}
                 name={name}

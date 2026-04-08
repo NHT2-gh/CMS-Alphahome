@@ -8,6 +8,7 @@ interface SelectProps {
   className?: string;
   defaultValue?: string;
   disabled?: boolean;
+  value?: string;
   handleOnChange?: (value: string) => void;
 }
 
@@ -17,9 +18,16 @@ const Select: React.FC<SelectProps> = ({
   className = "",
   defaultValue = "",
   disabled = false,
+  value,
   handleOnChange,
 }) => {
-  const [valueSelected, setValueSelected] = React.useState(defaultValue);
+  const [valueSelected, setValueSelected] = React.useState(
+    defaultValue || value,
+  );
+
+  React.useEffect(() => {
+    setValueSelected(defaultValue || value);
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value;

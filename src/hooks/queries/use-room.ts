@@ -2,12 +2,14 @@ import { queryKeys } from "@/config/query-keys";
 import { useBuilding } from "@/context/BuildingContext";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { showToast } from "@/lib/toast";
-import { CreateRoomFormType } from "@/schemas/validation/admin.validation";
+import {
+  CreateRoomFormType,
+  UpdateRoomInfoType,
+} from "@/schemas/validation/admin.validation";
 import { roomService } from "@/services/room.service";
-import { MutationResult } from "@/types/common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default function useRoom(
+export default function useRooms(
   buildingId?: string,
   options?: { enabled?: boolean },
 ) {
@@ -40,7 +42,23 @@ export function useCreateRoom() {
       }
     },
     onError: (error) => {
-      console.log(error.message);
+      return {
+        success: false,
+        message: mapErrorToMessage(error),
+      };
+    },
+  });
+}
+
+export function useUpdateRoom() {
+  return useMutation({
+    mutationKey: queryKeys.rooms.update(),
+    mutationFn: (payload: UpdateRoomInfoType) =>
+      roomService.updateRoom(payload),
+    onSuccess: (data) => {
+      return data;
+    },
+    onError: (error) => {
       return {
         success: false,
         message: mapErrorToMessage(error),

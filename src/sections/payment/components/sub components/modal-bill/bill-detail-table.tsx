@@ -5,7 +5,7 @@ import { BillServiceDetail, CalculationMethod } from "@/types/bill";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useBillServicesDetail } from "@/hooks/queries/use-bill";
-import { formatPrice } from "@/utils/format-data";
+import { formatCurrency } from "@/utils/format-data";
 import { FormField } from "@/components/_cms/components/form";
 import { useForm } from "react-hook-form";
 import {
@@ -153,8 +153,8 @@ export default function BillDetailTable({
                   <TableCell>Tiền phòng</TableCell>
                   <TableCell>{CalculationMethod.fixed}</TableCell>
                   <TableCell>1</TableCell>
-                  <TableCell>{formatPrice(baseRent)}</TableCell>
-                  <TableCell>{formatPrice(baseRent)}</TableCell>
+                  <TableCell>{formatCurrency(baseRent)}</TableCell>
+                  <TableCell>{formatCurrency(baseRent)}</TableCell>
                 </TableRow>
                 {billServices?.map((service, idx) => (
                   <TableRow key={service.id}>
@@ -169,8 +169,10 @@ export default function BillDetailTable({
                       }
                     </TableCell>
                     <TableCell>{service.quantity}</TableCell>
-                    <TableCell>{formatPrice(service.unit_price)}</TableCell>
-                    <TableCell>{formatPrice(service.total_amount)}</TableCell>
+                    <TableCell>{formatCurrency(service.unit_price)}</TableCell>
+                    <TableCell>
+                      {formatCurrency(service.total_amount)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </tbody>
@@ -262,7 +264,7 @@ export default function BillDetailTable({
                 Thành tiền
               </span>
               <span className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                {formatPrice(total)}
+                {formatCurrency(total)}
               </span>
             </li>
           </ul>

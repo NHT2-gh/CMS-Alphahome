@@ -1,7 +1,8 @@
 import ComponentCard from "@/components/common/ComponentCard";
 import Badge from "@/components/ui/badge/Badge";
+import Button from "@/components/ui/button/Button";
 import { Contract } from "@/types/contract";
-import { formatDateTime, formatPrice } from "@/utils/format-data";
+import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { UserCircle2, UserIcon } from "lucide-react";
 import React from "react";
 
@@ -30,7 +31,7 @@ export default function ViewContract({ contract }: ViewContractProps) {
             <li>
               <b>Tiền cọc:</b>{" "}
               <span className="text-red-500">
-                {formatPrice(contract.deposit_amount)}
+                {formatCurrency(contract.deposit_amount)}
               </span>
             </li>
             <li>
@@ -42,7 +43,7 @@ export default function ViewContract({ contract }: ViewContractProps) {
           </ul>
 
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold inline-flex gap-2 text-blue-500">
+            <h3 className="text-lg font-semibold inline-flex gap-2 text-neutral-800">
               <UserCircle2 /> Thông tin người thuê
             </h3>
             <ul className="grid grid-cols-2 gap-3">
@@ -56,7 +57,12 @@ export default function ViewContract({ contract }: ViewContractProps) {
           </div>
         </section>
       ) : (
-        <div>Chưa có hợp đồng</div>
+        <div className="flex flex-col gap-5">
+          <i className="">Chưa có hợp đồng</i>
+          <a href="" className="text-blue-500 text-sm underline">
+            Thêm hợp đồng
+          </a>
+        </div>
       )}
     </ComponentCard>
   );

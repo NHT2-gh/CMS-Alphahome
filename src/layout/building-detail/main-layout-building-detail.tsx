@@ -1,7 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { Blocks, ChartBar, CreditCard, NotepadText } from "lucide-react";
+import {
+  Blocks,
+  BookOpen,
+  ChartBar,
+  CreditCard,
+  FileText,
+  NotepadText,
+} from "lucide-react";
 import { APP_ROUTES } from "@/config/app-routes";
 import { useBuilding } from "@/context/BuildingContext";
 import { usePathname, useRouter } from "next/navigation";
@@ -48,7 +55,7 @@ export default function MainLayoutBuildingDetail({
   const { building } = useBuilding();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState<TabData["id"]>(
-    pathname.split("/")[3],
+    pathname.split("/")[3] || "overview",
   );
 
   useEffect(() => {
@@ -71,7 +78,7 @@ export default function MainLayoutBuildingDetail({
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(building?.code || ""),
     },
     {
-      id: "utility-reading",
+      id: "utility-readings",
       label: "Bản ghi số",
       icon: <NotepadText />,
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.UTILITY_READINGS(
@@ -83,6 +90,22 @@ export default function MainLayoutBuildingDetail({
       label: "Thanh toán",
       icon: <CreditCard />,
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.PAYMENT(building?.code || ""),
+    },
+    // {
+    //   id: "contracts",
+    //   label: "Hợp đồng",
+    //   icon: <FileText />,
+    //   appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.CONTRACTS.BASE(
+    //     building?.code || "",
+    //   ),
+    // },
+    {
+      id: "revenue-expenditure",
+      label: "Ghi nhận thu chi",
+      icon: <BookOpen />,
+      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.REVENUE_EXPENDITURE_BOOK(
+        building?.code || "",
+      ),
     },
   ];
 

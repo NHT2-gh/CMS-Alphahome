@@ -1,4 +1,4 @@
-export enum PaymentStatus {
+export enum BillStatus {
   draft = "Nháp",
   confirmed = "Đã xác nhận",
   paid = "Đã thanh toán",
@@ -17,7 +17,7 @@ export interface Bill {
   tracking_code: string;
   room_id: string;
   grand_total: number;
-  payment_status: PaymentStatus;
+  bill_status: BillStatus;
   month_date: string;
   rooms: {
     building_id: string;
@@ -34,12 +34,12 @@ export interface Bill {
 export interface BillFilter {
   room_id?: string;
   month_date?: string;
-  payment_status?: PaymentStatus;
+  bill_status?: BillStatus;
 }
 
 export interface Service {
   service_name: string;
-  type: ServiceType;
+  service_type: ServiceType;
   calculation_method: CalculationMethod;
 }
 

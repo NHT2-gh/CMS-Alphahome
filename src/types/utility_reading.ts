@@ -4,7 +4,7 @@ export type UtilityReadingType = "electricity" | "water";
 
 export interface UtilityReading {
   utility_type: UtilityReadingType;
-  total_consumption: string;
+  total_consumption: number;
 }
 
 export interface MonthData {
@@ -26,13 +26,15 @@ export interface UtilityReadingResponse {
 export interface BuildingService {
   id: string;
   services: Service;
-  type: UtilityReadingType;
+  building_id: string;
 }
 
 export interface UtilityReadingDetail {
   type: UtilityReadingType;
-  previous_reading: string | number;
-  current_reading: string | number;
-  consumption: string | number;
+  previous_reading: number | null;
+  current_reading: number | null;
+  consumption: number | null;
   room_id: string;
+  month_date: string;
+  building_service_id: string;
 }

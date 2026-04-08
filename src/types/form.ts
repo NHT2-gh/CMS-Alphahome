@@ -27,7 +27,7 @@ export type LayoutType = "grid" | "tabs" | "stepper" | "accordion" | "inline";
 
 // Field option for select/radio fields
 export interface FieldOption {
-  label: string;
+  label: string | ReactNode;
   value: string | number;
   disabled?: boolean;
 }
@@ -79,6 +79,7 @@ export interface SelectFieldConfig extends BaseFieldConfig {
 
 export interface DateFieldConfig extends Omit<BaseFieldConfig, "onChange"> {
   type: "date";
+  id: string;
   mode?: "single" | "multiple" | "range" | "time";
   onChange?: Hook | Hook[];
   defaultDate?: DateOption;

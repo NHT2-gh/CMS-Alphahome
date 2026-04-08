@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/config/query-keys";
 import {
   buildingService,
@@ -18,7 +18,22 @@ export const useBuildingDetail = (id: string) => {
   return useQuery({
     queryKey: queryKeys.buildings.detail(id),
     queryFn: () => {
-      return buildingService.getBuildingById(id);
+      return buildingService.getBuilding(id);
     },
+  });
+};
+
+export const useBuildingServices = (
+  id?: string,
+  options?: { enabled?: boolean },
+) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: queryKeys.buildings.services(id!),
+    queryFn: () => {
+      return buildingService.getBuildingServices(id!);
+    },
+
+    ...options,
   });
 };

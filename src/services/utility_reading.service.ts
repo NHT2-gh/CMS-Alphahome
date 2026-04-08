@@ -3,6 +3,7 @@ import { handlePostgresError } from "@/lib/error/postgres-error";
 import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
 import { UtilityReadingDetail, YearData } from "@/types/utility_reading";
+import { getNextDate, getPreviousMonth } from "@/utils/getTime";
 
 class UtilityReadingService {
   async getUtilityReadingOverview(
@@ -29,29 +30,9 @@ class UtilityReadingService {
 
   async getUtilityReadingByDate(
     buildingId: string,
-    date: string,
+    startDate: string,
+    endDate: string,
   ): Promise<UtilityReadingDetail[]> {
-    const getPreviousMonth = (date: string) => {
-      const d = new Date(date);
-      d.setMonth(d.getMonth() - 1);
-
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-
-      return `${year}-${month}-01`;
-    };
-
-    const getNextDate = (date: string) => {
-      const d = new Date(date);
-      d.setDate(d.getDate() + 1);
-
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
-    };
-
     const query = supabase
       .from("room_utility_readings")
       .select(
@@ -64,17 +45,14 @@ class UtilityReadingService {
   `,
       )
       .eq("rooms.building_id", buildingId)
-      .gte("month_date", getPreviousMonth(date))
-      .lt("month_date", getNextDate(date))
+      .gte("month_date", startDate)
+      .lt("month_date", endDate)
       .order("month_date", { ascending: true });
 
     const { data: UtilityReadingResponse, error } = await query;
 
     if (error) {
-      showToast.error({
-        title: "Lỗi",
-        description: error.message,
-      });
+      handlePostgresError(error);
     }
 
     return UtilityReadingResponse || [];
@@ -84,6 +62,8 @@ class UtilityReadingService {
     payload: UtilityReadingDetail[],
   ): Promise<boolean> {
     const query = supabase.from("room_utility_readings").insert(payload);
+
+    console.log(payload);
 
     const { error } = await query;
 

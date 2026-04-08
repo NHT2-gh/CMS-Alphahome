@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FormField } from "@/components/_cms/components/form";
-import useRoom from "@/hooks/queries/use-room";
+import useRooms from "@/hooks/queries/use-room";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Checkbox, Input } from "@/components/_cms/ui/input";
@@ -15,22 +15,44 @@ import Button from "@/components/ui/button/Button";
 import { createUtilityReading } from "@/lib/server-action/utility-action.action";
 import { showToast } from "@/lib/toast";
 import { formatDateTime } from "@/utils/format-data";
+import { useBuildingServices } from "@/hooks/queries/use-building";
+import { Loader2 } from "lucide-react";
 
 interface EditViewReadingProp {
-  currentDate?: string;
+  rangeDateSelected?: [string, string];
 }
+const currentDate = new Date();
 
 export default function EditViewReading({
-  currentDate = formatDateTime(new Date().toISOString()),
+  rangeDateSelected,
 }: EditViewReadingProp) {
   const { building } = useBuilding();
-  const { data: rooms, error } = useRoom(building?.id);
-  const { data: utilityReadingByDate } = useUtilityReadingByDate(
+  const { data: rooms, error } = useRooms(building?.id);
+  const {
+    data: buildingServices,
+    isFetching,
+    isLoading,
+  } = useBuildingServices(building?.id, {
+    enabled: !!building?.id,
+  });
+  const [rangeDate] = useState<[string, string?]>(
+    rangeDateSelected
+      ? rangeDateSelected
+      : [
+          `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-01`,
+          formatDateTime(new Date().toISOString()),
+        ],
+  );
+  const { data: utilityReadingByDate, refetch } = useUtilityReadingByDate(
     building?.id,
-    currentDate,
+    rangeDate[0],
+    rangeDate[1],
   );
   const [isFirstReading, setIsFirstReading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [allowAutoFill, setAllowAutoFill] = useState(
+    utilityReadingByDate?.length === 0,
+  );
   const [readings, setReadings] = useState<
     Record<string, UtilityReadingDetail>
   >({});
@@ -56,6 +78,11 @@ export default function EditViewReading({
           current_reading: item.current_reading,
           consumption: item.consumption,
           room_id: item.room_id,
+          month_date: item.month_date,
+          building_service_id:
+            buildingServices?.find(
+              (service) => service.services.service_type === item.type,
+            )?.id || "",
         },
       ]),
     );
@@ -90,9 +117,7 @@ export default function EditViewReading({
         const currVal = Number(updated.current_reading);
 
         if (!isNaN(prevVal) && !isNaN(currVal)) {
-          updated.consumption = String(
-            currVal - prevVal < 0 ? 0 : currVal - prevVal,
-          );
+          updated.consumption = currVal - prevVal < 0 ? 0 : currVal - prevVal;
         }
       }
 
@@ -101,6 +126,57 @@ export default function EditViewReading({
         [`${roomId}-${type}`]: updated,
       };
     });
+  };
+
+  const handleAutoFill = async () => {
+    if (!rooms) return;
+
+    const initData = rooms?.reduce(
+      (acc, room) => {
+        acc[`${room.room_id}-electricity`] = {
+          type: "electricity",
+          previous_reading: null,
+          current_reading: null,
+          consumption: null,
+          room_id: room.room_id,
+          month_date: rangeDate[0],
+          building_service_id:
+            buildingServices?.find(
+              (service) => service.services.service_type === "electricity",
+            )?.id || "",
+        };
+        acc[`${room.room_id}-water`] = {
+          type: "water",
+          previous_reading: null,
+          current_reading: null,
+          consumption: null,
+          room_id: room.room_id,
+          month_date: rangeDate[0],
+          building_service_id:
+            buildingServices?.find(
+              (service) => service.services.service_type === "water",
+            )?.id || "",
+        };
+        return acc;
+      },
+      {} as Record<string, UtilityReadingDetail>,
+    );
+
+    const result = await createUtilityReading(initData, isFirstReading);
+
+    if (result.success) {
+      refetch();
+      setAllowAutoFill(false);
+      showToast.success({
+        title: "Thành công",
+        description: "Tự động điền dữ liệu thành công",
+      });
+    } else {
+      showToast.error({
+        title: "Lỗi",
+        description: result.error,
+      });
+    }
   };
 
   const onSubmit = async (
@@ -146,6 +222,18 @@ export default function EditViewReading({
           }}
         />
 
+        {!rangeDateSelected && (
+          <FormField
+            field={{
+              id: "month_date",
+              label: "Kì ghi chỉ số",
+              type: "text",
+              readOnly: true,
+              defaultValue: `Tháng ${rangeDate[0].split("-")[1]}`,
+            }}
+          />
+        )}
+
         <Button disabled={!isEdit} className="w-fit h-fit" type="submit">
           Tạo bản ghi mới
         </Button>
@@ -157,7 +245,16 @@ export default function EditViewReading({
         onChange={() => setIsFirstReading(!isFirstReading)}
         label={"Đây là bản ghi đầu tiên"}
       />
-
+      {allowAutoFill && (
+        <Button
+          className="w-fit"
+          onClick={() => {
+            handleAutoFill();
+          }}
+        >
+          Tự động điền dữ liệu tháng trước
+        </Button>
+      )}
       <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
         Danh sách chỉ số
       </h4>
@@ -186,98 +283,106 @@ export default function EditViewReading({
             ]}
           />
 
-          <TableBody className="max-h-[300px] w-full overflow-y-scroll">
-            {rooms?.map((room) => (
-              <TableRow
-                key={room.room_id}
-                className="!min-w-full border-b border-neutral-300 last:border-0"
-              >
-                <TableCell key={room.room_id}>{room.code}</TableCell>
-                <TableCell key="previous_reading_electricity">
-                  <Input
-                    min="0"
-                    className="max-w-[120px] max-h-10"
-                    value={
-                      readings[`${room.room_id}-electricity`]
-                        ?.previous_reading || ""
-                    }
-                    type="number"
-                    onChange={(e) => {
-                      handleChange(
-                        room.room_id,
-                        "previous_reading",
-                        "electricity",
-                        e.target.value,
-                      );
-                    }}
-                  />
-                </TableCell>
-
-                <TableCell key="current_reading_electricity">
-                  <Input
-                    min="0"
-                    className="max-w-[120px] max-h-10"
-                    value={
-                      readings[`${room.room_id}-electricity`]
-                        ?.current_reading || ""
-                    }
-                    type="number"
-                    onChange={(e) => {
-                      handleChange(
-                        room.room_id,
-                        "current_reading",
-                        "electricity",
-                        e.target.value,
-                      );
-                    }}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  {readings[`${room.room_id}-electricity`]?.consumption || ""}
-                </TableCell>
-
-                <TableCell key="previous_reading_water">
-                  <Input
-                    min="0"
-                    className="max-w-[120px] max-h-10"
-                    value={
-                      readings[`${room.room_id}-water`]?.previous_reading || ""
-                    }
-                    type="number"
-                    onChange={(e) => {
-                      handleChange(
-                        room.room_id,
-                        "previous_reading",
-                        "water",
-                        e.target.value,
-                      );
-                    }}
-                  />
-                </TableCell>
-                <TableCell key="current_reading_water">
-                  <Input
-                    min="0"
-                    className="max-w-[120px] max-h-10"
-                    value={
-                      readings[`${room.room_id}-water`]?.current_reading || ""
-                    }
-                    type="number"
-                    onChange={(e) => {
-                      handleChange(
-                        room.room_id,
-                        "current_reading",
-                        "water",
-                        e.target.value,
-                      );
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  {readings[`${room.room_id}-water`]?.consumption}
+          <TableBody className="max-h-[300px] min-h-[300px] w-full overflow-y-scroll">
+            {isLoading || isFetching ? (
+              <TableRow>
+                <TableCell className="text-center">
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              rooms?.map((room) => (
+                <TableRow
+                  key={room.room_id}
+                  className="!min-w-full border-b border-neutral-300 last:border-0"
+                >
+                  <TableCell key={room.room_id}>{room.code}</TableCell>
+                  <TableCell key="previous_reading_electricity">
+                    <Input
+                      min="0"
+                      className="max-w-[120px] max-h-10"
+                      value={
+                        readings[`${room.room_id}-electricity`]
+                          ?.previous_reading || 0
+                      }
+                      type="number"
+                      onChange={(e) => {
+                        handleChange(
+                          room.room_id,
+                          "previous_reading",
+                          "electricity",
+                          e.target.value,
+                        );
+                      }}
+                    />
+                  </TableCell>
+
+                  <TableCell key="current_reading_electricity">
+                    <Input
+                      min="0"
+                      className="max-w-[120px] max-h-10"
+                      value={
+                        readings[`${room.room_id}-electricity`]
+                          ?.current_reading || 0
+                      }
+                      type="number"
+                      onChange={(e) => {
+                        handleChange(
+                          room.room_id,
+                          "current_reading",
+                          "electricity",
+                          e.target.value,
+                        );
+                      }}
+                    />
+                  </TableCell>
+
+                  <TableCell>
+                    {readings[`${room.room_id}-electricity`]?.consumption || ""}
+                  </TableCell>
+
+                  <TableCell key="previous_reading_water">
+                    <Input
+                      min="0"
+                      className="max-w-[120px] max-h-10"
+                      value={
+                        readings[`${room.room_id}-water`]?.previous_reading || 0
+                      }
+                      type="number"
+                      onChange={(e) => {
+                        handleChange(
+                          room.room_id,
+                          "previous_reading",
+                          "water",
+                          e.target.value,
+                        );
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell key="current_reading_water">
+                    <Input
+                      min="0"
+                      className="max-w-[120px] max-h-10"
+                      value={
+                        readings[`${room.room_id}-water`]?.current_reading || 0
+                      }
+                      type="number"
+                      onChange={(e) => {
+                        handleChange(
+                          room.room_id,
+                          "current_reading",
+                          "water",
+                          e.target.value,
+                        );
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {readings[`${room.room_id}-water`]?.consumption}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

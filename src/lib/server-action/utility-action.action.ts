@@ -11,7 +11,7 @@ export async function createUtilityReading(
   const payload = Object.values(data);
 
   if (!isFirstReading) {
-    payload.filter((item) => item.current_reading !== "");
+    payload.filter((item) => item.current_reading !== null);
   } else {
     payload.forEach((item) => {
       item.current_reading = item.previous_reading;

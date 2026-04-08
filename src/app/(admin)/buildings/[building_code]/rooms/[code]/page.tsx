@@ -1,3 +1,4 @@
+import NotFoundPage from "@/app/not-found";
 import { getRoomDetailServerAction } from "@/lib/server-action/room.action";
 import { RoomDetailPageView } from "@/sections/rooms/view";
 import React from "react";
@@ -10,6 +11,10 @@ export default async function RoomDetailPage({
   const { building_code, code } = await params;
 
   const roomDetailData = await getRoomDetailServerAction(building_code, code);
+
+  if (!roomDetailData.room) {
+    return <NotFoundPage />;
+  }
 
   return (
     <RoomDetailPageView

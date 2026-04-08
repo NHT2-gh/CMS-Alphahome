@@ -5,14 +5,14 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { RoomOverview } from "@/types/room";
 import { useRouter } from "next/navigation";
-import useRoom from "@/hooks/queries/use-room";
+import useRooms from "@/hooks/queries/use-room";
 import TableAction from "./rooms-table-action";
 import { Eye, PlusCircle } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { APP_ROUTES } from "@/config/app-routes";
 import Button from "@/components/ui/button/Button";
 import { useBuilding } from "@/context/BuildingContext";
-import { formatDateTime, formatPrice } from "@/utils/format-data";
+import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
@@ -28,7 +28,7 @@ const _tableHeader: { key: keyof RoomOverview | string; title: string }[] = [
 ];
 export default function RoomsTable() {
   const { building } = useBuilding();
-  const { data: rooms, error } = useRoom(building?.id);
+  const { data: rooms, error } = useRooms(building?.id);
   const [search, setSearch] = useState<string | undefined>(undefined);
   const router = useRouter();
 
@@ -86,7 +86,7 @@ export default function RoomsTable() {
             >
               <TableCell>{room.code}</TableCell>
               <TableCell>{room.occupants_count || 0}</TableCell>
-              <TableCell>{formatPrice(room.current_rent)}</TableCell>
+              <TableCell>{formatCurrency(room.current_rent)}</TableCell>
 
               <TableCell>{room.area}</TableCell>
               <TableCell>

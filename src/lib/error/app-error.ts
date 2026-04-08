@@ -5,6 +5,7 @@ const errorMessageMap: Record<ErrorCode, string> = {
   [ErrorCode.FOREIGN_KEY_INVALID]: "Dữ liệu liên kết không hợp lệ",
   [ErrorCode.MISSING_REQUIRED_FIELD]: "Vui lòng nhập đầy đủ thông tin",
   [ErrorCode.INVALID_INPUT]: "Dữ liệu không hợp lệ",
+  [ErrorCode.NOT_FOUND]: "Không tìm thấy dữ liệu",
 };
 
 export const mapErrorToMessage = (error: unknown): string => {

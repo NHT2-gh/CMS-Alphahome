@@ -7,7 +7,7 @@ import Button from "@/components/ui/button/Button";
 import { Check, ClosedCaption, Loader2, UploadCloud, X } from "lucide-react";
 
 interface DropzoneComponentProps {
-  images: ImageItem[];
+  images: ImageItem[] | [];
   onChange: (images: ImageItem[]) => void; // update ngược lên
   onUpload?: (images: ImageItem[]) => void;
   className?: string;
@@ -64,7 +64,6 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
     },
   });
 
-  console.log(images);
   return (
     <ComponentCard title="Hình ảnh" className={className}>
       {images && images.length > 0 && (

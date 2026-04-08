@@ -17,15 +17,20 @@ export function useUtilityReadingOverview(
 
 export function useUtilityReadingByDate(
   buildingId?: string,
-  date?: string,
+  startDate?: string,
+  endDate?: string,
   options?: {
     enabled?: boolean;
   },
 ) {
   return useQuery({
-    queryKey: queryKeys.utilityReading.detail(buildingId!, date!),
+    queryKey: queryKeys.utilityReading.detail(buildingId!, startDate!),
     queryFn: () =>
-      utilityReadingService.getUtilityReadingByDate(buildingId!, date!),
-    enabled: !!buildingId && !!date && options?.enabled,
+      utilityReadingService.getUtilityReadingByDate(
+        buildingId!,
+        startDate!,
+        endDate!,
+      ),
+    enabled: !!buildingId && !!startDate && options?.enabled,
   });
 }

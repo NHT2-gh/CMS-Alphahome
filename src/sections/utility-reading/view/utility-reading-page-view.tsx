@@ -12,9 +12,9 @@ export default function UtilityReadingPageView() {
   const { building } = useBuilding();
   const { isOpen, closeModal, openModal } = useModal();
   const { data: utilityReading } = useUtilityReadingOverview(building?.id);
-  const [dateSelected, setDateSelected] = useState<string | undefined>(
-    undefined,
-  );
+  const [dateSelected, setDateSelected] = useState<
+    [string, string] | undefined
+  >(undefined);
 
   return (
     <section>
@@ -67,26 +67,34 @@ export default function UtilityReadingPageView() {
                   const waterReading = monthData.utility_readings
                     .filter((item) => item.utility_type === "water")
                     .reduce(
-                      (acc, reading) => acc + Number(reading.total_consumption),
+                      (acc, reading) =>
+                        acc +
+                        (isNaN(Number(reading.total_consumption))
+                          ? 0
+                          : Number(reading.total_consumption)),
                       0,
                     );
                   const electricityReading = monthData.utility_readings
                     .filter((item) => item.utility_type === "electricity")
                     .reduce(
-                      (acc, reading) => acc + Number(reading.total_consumption),
+                      (acc, reading) =>
+                        acc +
+                        (isNaN(Number(reading.total_consumption))
+                          ? 0
+                          : Number(reading.total_consumption)),
                       0,
                     );
 
                   return (
                     <FolderCard
                       key={monthData.month}
-                      id={`${year}-0${monthData.month}-30`}
+                      id={`${year}-${monthData.month}-01`}
                       title={`Tháng ${monthData.month}`}
-                      waterCount={waterReading.toString() || "0"}
-                      electricityCount={electricityReading.toString() || "0"}
+                      waterCount={waterReading}
+                      electricityCount={electricityReading}
                       handleDelete={() => {}}
                       handleViewMore={(id) => {
-                        setDateSelected(id);
+                        setDateSelected([id, `${year}-${monthData.month}-28`]);
                         openModal();
                       }}
                     />
@@ -97,13 +105,15 @@ export default function UtilityReadingPageView() {
           </div>
         ))}
 
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="max-w-[80%] p-5 lg:p-10"
-      >
-        <EditViewReading />
-      </Modal>
+      {dateSelected && (
+        <Modal
+          isOpen={isOpen}
+          onClose={closeModal}
+          className="max-w-[80%] p-5 lg:p-10"
+        >
+          <EditViewReading rangeDateSelected={dateSelected} />
+        </Modal>
+      )}
     </section>
   );
 }

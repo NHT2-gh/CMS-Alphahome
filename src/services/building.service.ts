@@ -1,6 +1,7 @@
 import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
 import { Building } from "@/types/building";
+import { BuildingService as BuildingServiceType } from "@/types/utility_reading";
 
 export interface BuildingFilter {
   query?: string;
@@ -61,17 +62,25 @@ class BuildingService {
     return data[0];
   }
 
-  async getBuildingServices(buildingId: string): Promise<Building | null> {
+  async getBuildingServices(
+    buildingId: string,
+  ): Promise<BuildingServiceType[] | null> {
     const query = supabase
       .from("building_services")
-      .select("*")
+      .select(
+        `
+        *,
+        services!inner (
+        service_type
+        )`,
+      )
       .eq("building_id", buildingId);
 
     const { data, error } = await query;
 
-    if (!data || error) return null;
+    if (!data || error) return [];
 
-    return data[0];
+    return data;
   }
 }
 

@@ -1,5 +1,4 @@
 import { handlePostgresError } from "@/lib/error/postgres-error";
-import { showToast } from "@/lib/toast";
 import {
   CreateRoomFormType,
   UpdateRoomInfoType,
@@ -9,7 +8,10 @@ import { MutationResult } from "@/types/common";
 import { CreateRoomResponse, Room, RoomOverview } from "@/types/room";
 
 class RoomService {
-  constructor() {}
+  private tableName: string;
+  constructor() {
+    this.tableName = "rooms";
+  }
 
   async getRooms(buildingId: string): Promise<RoomOverview[]> {
     const query = supabase
@@ -47,7 +49,7 @@ class RoomService {
 
   async getRoomDetail(buildingCode: string, roomCode: string): Promise<Room> {
     const query = supabase
-      .from("rooms")
+      .from(this.tableName)
       .select(`*, buildings!inner(code)`)
       .eq("code", roomCode)
       .eq("buildings.code", buildingCode)
@@ -61,20 +63,26 @@ class RoomService {
     return room;
   }
 
-  async updateRoom(room: UpdateRoomInfoType): Promise<Room> {
-    const { data: response, error } = await supabase.rpc("update_room", {
-      p_code: room.code_room,
-      p_area: Number(room.area),
-      p_furniture_status: room.furniture_status,
-      p_description: room.description,
-      p_images: room.images,
-      p_builidng_id: room.building_id,
-    });
+  async updateRoom(room: UpdateRoomInfoType): Promise<MutationResult> {
+    const { error } = await supabase
+      .from(this.tableName)
+      .update({
+        code: room.code_room,
+        area: Number(room.area),
+        furniture_status: room.furniture_status,
+        description: room.description,
+        images: room.images,
+      })
+      .eq("id", room.id);
 
     if (error) {
       handlePostgresError(error);
     }
-    return response;
+
+    return {
+      success: true,
+      message: "Room updated successfully",
+    };
   }
 }
 

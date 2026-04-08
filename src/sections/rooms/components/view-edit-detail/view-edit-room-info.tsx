@@ -2,20 +2,22 @@
 import React, { useEffect, useState } from "react";
 
 import { Room } from "@/types/room";
+import { showToast } from "@/lib/toast";
 import { useForm } from "react-hook-form";
-import { FormField } from "@/components/_cms/components/form";
-import ComponentCard from "@/components/common/ComponentCard";
-import DropzoneComponent, {
-  ImageItem,
-} from "@/components/form/form-elements/DropZone";
-import Button from "@/components/ui/button/Button";
-import { useBuilding } from "@/context/BuildingContext";
 import {
   updateRoomInfoSchema,
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
-import { uploadImage } from "@/supabase/storage/storageClinets";
+import DropzoneComponent, {
+  ImageItem,
+} from "@/components/form/form-elements/DropZone";
+import Button from "@/components/ui/button/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useBuilding } from "@/context/BuildingContext";
+import { useUpdateRoom } from "@/hooks/queries/use-room";
+import { FormField } from "@/components/_cms/components/form";
+import ComponentCard from "@/components/common/ComponentCard";
+import { uploadImage } from "@/supabase/storage/storageClinets";
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
@@ -25,6 +27,7 @@ export default function ViewEditRoomInfo({
   currentRoom,
 }: ViewEditRoomInfoProps) {
   const { building } = useBuilding();
+  const updateRoom = useUpdateRoom();
   const [isUploading, setIsUploading] = useState(false);
   const [images, setImages] =
     useState<ImageItem[]>(
@@ -41,20 +44,25 @@ export default function ViewEditRoomInfo({
   const editRoomInfoForm = useForm<UpdateRoomInfoType>({
     resolver: zodResolver(updateRoomInfoSchema),
     defaultValues: {
+      id: currentRoom.id,
       code_room: currentRoom.code,
-      area: currentRoom.area,
+      area: Number(currentRoom.area) || 0,
       furniture_status: currentRoom.furniture_status,
       description: currentRoom.description || "",
-      images: currentRoom.images,
+      images: currentRoom.images || [],
     },
   });
   useEffect(() => {
-    setValue(
-      "images",
-      images
-        .filter((img) => img.status === "success")
-        .map((img) => img.uploadedUrl!),
-    );
+    if (images && images.length > 0) {
+      setValue(
+        "images",
+        images
+          .filter((img) => img.status === "success")
+          .map((img) => img.uploadedUrl!),
+      );
+    } else {
+      return;
+    }
   }, [images]);
   const { handleSubmit, setValue } = editRoomInfoForm;
 
@@ -95,7 +103,12 @@ export default function ViewEditRoomInfo({
   };
 
   const onSubmit = async (data: UpdateRoomInfoType) => {
-    console.log(data);
+    const result = await updateRoom.mutateAsync(data);
+    if (result.success) {
+      showToast.success({ title: "Cập nhật thông tin phòng thành công" });
+    } else {
+      showToast.error({ title: "Cập nhật thông tin phòng thất bại" });
+    }
   };
 
   return (
@@ -113,6 +126,7 @@ export default function ViewEditRoomInfo({
             placeholder: "Nhập mã phòng",
           }}
         />
+
         <FormField
           form={editRoomInfoForm}
           field={{
@@ -138,6 +152,7 @@ export default function ViewEditRoomInfo({
             ],
           }}
         />
+
         <FormField
           form={editRoomInfoForm}
           className="col-span-2"

@@ -16,7 +16,11 @@ export default async function BuildingDetailLayout({
   const currentBuilding = await buildingService.getBuilding(building_code);
   if (!currentBuilding) return null;
   return (
-    <BuildingProvider initialBuilding={currentBuilding}>
+    <BuildingProvider
+      initialBuilding={{
+        ...currentBuilding,
+      }}
+    >
       <MainContainer
         title={`Thông tin nhà trọ ${currentBuilding.code}`}
         links={[

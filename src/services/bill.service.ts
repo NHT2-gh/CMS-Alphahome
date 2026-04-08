@@ -8,11 +8,17 @@ import {
   CreateSingleMonthlyBillResponse,
   FilteredBillResponse,
 } from "@/types/bill";
+import { ResponseData } from "@/types/common";
 
 class BillService {
-  constructor() {}
+  page: number;
+  limit: number;
+  constructor() {
+    this.page = 1;
+    this.limit = 20;
+  }
 
-  async getAllBills(buildingId: string): Promise<Bill[]> {
+  async getAllBills(buildingId: string, page?: number, limit?: number) {
     const query = supabase
       .from("room_monthly_bills")
       .select(
@@ -27,16 +33,26 @@ class BillService {
     )
 
   `,
+        { count: "exact" },
       )
       .eq("rooms.building_id", buildingId);
 
-    const { data: bills, error } = await query;
+    if (page && limit) {
+      query.range((page - 1) * limit, page * limit - 1);
+    }
+
+    const { data, error, count } = await query;
+
+    console.log(data, count);
 
     if (error) {
       handlePostgresError(error);
     }
 
-    return bills || [];
+    return {
+      data: data || [],
+      count: count || 0,
+    };
   }
 
   async getBill(trackingCode: string): Promise<Bill | null> {

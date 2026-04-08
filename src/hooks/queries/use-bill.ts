@@ -1,13 +1,22 @@
 import { queryKeys } from "@/config/query-keys";
 import { useBuilding } from "@/context/BuildingContext";
 import { billService } from "@/services/bill.service";
+import { Pagination } from "@/types/common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useAllBillsBy(buildingId: string) {
+export function useAllBills(buildingId: string, pagination: Pagination) {
   return useQuery({
-    queryKey: queryKeys.bills.allByBuildingId(buildingId),
+    queryKey: queryKeys.bills.allByBuildingId(
+      buildingId,
+      pagination.page,
+      pagination.limit,
+    ),
     queryFn: () => {
-      return billService.getAllBills(buildingId);
+      return billService.getAllBills(
+        buildingId,
+        pagination.page,
+        pagination.limit,
+      );
     },
 
     enabled: !!buildingId,
@@ -36,17 +45,19 @@ type CreateMultipleBillsPayload = {
   trackingCode: string;
   month_date: string;
   room_ids: string[];
+  building_id: string;
 };
 
 type CreateOneBillsPayload = {
   trackingCode: string;
   month_date: string;
   room_id: string;
+  building_id: string;
 };
 
 export function useCreateMultipleRoomMonthlyBills() {
   const queryClient = useQueryClient();
-  const { building } = useBuilding();
+
   return useMutation({
     mutationKey: queryKeys.bills.createMultipleBills(),
     mutationFn: (payload: CreateMultipleBillsPayload) =>
@@ -56,21 +67,20 @@ export function useCreateMultipleRoomMonthlyBills() {
         payload.room_ids,
       ),
 
-    onSuccess: (data) => {
-      if (!building?.id) {
+    onSuccess: (_, payload) => {
+      if (!payload.building_id) {
         return;
-      } else if (data) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.bills.allByBuildingId(building?.id),
-        });
       }
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.bills.allByBuildingId(payload.building_id),
+      });
     },
   });
 }
 
 export function useCreateSingleRoomMonthlyBill() {
   const queryClient = useQueryClient();
-  const { building } = useBuilding();
+
   return useMutation({
     mutationKey: queryKeys.bills.createSignleBill(),
     mutationFn: (payload: CreateOneBillsPayload) =>
@@ -80,13 +90,13 @@ export function useCreateSingleRoomMonthlyBill() {
         payload.room_id,
       ),
 
-    onSuccess: () => {
-      if (!building?.id) {
+    onSuccess: (_, payload) => {
+      if (!payload.building_id) {
         return;
       }
 
       queryClient.invalidateQueries({
-        queryKey: queryKeys.bills.allByBuildingId(building?.id),
+        queryKey: queryKeys.bills.allByBuildingId(payload.building_id),
       });
     },
   });

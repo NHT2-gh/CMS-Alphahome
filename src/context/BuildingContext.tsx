@@ -25,7 +25,11 @@ export const BuildingProvider = ({
   const [building, setBuilding] = useState<Building | null>(initialBuilding);
   return (
     <BuildingContext.Provider
-      value={{ building, setBuilding, initialBuilding }}
+      value={{
+        building,
+        setBuilding,
+        initialBuilding,
+      }}
     >
       {children}
     </BuildingContext.Provider>

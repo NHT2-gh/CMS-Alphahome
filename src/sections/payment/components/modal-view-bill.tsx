@@ -7,7 +7,7 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { useBill } from "@/hooks/queries/use-bill";
 import { useContract } from "@/hooks/queries/use-contract";
-import { Bill, PaymentStatus } from "@/types/bill";
+import { Bill, BillStatus } from "@/types/bill";
 import { formatDateTime } from "@/utils/format-data";
 import { Eye, Receipt, UserCircle } from "lucide-react";
 import React, { useState } from "react";
@@ -20,9 +20,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
   const { isOpen, openModal, closeModal } = useModal();
   const { data: bill } = useBill(currentBill.tracking_code ?? "");
   const { data: contract } = useContract(bill?.room_id || "");
-  const [status, setStatus] = useState<PaymentStatus>(
-    currentBill.payment_status,
-  );
+  const [status, setStatus] = useState<BillStatus>(currentBill.bill_status);
 
   if (!currentBill.tracking_code) {
     closeModal();
@@ -61,18 +59,18 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
             <Badge
               variant="light"
               color={
-                bill?.payment_status === ("paid" as PaymentStatus)
+                bill?.bill_status === ("paid" as BillStatus)
                   ? "success"
-                  : bill?.payment_status === ("draft" as PaymentStatus)
+                  : bill?.bill_status === ("draft" as BillStatus)
                     ? "warning"
-                    : bill?.payment_status === ("overdue" as PaymentStatus)
+                    : bill?.bill_status === ("overdue" as BillStatus)
                       ? "error"
                       : "info"
               }
             >
               {
-                PaymentStatus[
-                  bill?.payment_status as unknown as keyof typeof PaymentStatus
+                BillStatus[
+                  bill?.bill_status as unknown as keyof typeof BillStatus
                 ]
               }
             </Badge>
@@ -117,13 +115,13 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                   field={{
                     label: "Trạng thái",
                     type: "select",
-                    options: Object.keys(PaymentStatus).map((key) => ({
-                      label: PaymentStatus[key as keyof typeof PaymentStatus],
+                    options: Object.keys(BillStatus).map((key) => ({
+                      label: BillStatus[key as keyof typeof BillStatus],
                       value: key,
                     })),
                     defaultValue: status,
                     handleOnChange(value) {
-                      setStatus(value as PaymentStatus);
+                      setStatus(value as BillStatus);
                     },
                   }}
                 />

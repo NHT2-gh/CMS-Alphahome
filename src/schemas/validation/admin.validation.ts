@@ -22,7 +22,7 @@ export const addBillServiceDetaiFormSchema = z.object({
 export const createRoomFormSchema = z.object({
   building_id: z.string().min(1, "Building ID is required"),
   code_room: z.string().min(1, "Code room is required"),
-  area: z.number().min(1, "Area is required"),
+  area: z.number().optional(),
   current_rent: z.number().min(1, "Current rent is required"),
   furniture_status: z.string().min(1, "Furniture status is required"),
   description: z.string().optional(),
@@ -30,13 +30,36 @@ export const createRoomFormSchema = z.object({
 });
 
 export const updateRoomInfoSchema = z.object({
-  building_id: z.string().min(1, "Building ID is required"),
+  id: z.string().min(1, "Room ID is required"),
   code_room: z.string().min(1, "Code room is required"),
-  area: z.number().min(1, "Area is required"),
+  area: z.number().optional(),
   furniture_status: z.string().min(1, "Furniture status is required"),
   description: z.string().optional(),
   images: z.array(z.string()),
 });
+
+export const createTransactionSchema = z
+  .object({
+    category_id: z.string().min(1, "Hạng mục là bắt buộc"),
+    description: z.string().optional(),
+    amount: z.number().min(1, "Số tiền là bắt buộc"),
+    type: z.string().min(1, "Loại là bắt buộc"),
+    transaction_date: z.string().min(1, "Ngày là bắt buộc"),
+    payment_method: z.string().min(1, "Phương thức thanh toán là bắt buộc"),
+    room_id: z.string().optional(),
+    building_id: z.string().min(1, "Building ID is required"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.category_id === "other" && !data.description) {
+      ctx.addIssue({
+        path: ["description"],
+        code: z.ZodIssueCode.custom,
+        message: "Mô tả là bắt buộc khi chọn 'Khác'",
+      });
+    }
+  });
+
+export type CreateTransactionType = z.infer<typeof createTransactionSchema>;
 
 export type UpdateRoomInfoType = z.infer<typeof updateRoomInfoSchema>;
 
