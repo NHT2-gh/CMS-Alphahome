@@ -1,4 +1,6 @@
+import { FilterValue } from "@/components/_cms/components/filter/box/type";
 import { BuildingFilter } from "@/services/building.service";
+import { Pagination } from "@/types/common";
 
 export const queryKeys = {
   buildings: {
@@ -29,12 +31,17 @@ export const queryKeys = {
     byRoomId: (roomId: string) => ["contract", "room", roomId],
   },
   bills: {
-    allByBuildingId: (buildingId: string, page?: number, limit?: number) => [
+    allByBuildingId: (
+      buildingId: string,
+      pagination?: Pagination,
+      filter?: Record<string, FilterValue>,
+    ) => [
       "bills",
       "building",
       buildingId,
-      page,
-      limit,
+      pagination?.page,
+      pagination?.limit,
+      filter,
     ],
     byTrackingCode: (trackingCode: string) => [
       "bills",
@@ -44,6 +51,7 @@ export const queryKeys = {
     servicesDetail: (billId: string) => ["bills", "services-detail", billId],
     createSignleBill: () => ["create-one-bill"],
     createMultipleBills: () => ["create-multiple-bills"],
+    updateStatusBill: () => ["update-status-bill"],
   },
 
   transactions: {

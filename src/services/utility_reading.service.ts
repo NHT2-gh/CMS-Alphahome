@@ -63,8 +63,6 @@ class UtilityReadingService {
   ): Promise<boolean> {
     const query = supabase.from("room_utility_readings").insert(payload);
 
-    console.log(payload);
-
     const { error } = await query;
 
     if (error) {

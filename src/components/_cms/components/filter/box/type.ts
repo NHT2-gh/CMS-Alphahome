@@ -1,6 +1,8 @@
 export interface BaseFilterItemConfig {
   key: string;
   label?: string;
+  subLabel?: string;
+  isMultiple?: boolean;
 }
 export interface Checkboxs extends BaseFilterItemConfig {
   type: "checkbox";
@@ -25,4 +27,4 @@ export interface InputRange extends BaseFilterItemConfig {
 
 export type FilterItemConfig = Checkboxs | ButtonsToggle | InputRange;
 
-export type FilterValue = [number, number] | number | string[] | null;
+export type FilterValue = [number, number] | number | string[] | string | null;

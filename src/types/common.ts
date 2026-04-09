@@ -5,8 +5,6 @@ export interface Pagination {
   total?: number;
 }
 
-export type FilterValue = string | string[] | number | [number, number];
-
 export interface MutationResult {
   success: boolean;
   message: string;

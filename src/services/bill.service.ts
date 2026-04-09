@@ -1,14 +1,15 @@
 import { adaptMonthlyBillsResponse } from "@/adapters/bill.adapter";
+import { FilterValue } from "@/components/_cms/components/filter/box/type";
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import { supabase } from "@/supabase/supabaseClients";
 import {
   Bill,
   BillServiceDetail,
+  BillStatus,
   CreateMonthlyBillsResponse,
   CreateSingleMonthlyBillResponse,
-  FilteredBillResponse,
 } from "@/types/bill";
-import { ResponseData } from "@/types/common";
+import { MutationResult } from "@/types/common";
 
 class BillService {
   page: number;
@@ -18,7 +19,12 @@ class BillService {
     this.limit = 20;
   }
 
-  async getAllBills(buildingId: string, page?: number, limit?: number) {
+  async getAllBills(
+    buildingId: string,
+    page?: number,
+    limit?: number,
+    filters?: Record<string, FilterValue>,
+  ) {
     const query = supabase
       .from("room_monthly_bills")
       .select(
@@ -37,13 +43,23 @@ class BillService {
       )
       .eq("rooms.building_id", buildingId);
 
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === "") return;
+
+        if (key === "tracking_code") {
+          query.ilike(key, `%${value}%`);
+        } else {
+          query.eq(key, value);
+        }
+      });
+    }
+
     if (page && limit) {
       query.range((page - 1) * limit, page * limit - 1);
     }
 
     const { data, error, count } = await query;
-
-    console.log(data, count);
 
     if (error) {
       handlePostgresError(error);
@@ -145,6 +161,25 @@ class BillService {
       handlePostgresError(error);
     }
     return response;
+  }
+
+  async updateStatusBill(
+    tracking_code: string,
+    status: BillStatus,
+  ): Promise<MutationResult> {
+    const { error } = await supabase
+      .from("room_monthly_bills")
+      .update({ bill_status: status })
+      .eq("tracking_code", tracking_code);
+
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật trạng thái hoá đơn thành công",
+    };
   }
 }
 

@@ -87,7 +87,7 @@ export default function MainLayoutBuildingDetail({
     },
     {
       id: "bills",
-      label: "Thanh toán",
+      label: "Hoá đơn",
       icon: <CreditCard />,
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.PAYMENT(building?.code || ""),
     },

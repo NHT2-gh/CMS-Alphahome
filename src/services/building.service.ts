@@ -71,12 +71,17 @@ class BuildingService {
         `
         *,
         services!inner (
-        service_type
+          id,
+          service_name,
+          service_type,
+          calculation_method
         )`,
       )
       .eq("building_id", buildingId);
 
     const { data, error } = await query;
+
+    console.log(data);
 
     if (!data || error) return [];
 

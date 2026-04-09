@@ -1,21 +1,41 @@
+import { FilterValue } from "@/components/_cms/components/filter/box/type";
 import { queryKeys } from "@/config/query-keys";
-import { useBuilding } from "@/context/BuildingContext";
 import { billService } from "@/services/bill.service";
+import { BillStatus } from "@/types/bill";
 import { Pagination } from "@/types/common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useAllBills(buildingId: string, pagination: Pagination) {
+type CreateMultipleBillsPayload = {
+  trackingCode: string;
+  month_date: string;
+  room_ids: string[];
+  building_id: string;
+};
+
+type CreateOneBillsPayload = {
+  trackingCode: string;
+  month_date: string;
+  room_id: string;
+  building_id: string;
+};
+
+export function useAllBills({
+  buildingId,
+  pagination,
+  filters,
+}: {
+  buildingId: string;
+  pagination?: Pagination;
+  filters?: Record<string, FilterValue>;
+}) {
   return useQuery({
-    queryKey: queryKeys.bills.allByBuildingId(
-      buildingId,
-      pagination.page,
-      pagination.limit,
-    ),
+    queryKey: queryKeys.bills.allByBuildingId(buildingId, pagination, filters),
     queryFn: () => {
       return billService.getAllBills(
         buildingId,
-        pagination.page,
-        pagination.limit,
+        pagination?.page,
+        pagination?.limit,
+        filters,
       );
     },
 
@@ -40,20 +60,6 @@ export function useBillServicesDetail(billId: string) {
     enabled: !!billId,
   });
 }
-
-type CreateMultipleBillsPayload = {
-  trackingCode: string;
-  month_date: string;
-  room_ids: string[];
-  building_id: string;
-};
-
-type CreateOneBillsPayload = {
-  trackingCode: string;
-  month_date: string;
-  room_id: string;
-  building_id: string;
-};
 
 export function useCreateMultipleRoomMonthlyBills() {
   const queryClient = useQueryClient();
@@ -97,6 +103,20 @@ export function useCreateSingleRoomMonthlyBill() {
 
       queryClient.invalidateQueries({
         queryKey: queryKeys.bills.allByBuildingId(payload.building_id),
+      });
+    },
+  });
+}
+
+export function useUpdateStatusBill() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: queryKeys.bills.updateStatusBill(),
+    mutationFn: (paylod: { tracking_code: string; status: BillStatus }) =>
+      billService.updateStatusBill(paylod.tracking_code, paylod.status),
+    onSuccess: (_, payload) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.bills.byTrackingCode(payload.tracking_code),
       });
     },
   });

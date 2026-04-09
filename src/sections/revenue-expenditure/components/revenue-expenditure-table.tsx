@@ -25,11 +25,8 @@ const _tableHeader: { key: string; title: string }[] = [
 export default function RevenueExpenditureTable() {
   const { building } = useBuilding();
   const { data: transcriptions } = useAllTransactions(building?.id as string);
-  const [filterStatus, setFilterStatus] = useState<TransactionType | "all">(
-    "all",
-  );
+  const [filter, setFilterStatus] = useState<TransactionType | "all">("all");
   const [search, setSearch] = useState<string | null>(null);
-
   const handleSearch = useCallback((value: string) => {
     if (value.trim() === "") {
       setSearch(null);
@@ -100,7 +97,7 @@ export default function RevenueExpenditureTable() {
                   variant="solid"
                   className="min-w-[80px] !text-sm "
                   color={
-                    item.type === ("icome" as TransactionType)
+                    item.type === ("income" as TransactionType)
                       ? "success"
                       : "error"
                   }

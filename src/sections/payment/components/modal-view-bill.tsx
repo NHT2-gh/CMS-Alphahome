@@ -5,72 +5,82 @@ import { FormField } from "@/components/_cms/components/form";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
-import { useBill } from "@/hooks/queries/use-bill";
+import { useUpdateStatusBill } from "@/hooks/queries/use-bill";
 import { useContract } from "@/hooks/queries/use-contract";
 import { Bill, BillStatus } from "@/types/bill";
 import { formatDateTime } from "@/utils/format-data";
-import { Eye, Receipt, UserCircle } from "lucide-react";
+import { Receipt, SaveIcon, UserCircle } from "lucide-react";
 import React, { useState } from "react";
 import { BillDetailTable } from "./sub components/modal-bill";
-import { useModal } from "@/hooks/useModal";
 import { BillPreviewModal } from "./sub components/modal-bill";
 import { Contract } from "@/types/contract";
+import { showToast } from "@/lib/toast";
+import { mapErrorToMessage } from "@/lib/error/app-error";
 
-export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
-  const { isOpen, openModal, closeModal } = useModal();
-  const { data: bill } = useBill(currentBill.tracking_code ?? "");
-  const { data: contract } = useContract(bill?.room_id || "");
+export default function ModalViewBill({
+  currentBill,
+  closeModal,
+}: {
+  currentBill: Bill;
+  closeModal: () => void;
+}) {
+  const { data: contract } = useContract(currentBill?.room_id);
   const [status, setStatus] = useState<BillStatus>(currentBill.bill_status);
+  const updateStatusBill = useUpdateStatusBill();
 
-  if (!currentBill.tracking_code) {
-    closeModal();
-    return null;
-  }
+  const handleUpdateStatus = async () => {
+    try {
+      const result = await updateStatusBill.mutateAsync({
+        tracking_code: currentBill.tracking_code,
+        status: status,
+      });
+
+      if (result.success) {
+        closeModal();
+        showToast.success({
+          title: result.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
-      <button
-        onClick={() => {
-          openModal();
-        }}
-        className="group text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-      >
-        <Eye />
-      </button>
-
       <Modal
-        isOpen={isOpen}
+        isOpen={true}
         onClose={closeModal}
         className="max-w-[80%] max-h-[90vh] overflow-y-scroll p-5 lg:p-10"
       >
         <h2 className="text-2xl font-bold mb-5">Phiếu thu</h2>
         <div className="grid grid-cols-2 gap-y-2 mb-3">
-          <p>Mã phiếu: #{bill?.tracking_code}</p>
+          <p>Mã phiếu: #{currentBill?.tracking_code}</p>
           <p>
             Ngày tạo phiếu:{" "}
-            {formatDateTime(bill?.created_at, { withTime: true })}
+            {formatDateTime(currentBill?.created_at, { withTime: true })}
           </p>
           <p>
             Ngày cập nhật gần nhất:{" "}
-            {formatDateTime(bill?.updated_at, { withTime: true })}
+            {formatDateTime(currentBill?.updated_at, { withTime: true })}
           </p>
           <div className="flex gap-2">
             <span>Trạng thái:</span>
             <Badge
               variant="light"
               color={
-                bill?.bill_status === ("paid" as BillStatus)
+                currentBill?.bill_status === ("paid" as BillStatus)
                   ? "success"
-                  : bill?.bill_status === ("draft" as BillStatus)
+                  : currentBill?.bill_status === ("draft" as BillStatus)
                     ? "warning"
-                    : bill?.bill_status === ("overdue" as BillStatus)
+                    : currentBill?.bill_status === ("overdue" as BillStatus)
                       ? "error"
                       : "info"
               }
             >
               {
                 BillStatus[
-                  bill?.bill_status as unknown as keyof typeof BillStatus
+                  currentBill?.bill_status as unknown as keyof typeof BillStatus
                 ]
               }
             </Badge>
@@ -89,7 +99,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                     label: "Số hóa đơn",
                     type: "text",
                     readOnly: true,
-                    value: bill?.tracking_code ?? "",
+                    value: currentBill?.tracking_code ?? "",
                   }}
                 />
 
@@ -98,7 +108,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                     label: "Mã phòng",
                     type: "text",
                     readOnly: true,
-                    value: bill?.rooms.code ?? "",
+                    value: currentBill?.rooms.code ?? "",
                   }}
                 />
 
@@ -106,7 +116,7 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                   field={{
                     label: "Kì thanh toán",
                     type: "text",
-                    value: bill?.month_date ?? "",
+                    value: currentBill?.month_date ?? "",
                     readOnly: true,
                   }}
                 />
@@ -166,38 +176,25 @@ export default function ModalViewBill({ currentBill }: { currentBill: Bill }) {
                 </div>
               </div>
             )}
-            {bill && (
+            {currentBill && (
               <BillDetailTable
-                billId={bill.id}
-                baseRent={bill.base_rent}
+                billId={currentBill.id}
+                buildingId={currentBill.rooms.building_id}
+                baseRent={currentBill.base_rent}
                 isPreview={false}
               />
             )}
           </div>
           <div className="p-4 sm:p-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {bill && (
+              {currentBill && contract && (
                 <BillPreviewModal
-                  bill={bill}
+                  bill={currentBill}
                   infoCustomer={contract as Contract}
                 />
               )}
-              <Button variant="primary">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M13.333 16.6666V12.9166C13.333 12.2262 12.7734 11.6666 12.083 11.6666L7.91634 11.6666C7.22599 11.6666 6.66634 12.2262 6.66634 12.9166L6.66635 16.6666M9.99967 5.83325H6.66634M15.4163 16.6666H4.58301C3.89265 16.6666 3.33301 16.1069 3.33301 15.4166V4.58325C3.33301 3.8929 3.89265 3.33325 4.58301 3.33325H12.8171C13.1483 3.33325 13.4659 3.46468 13.7003 3.69869L16.2995 6.29384C16.5343 6.52832 16.6662 6.84655 16.6662 7.17841L16.6663 15.4166C16.6663 16.1069 16.1066 16.6666 15.4163 16.6666Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+              <Button variant="primary" onClick={handleUpdateStatus}>
+                <SaveIcon />
                 Lưu phiếu
               </Button>
             </div>

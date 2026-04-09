@@ -86,6 +86,7 @@ export default function InputRangeFilterItem({
       {config.options.length > 0 && (
         <FilterItemRender
           config={{
+            subLabel: "Chọn nhanh",
             type: "checkbox",
             options: "options" in config ? config.options : [],
             key: config.key,
@@ -95,7 +96,7 @@ export default function InputRangeFilterItem({
           className={className}
         />
       )}
-      <span className="text-sm font-medium">Hoặc nhập khoảng giá phù hợp:</span>
+      <p className="text-sm font-medium">Hoặc nhập khoảng giá phù hợp:</p>
       <div className="flex items-center gap-2">
         <Input
           type="number"

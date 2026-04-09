@@ -1,8 +1,9 @@
 export enum BillStatus {
-  draft = "Nháp",
+  draft = "Bản nháp",
   confirmed = "Đã xác nhận",
   paid = "Đã thanh toán",
   overdue = "Quá hạn",
+  unpaid = "Không thanh toán",
 }
 
 export enum CalculationMethod {
@@ -38,6 +39,7 @@ export interface BillFilter {
 }
 
 export interface Service {
+  id: string;
   service_name: string;
   service_type: ServiceType;
   calculation_method: CalculationMethod;

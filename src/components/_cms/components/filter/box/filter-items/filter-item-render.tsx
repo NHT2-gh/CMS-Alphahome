@@ -52,7 +52,11 @@ export default function FilterItemRender({
   };
 
   return (
-    <FilterItemLayout label={config.label} className={className}>
+    <FilterItemLayout
+      label={config.label}
+      subLabel={config.subLabel}
+      className={className}
+    >
       {renderFilterItem()}
     </FilterItemLayout>
   );

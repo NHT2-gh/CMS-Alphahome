@@ -27,6 +27,7 @@ export interface BuildingService {
   id: string;
   services: Service;
   building_id: string;
+  unit_price: number;
 }
 
 export interface UtilityReadingDetail {

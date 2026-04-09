@@ -36,6 +36,8 @@ export default function ButtonsToggleFilterItem({
   useEffect(() => {
     if (value) {
       setSelectedOptions(value);
+
+      console.log(value);
     } else {
       setSelectedOptions([]);
     }
@@ -51,7 +53,7 @@ export default function ButtonsToggleFilterItem({
           disabled={option.disable}
           className={cn(
             "transition-all duration-200 border-stroke-primary border-1 focus:bg-transparent",
-            { "border-stroke-red": selectedOptions.includes(option.value) },
+            { "border-blue-300": selectedOptions.includes(option.value) },
           )}
         >
           <span

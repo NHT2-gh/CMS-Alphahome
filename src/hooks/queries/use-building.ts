@@ -27,13 +27,11 @@ export const useBuildingServices = (
   id?: string,
   options?: { enabled?: boolean },
 ) => {
-  const queryClient = useQueryClient();
   return useQuery({
     queryKey: queryKeys.buildings.services(id!),
     queryFn: () => {
       return buildingService.getBuildingServices(id!);
     },
-
     ...options,
   });
 };

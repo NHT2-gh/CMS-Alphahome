@@ -7,7 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { useBillServicesDetail } from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
 import { FormField } from "@/components/_cms/components/form";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
   addBillServiceDetaiFormSchema,
   AddBillServiceDetaiFormType,
@@ -15,6 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/ui/button/Button";
 import { InfoIcon } from "lucide-react";
+import { useBuildingServices } from "@/hooks/queries/use-building";
 
 interface Product {
   name: string;
@@ -47,16 +48,19 @@ const _tableHeader: { key: keyof BillServiceDetail | string; title: string }[] =
 export default function BillDetailTable({
   billId,
   baseRent,
+  buildingId,
   isPreview = true,
 }: {
   billId: string;
   baseRent: number;
+  buildingId?: string;
   isPreview?: boolean;
 }) {
   const { data: billServicesDetail } = useBillServicesDetail(billId);
   const [billServices, setBillServices] = useState<
     BillServiceDetail[] | undefined
   >(undefined);
+  const { data: buildingServices } = useBuildingServices(buildingId);
 
   const [form, setForm] = useState<FormData>({
     name: "",
@@ -74,11 +78,38 @@ export default function BillDetailTable({
       unit_price: "",
     },
   });
+  const service_id = useWatch({
+    control: addServiceForm.control,
+    name: "service_id",
+  });
+  const quantity = useWatch({
+    control: addServiceForm.control,
+    name: "quantity",
+  });
+  const unit_price = useWatch({
+    control: addServiceForm.control,
+    name: "unit_price",
+  });
+
+  useEffect(() => {
+    if (service_id) {
+      const service = buildingServices?.find(
+        (item) => String(item.services.id) === String(service_id),
+      );
+
+      if (service) {
+        addServiceForm.setValue(
+          "calculation_method",
+          service.services.calculation_method,
+        );
+        addServiceForm.setValue("unit_price", String(service.unit_price));
+      }
+    }
+  }, [service_id]);
 
   const {
     handleSubmit,
     formState: { isLoading, isSubmitted },
-    watch,
   } = addServiceForm;
 
   const handleDelete = (index: number): void => {
@@ -190,9 +221,14 @@ export default function BillDetailTable({
                 form={addServiceForm}
                 field={{
                   name: "service_id",
-                  type: "text",
+                  type: "select",
                   label: "Dịch vụ",
                   placeholder: "Chọn dịch vụ",
+                  options:
+                    buildingServices?.map((item) => ({
+                      label: item.services.service_name,
+                      value: item.services.id,
+                    })) ?? [],
                 }}
               />
 
@@ -201,9 +237,15 @@ export default function BillDetailTable({
                 form={addServiceForm}
                 field={{
                   name: "calculation_method",
-                  type: "text",
+                  type: "select",
                   placeholder: "Chọn đơn vị tính",
                   label: "Đơn vị tính",
+                  options: Object.entries(CalculationMethod).map(
+                    ([key, value]) => ({
+                      label: value,
+                      value: key,
+                    }),
+                  ),
                 }}
               />
 
@@ -233,11 +275,12 @@ export default function BillDetailTable({
               <FormField
                 className="w-full lg:col-span-2"
                 field={{
-                  type: "text",
+                  type: "number",
                   defaultValue: 0,
                   label: "Tổng tiền",
                   className: "w-full lg:col-span-2",
                   readOnly: true,
+                  value: quantity * Number(unit_price),
                 }}
               />
 
