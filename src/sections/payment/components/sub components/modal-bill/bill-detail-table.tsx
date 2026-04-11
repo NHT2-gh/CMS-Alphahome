@@ -182,7 +182,7 @@ export default function BillDetailTable({
                 <TableRow>
                   <TableCell>1</TableCell>
                   <TableCell>Tiền phòng</TableCell>
-                  <TableCell>{CalculationMethod.fixed}</TableCell>
+                  <TableCell>{CalculationMethod.per_room}</TableCell>
                   <TableCell>1</TableCell>
                   <TableCell>{formatCurrency(baseRent)}</TableCell>
                   <TableCell>{formatCurrency(baseRent)}</TableCell>

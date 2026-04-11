@@ -47,7 +47,7 @@ class UtilityReadingService {
       .eq("rooms.building_id", buildingId)
       .gte("month_date", startDate)
       .lt("month_date", endDate)
-      .order("month_date", { ascending: true });
+      .order("updated_at", { ascending: true });
 
     const { data: UtilityReadingResponse, error } = await query;
 

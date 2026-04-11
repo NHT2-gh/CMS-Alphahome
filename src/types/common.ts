@@ -1,7 +1,7 @@
 // Other types used across the application
 export interface Pagination {
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   total?: number;
 }
 
@@ -10,7 +10,11 @@ export interface MutationResult {
   message: string;
 }
 
-export interface ResponseData<T> {
+export interface ResponseStandard<T> {
   data: T;
-  count: number;
+  pagination: Pagination;
+}
+
+export interface ResponseWithStatics<T> extends ResponseStandard<T> {
+  statics: Record<string, number>;
 }

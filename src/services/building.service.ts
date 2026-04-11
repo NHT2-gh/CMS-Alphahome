@@ -81,8 +81,6 @@ class BuildingService {
 
     const { data, error } = await query;
 
-    console.log(data);
-
     if (!data || error) return [];
 
     return data;

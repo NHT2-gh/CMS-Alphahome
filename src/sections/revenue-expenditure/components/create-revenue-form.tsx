@@ -1,22 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import {
-  createTransactionSchema,
-  CreateTransactionType,
-} from "@/schemas/validation/admin.validation";
-import useRooms from "@/hooks/queries/use-room";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormField } from "@/components/_cms/components/form";
-import { useCategories } from "@/hooks/queries/use-category";
-import { PaymentMethod, TransactionType } from "@/types/transcription";
-import Button from "@/components/ui/button/Button";
-import { useBuilding } from "@/context/BuildingContext";
+import React, { useEffect } from "react";
+
 import { showToast } from "@/lib/toast";
 import {
   useBuildingRevenueCombined,
   useCreateTransaction,
 } from "@/hooks/queries/use-transaction";
+import {
+  createTransactionSchema,
+  CreateTransactionType,
+} from "@/schemas/validation/admin.validation";
+import useRooms from "@/hooks/queries/use-room";
+import Button from "@/components/ui/button/Button";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useBuilding } from "@/context/BuildingContext";
+import { useCategories } from "@/hooks/queries/use-category";
+import { FormField } from "@/components/_cms/components/form";
+import { PaymentMethod, TransactionType } from "@/types/transcription";
 
 export default function CreateRevenueForm() {
   const { building } = useBuilding();
@@ -29,13 +30,13 @@ export default function CreateRevenueForm() {
   const createRevenueForm = useForm<CreateTransactionType>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
-      category_id: "",
-      amount: 0,
       type: "",
-      transaction_date: "",
+      amount: 0,
       description: "",
-      payment_method: "",
+      category_id: "",
       room_id: undefined,
+      payment_method: "",
+      transaction_date: "",
       building_id: building?.id,
     },
   });
@@ -43,12 +44,19 @@ export default function CreateRevenueForm() {
     control: createRevenueForm.control,
     name: "category_id",
   });
+
+  const transaction_date = useWatch({
+    control: createRevenueForm.control,
+    name: "transaction_date",
+  });
   useEffect(() => {
     if (buildingRevenueCombined && category) {
       const categoryData = buildingRevenueCombined.find(
         (item) =>
           item.category_name ===
-          categories?.find((c) => c.id === category)?.name,
+            categories?.find((c) => c.id === category)?.name &&
+          new Date(item.month).getMonth() ===
+            new Date(transaction_date).getMonth(),
       );
 
       if (categoryData) {
@@ -59,7 +67,7 @@ export default function CreateRevenueForm() {
         setValue("amount", 0);
       }
     }
-  }, [buildingRevenueCombined, category]);
+  }, [buildingRevenueCombined, category, transaction_date]);
 
   const { handleSubmit, setValue, reset } = createRevenueForm;
 

@@ -6,7 +6,7 @@ interface SingleFilterButtonGroupProp {
     value: string;
     label: string;
   }[];
-  onChange: (value: string) => void;
+  onChange: (value: string | null) => void;
   value?: string;
   className?: string;
 }
@@ -18,7 +18,7 @@ export default function SingleFilterButtonGroup({
   className,
 }: SingleFilterButtonGroupProp) {
   const [currentValue, setCurrentValue] = useState<string | null>(
-    value ? value : "all",
+    value ? value : null,
   );
   return (
     <div
@@ -29,11 +29,11 @@ export default function SingleFilterButtonGroup({
     >
       <button
         onClick={() => {
-          onChange("all");
-          setCurrentValue("all");
+          onChange(null);
+          setCurrentValue(null);
         }}
         className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
-          currentValue === "all"
+          currentValue === null
             ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
             : "text-gray-500 dark:text-gray-400"
         }`}

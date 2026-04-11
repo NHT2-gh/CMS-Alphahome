@@ -83,6 +83,7 @@ export default function EditViewReading({
             buildingServices?.find(
               (service) => service.services.service_type === item.type,
             )?.id || "",
+          updated_at: item.updated_at,
         },
       ]),
     );
@@ -200,9 +201,20 @@ export default function EditViewReading({
   return (
     <div className="flex flex-col gap-5">
       {/* <FormInModal /> */}
-      <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
-        Thông tin bản ghi mới của tòa nhà {building?.code}
-      </h4>
+      <div>
+        <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
+          Thông tin bản ghi mới của tòa nhà {building?.code}
+        </h4>
+        <span className="text-sm text-gray-700 dark:text-gray-500 font-normal">
+          Cập nhật lần cuối:{" "}
+          {utilityReadingByDate?.[0].updated_at
+            ? formatDateTime(utilityReadingByDate[0].updated_at, {
+                withTime: true,
+                formatString: "dd-mm-yyyy",
+              })
+            : "Chưa có dữ liệu"}
+        </span>
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -210,32 +222,42 @@ export default function EditViewReading({
         }}
         className="flex justify-between items-end"
       >
-        <FormField
-          field={{
-            required: true,
-            label: "Thời gian ghi chỉ số",
-            type: "text",
-            readOnly: true,
-            defaultValue: formatDateTime(new Date().toISOString(), {
-              withTime: true,
-            }),
-          }}
-        />
-
         {!rangeDateSelected && (
-          <FormField
-            field={{
-              id: "month_date",
-              label: "Kì ghi chỉ số",
-              type: "text",
-              readOnly: true,
-              defaultValue: `Tháng ${rangeDate[0].split("-")[1]}`,
-            }}
-          />
+          <>
+            <FormField
+              field={{
+                required: true,
+                label: "Thời gian ghi chỉ số",
+                type: "text",
+                readOnly: true,
+                defaultValue: formatDateTime(new Date().toISOString(), {
+                  withTime: true,
+                }),
+              }}
+            />
+
+            <FormField
+              field={{
+                id: "month_date",
+                label: "Kì ghi chỉ số",
+                type: "text",
+                readOnly: true,
+                defaultValue: `Tháng ${rangeDate[0].split("-")[1]}`,
+              }}
+            />
+          </>
         )}
 
-        <Button disabled={!isEdit} className="w-fit h-fit" type="submit">
-          Tạo bản ghi mới
+        <Button
+          disabled={!isEdit}
+          className="w-fit h-fit ml-auto"
+          type="submit"
+        >
+          {rangeDateSelected
+            ? "Cập nhật bảng ghi"
+            : allowAutoFill
+              ? "Tạo bảng ghi mới"
+              : "Cập nhật bảng ghi"}
         </Button>
       </form>
 
@@ -245,6 +267,13 @@ export default function EditViewReading({
         onChange={() => setIsFirstReading(!isFirstReading)}
         label={"Đây là bản ghi đầu tiên"}
       />
+
+      {isFirstReading && (
+        <span className="text-sm text-amber-600 dark:text-amber-400 font-normal">
+          Lưu ý: Với bản ghi đầu tiên, vui lòng nhập số liệu ban đầu của từng
+          loại dịch vụ cho từng phòng vào cột dữ liệu hiện tại.
+        </span>
+      )}
       {allowAutoFill && (
         <Button
           className="w-fit"
@@ -299,6 +328,7 @@ export default function EditViewReading({
                   <TableCell key={room.room_id}>{room.code}</TableCell>
                   <TableCell key="previous_reading_electricity">
                     <Input
+                      disabled={isFirstReading}
                       min="0"
                       className="max-w-[120px] max-h-10"
                       value={
@@ -343,6 +373,7 @@ export default function EditViewReading({
 
                   <TableCell key="previous_reading_water">
                     <Input
+                      disabled={isFirstReading}
                       min="0"
                       className="max-w-[120px] max-h-10"
                       value={

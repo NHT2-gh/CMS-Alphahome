@@ -38,4 +38,6 @@ export interface UtilityReadingDetail {
   room_id: string;
   month_date: string;
   building_service_id: string;
+  created_at?: string;
+  updated_at?: string;
 }

@@ -9,7 +9,7 @@ export enum BillStatus {
 export enum CalculationMethod {
   by_usage = "m³/kwh",
   per_person = "Người",
-  fixed = "Phòng",
+  per_room = "Phòng",
 }
 export type ServiceType = "water" | "electricity" | "fixed";
 

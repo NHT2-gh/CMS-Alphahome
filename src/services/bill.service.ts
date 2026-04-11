@@ -9,7 +9,11 @@ import {
   CreateMonthlyBillsResponse,
   CreateSingleMonthlyBillResponse,
 } from "@/types/bill";
-import { MutationResult } from "@/types/common";
+import {
+  MutationResult,
+  ResponseStandard,
+  ResponseWithStatics,
+} from "@/types/common";
 
 class BillService {
   page: number;
@@ -24,7 +28,7 @@ class BillService {
     page?: number,
     limit?: number,
     filters?: Record<string, FilterValue>,
-  ) {
+  ): Promise<ResponseStandard<Bill[]>> {
     const query = supabase
       .from("room_monthly_bills")
       .select(
@@ -67,7 +71,11 @@ class BillService {
 
     return {
       data: data || [],
-      count: count || 0,
+      pagination: {
+        page: page || 1,
+        limit: limit || 20,
+        total: count || 0,
+      },
     };
   }
 
