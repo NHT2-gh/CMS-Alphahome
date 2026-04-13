@@ -73,7 +73,7 @@ export default function RevenueExpenditureTable() {
         </div>
       </div>
       <Table className="w-full">
-        <CMSTableHeader tableHeader={_tableHeader} />
+        <CMSTableHeader columns={_tableHeader} />
         <TableBody>
           {transcriptions?.map((item) => (
             <TableRow key={item.id}>

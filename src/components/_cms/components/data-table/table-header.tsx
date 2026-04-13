@@ -4,12 +4,12 @@ import React from "react";
 import { Checkbox } from "../../ui/input";
 
 export default function CMSTableHeader({
-  tableHeader,
+  columns,
   selectAll = false,
   handleSelectAll,
   className,
 }: {
-  tableHeader: {
+  columns: {
     key: string;
     title: string;
     className?: string;
@@ -19,6 +19,7 @@ export default function CMSTableHeader({
   selectAll?: boolean;
   handleSelectAll?: (isSelectAll: boolean) => void;
 }) {
+  if (!columns) return;
   return (
     <TableHeader
       className={cn(
@@ -33,10 +34,10 @@ export default function CMSTableHeader({
             className="font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
           >
             <Checkbox
-              id={tableHeader[0].key}
+              id={columns[0].key}
               checked={selectAll}
               onChange={() => handleSelectAll?.(!selectAll)}
-              label={tableHeader[0].title}
+              label={columns[0].title}
             />
           </TableCell>
         ) : (
@@ -44,11 +45,11 @@ export default function CMSTableHeader({
             isHeader
             className="font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
           >
-            {tableHeader[0].title}
+            {columns[0].title}
           </TableCell>
         )}
 
-        {tableHeader.slice(1).map((cell, index) => (
+        {columns.slice(1).map((cell, index) => (
           <TableCell
             key={index}
             isHeader

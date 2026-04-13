@@ -20,7 +20,8 @@ export default function RoomDetailPageView({
 }: RoomDetailPageViewProps) {
   return (
     <MainContainer title={`Thông tin chi tiết phòng ${room.code}`}>
-      <ViewDetailRoomInfo currentRoom={room} />
+      <ViewDetailRoomInfo currentRoom={room} rentHistory={rentHistory} />
+
       <ViewContract contract={contract} />
     </MainContainer>
   );

@@ -138,7 +138,7 @@ export default function PaymentsListTable() {
         <Table>
           <CMSTableHeader
             selectAll={selectedBills.length === bills?.data.length}
-            tableHeader={_tableHeader}
+            columns={_tableHeader}
             handleSelectAll={(isSelectAll) => {
               if (isSelectAll) {
                 setSelectedBills(bills?.data.map((bill) => bill.id) || []);

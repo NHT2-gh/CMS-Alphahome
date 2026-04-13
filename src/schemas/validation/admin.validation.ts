@@ -36,6 +36,7 @@ export const updateRoomInfoSchema = z.object({
   furniture_status: z.string().min(1, "Furniture status is required"),
   description: z.string().optional(),
   images: z.array(z.string()),
+  current_rent: z.number().min(1, "Current rent is required"),
 });
 
 export const createTransactionSchema = z

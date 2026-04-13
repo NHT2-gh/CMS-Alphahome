@@ -62,6 +62,7 @@ export interface NumberFieldConfig extends BaseFieldConfig {
   min?: number;
   max?: number;
   step?: number;
+  formatCurrency?: boolean;
 }
 
 export interface TextareaFieldConfig extends BaseFieldConfig {
@@ -221,6 +222,7 @@ export interface FieldRendererProps {
   form?: UseFormReturn<any>;
   disabled?: boolean;
   className?: string;
+  children?: ReactNode;
 }
 
 // Custom field props

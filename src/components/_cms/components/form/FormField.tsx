@@ -47,6 +47,7 @@ export default function FormField({
   form,
   disabled,
   className,
+  children,
 }: FieldRendererProps) {
   const FieldComponent = fieldComponents[field.type];
 
@@ -98,7 +99,9 @@ export default function FormField({
                 value={value}
                 name={name}
                 ref={ref}
-              />
+              >
+                {children}
+              </FieldComponent>
             )}
           />
         ) : (

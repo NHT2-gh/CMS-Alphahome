@@ -1,5 +1,6 @@
 import type React from "react";
-import { useState } from "react";
+import { formatCurrency as formatCurrencyUtil } from "@/utils/format-data";
+import { ReactNode } from "react";
 
 export interface InputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -13,6 +14,8 @@ export interface InputProps extends Omit<
   success?: boolean;
   error?: boolean;
   hint?: string;
+  formatCurrency?: boolean;
+  children?: ReactNode;
 }
 
 export default function Input({
@@ -31,6 +34,8 @@ export default function Input({
   hint,
   name,
   id,
+  formatCurrency,
+  children,
   ...props
 }: InputProps) {
   let inputClasses = ` h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
@@ -50,8 +55,7 @@ export default function Input({
       <input
         type={type}
         placeholder={placeholder}
-        defaultValue={defaultValue}
-        value={value}
+        value={type === "number" && isNaN(value as number) ? 0 : value}
         onChange={onChange}
         min={min}
         max={max}
@@ -62,6 +66,8 @@ export default function Input({
         id={id}
         {...props}
       />
+
+      <div className="absolute right-2 bottom-[-2]">{children}</div>
 
       {hint && (
         <p
@@ -74,6 +80,20 @@ export default function Input({
           }`}
         >
           {hint}
+        </p>
+      )}
+
+      {formatCurrency && type === "number" && (
+        <p
+          className={`mt-1.5 ml-2 text-xs ${
+            error
+              ? "text-error-500"
+              : success
+                ? "text-success-500"
+                : "text-gray-500"
+          }`}
+        >
+          Định dạng tiền: {formatCurrencyUtil(value as number)}
         </p>
       )}
     </div>

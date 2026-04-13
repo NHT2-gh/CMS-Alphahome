@@ -133,7 +133,7 @@ export default function BillPreviewModal({
             </div>
 
             {/* <!-- Invoice Table --> */}
-            <BillDetailTable billId={bill.id} baseRent={bill.base_rent} />
+            <BillDetailTable bill={bill} baseRent={bill.base_rent} />
 
             <div className="flex items-center justify-center gap-2">
               <Image

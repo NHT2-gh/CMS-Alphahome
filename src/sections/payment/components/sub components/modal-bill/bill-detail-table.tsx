@@ -1,9 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@/icons";
-import { BillServiceDetail, CalculationMethod } from "@/types/bill";
+import {
+  Bill,
+  BillServiceDetail,
+  CalculationMethod,
+  RoomServiceExtra,
+} from "@/types/bill";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useBillServicesDetail } from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
 import { FormField } from "@/components/_cms/components/form";
@@ -14,8 +19,12 @@ import {
 } from "@/schemas/validation/admin.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/ui/button/Button";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, Trash } from "lucide-react";
 import { useBuildingServices } from "@/hooks/queries/use-building";
+import {
+  useAllServiceExtra,
+  useGetRoomServiceExtra,
+} from "@/hooks/queries/use-service";
 
 interface Product {
   name: string;
@@ -46,28 +55,23 @@ const _tableHeader: { key: keyof BillServiceDetail | string; title: string }[] =
   ];
 
 export default function BillDetailTable({
-  billId,
+  bill,
   baseRent,
-  buildingId,
   isPreview = true,
 }: {
-  billId: string;
+  bill: Bill;
   baseRent: number;
-  buildingId?: string;
   isPreview?: boolean;
 }) {
-  const { data: billServicesDetail } = useBillServicesDetail(billId);
+  const { data: billServicesDetail } = useBillServicesDetail(bill.id);
+  const { data: roomServiceExtra } = useGetRoomServiceExtra(bill.room_id);
   const [billServices, setBillServices] = useState<
     BillServiceDetail[] | undefined
   >(undefined);
-  const { data: buildingServices } = useBuildingServices(buildingId);
-
-  const [form, setForm] = useState<FormData>({
-    name: "",
-    price: 0,
-    quantity: 1,
-    discount: 0,
-  });
+  const [roomServiceExtras, setRoomServiceExtras] = useState<
+    RoomServiceExtra[] | undefined
+  >(undefined);
+  const { data: servicesExtra } = useAllServiceExtra();
 
   const addServiceForm = useForm<AddBillServiceDetaiFormType>({
     resolver: zodResolver(addBillServiceDetaiFormSchema),
@@ -93,16 +97,18 @@ export default function BillDetailTable({
 
   useEffect(() => {
     if (service_id) {
-      const service = buildingServices?.find(
-        (item) => String(item.services.id) === String(service_id),
+      const service = servicesExtra?.find(
+        (item) => String(item.id) === String(service_id),
       );
 
       if (service) {
         addServiceForm.setValue(
           "calculation_method",
-          service.services.calculation_method,
+          service.unit ||
+            CalculationMethod[
+              service.calculation_method as unknown as keyof typeof CalculationMethod
+            ],
         );
-        addServiceForm.setValue("unit_price", String(service.unit_price));
       }
     }
   }, [service_id]);
@@ -113,27 +119,7 @@ export default function BillDetailTable({
   } = addServiceForm;
 
   const handleDelete = (index: number): void => {
-    setBillServices((prev) => prev?.filter((_, i) => i !== index));
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ): void => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]:
-        name === "price" || name === "quantity" || name === "discount"
-          ? Number(value)
-          : value,
-    }));
-  };
-
-  const handleQuantityChange = (delta: number): void => {
-    setForm((prev) => ({
-      ...prev,
-      quantity: Math.max(1, prev.quantity + delta),
-    }));
+    setRoomServiceExtras((prev) => prev?.filter((_, i) => i !== index));
   };
 
   const onSubmit = (data: AddBillServiceDetaiFormType): void => {
@@ -159,6 +145,10 @@ export default function BillDetailTable({
     setBillServices(billServicesDetail);
   }, [billServicesDetail]);
 
+  useEffect(() => {
+    setRoomServiceExtras(roomServiceExtra);
+  }, [roomServiceExtra]);
+
   const total: number = billServices
     ? billServices.reduce(
         (sum, service) => sum + Number(service.total_amount),
@@ -177,8 +167,8 @@ export default function BillDetailTable({
             </div>
           ) : (
             <table className="min-w-full text-left text-sm text-gray-700 dark:border-gray-800">
-              <CMSTableHeader tableHeader={_tableHeader} />
-              <tbody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-white/3">
+              <CMSTableHeader columns={_tableHeader} />
+              <TableBody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-white/3">
                 <TableRow>
                   <TableCell>1</TableCell>
                   <TableCell>Tiền phòng</TableCell>
@@ -206,7 +196,36 @@ export default function BillDetailTable({
                     </TableCell>
                   </TableRow>
                 ))}
-              </tbody>
+
+                {roomServiceExtras?.map((item, idx) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      {idx + (billServices?.length || 0) + 2}
+                    </TableCell>
+                    <TableCell>{item.services.service_name}</TableCell>
+                    <TableCell>
+                      {item.services.unit ||
+                        CalculationMethod[
+                          item.services
+                            .calculation_method as unknown as keyof typeof CalculationMethod
+                        ]}
+                    </TableCell>
+                    <TableCell>{item.quantity}</TableCell>
+                    <TableCell>{formatCurrency(item.unit_price)}</TableCell>
+                    <TableCell>
+                      {formatCurrency(item.unit_price * item.quantity)}
+                    </TableCell>
+
+                    {!isPreview && (
+                      <TableCell className="max-w-[20px] !pl-2">
+                        <button onClick={() => handleDelete(idx)}>
+                          <Trash className="size-4 text-red-400" />
+                        </button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
             </table>
           )}
         </div>
@@ -225,9 +244,9 @@ export default function BillDetailTable({
                   label: "Dịch vụ",
                   placeholder: "Chọn dịch vụ",
                   options:
-                    buildingServices?.map((item) => ({
-                      label: item.services.service_name,
-                      value: item.services.id,
+                    servicesExtra?.map((item) => ({
+                      label: item.service_name,
+                      value: item.id,
                     })) ?? [],
                 }}
               />
@@ -237,15 +256,10 @@ export default function BillDetailTable({
                 form={addServiceForm}
                 field={{
                   name: "calculation_method",
-                  type: "select",
-                  placeholder: "Chọn đơn vị tính",
+                  type: "text",
+                  placeholder: "Đơn vị tính",
                   label: "Đơn vị tính",
-                  options: Object.entries(CalculationMethod).map(
-                    ([key, value]) => ({
-                      label: value,
-                      value: key,
-                    }),
-                  ),
+                  readOnly: true,
                 }}
               />
 

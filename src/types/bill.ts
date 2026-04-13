@@ -10,8 +10,9 @@ export enum CalculationMethod {
   by_usage = "m³/kwh",
   per_person = "Người",
   per_room = "Phòng",
+  other = "Khác",
 }
-export type ServiceType = "water" | "electricity" | "fixed";
+export type ServiceType = "water" | "electricity" | "fixed" | "extra";
 
 export interface Bill {
   id: string;
@@ -43,6 +44,15 @@ export interface Service {
   service_name: string;
   service_type: ServiceType;
   calculation_method: CalculationMethod;
+  unit?: string;
+}
+
+export interface RoomServiceExtra {
+  id: string;
+  room_id: string;
+  services: Service;
+  quantity: number;
+  unit_price: number;
 }
 
 export interface BillServiceDetail {

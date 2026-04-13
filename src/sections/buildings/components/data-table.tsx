@@ -1,4 +1,6 @@
 "use client";
+import React, { useCallback, useState } from "react";
+
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import ProgressBar from "@/components/progress-bar/ProgressBar";
@@ -11,8 +13,7 @@ import { formatCurrency } from "@/utils/format-data";
 import { Eye, Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import React, { useCallback, useState } from "react";
-const _tableHeader = [
+const _tableHeader: { key: string; title: string }[] = [
   { key: "code", title: "Mã căn hộ" },
   { key: "address", title: "Địa chỉ" },
   { key: "price-rent", title: "Giá thuê" },
@@ -23,7 +24,7 @@ const _tableHeader = [
   { key: "is_active", title: "Trạng thái" },
 ];
 
-export default function DataTable({}: {}) {
+export default function DataTable() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const router = useRouter();
   const { isLoading, data: buildings } = useBuilding({
@@ -42,7 +43,6 @@ export default function DataTable({}: {}) {
 
     setSearchText(value);
   }, []);
-
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
@@ -103,78 +103,70 @@ export default function DataTable({}: {}) {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center">
-          <Loader2 className="animate-spin" />
-        </div>
-      ) : (
-        <Table className="w-full">
-          <CMSTableHeader
-            selectAll={false}
-            handleSelectAll={() => {}}
-            tableHeader={_tableHeader}
-          />
-          <TableBody>
-            {buildings?.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.code}</TableCell>
+      <Table className="w-full">
+        <CMSTableHeader
+          selectAll={false}
+          handleSelectAll={() => {}}
+          columns={_tableHeader}
+        />
+        <TableBody>
+          {buildings?.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.code}</TableCell>
 
-                <TableCell>{item.address}</TableCell>
+              <TableCell>{item.address}</TableCell>
 
-                <TableCell>{formatCurrency(item.price_rent)}</TableCell>
+              <TableCell>{formatCurrency(item.price_rent)}</TableCell>
 
-                <TableCell>{formatCurrency(item.price_deposit)}</TableCell>
+              <TableCell>{formatCurrency(item.price_deposit)}</TableCell>
 
-                <TableCell>{item.start_date || "NULL"}</TableCell>
+              <TableCell>{item.start_date || "NULL"}</TableCell>
 
-                <TableCell>{item.end_date || "NULL"}</TableCell>
+              <TableCell>{item.end_date || "NULL"}</TableCell>
 
-                <TableCell className="min-w-[8rem]">
-                  <Tooltip
-                    content={`Trống ${item.number_available_rooms}/${item.total_rooms} phòng`}
-                    position="top"
-                  >
-                    <ProgressBar
-                      progress={
-                        ((item.total_rooms - item.number_available_rooms) /
-                          item.total_rooms) *
-                        100
-                      }
-                      size="lg"
-                      label="inside"
-                    />
-                  </Tooltip>
-                </TableCell>
+              <TableCell className="min-w-[8rem]">
+                <Tooltip
+                  content={`Trống ${item.number_available_rooms}/${item.total_rooms} phòng`}
+                  position="top"
+                >
+                  <ProgressBar
+                    progress={
+                      ((item.total_rooms - item.number_available_rooms) /
+                        item.total_rooms) *
+                      100
+                    }
+                    size="lg"
+                    label="inside"
+                  />
+                </Tooltip>
+              </TableCell>
 
-                <TableCell>
-                  <Badge
-                    variant="light"
-                    color={item.is_active ? "success" : "error"}
-                    size="sm"
-                  >
-                    <span className="capitalize">
-                      {item.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </Badge>
-                </TableCell>
+              <TableCell>
+                <Badge
+                  variant="light"
+                  color={item.is_active ? "success" : "error"}
+                  size="sm"
+                >
+                  <span className="capitalize">
+                    {item.is_active ? "Active" : "Inactive"}
+                  </span>
+                </Badge>
+              </TableCell>
 
-                <TableCell>
-                  <button
-                    className="group"
-                    onClick={() => {
-                      router.push(
-                        APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(item.code),
-                      );
-                    }}
-                  >
-                    <Eye className="group-hover:text-brand-400" />
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+              <TableCell>
+                <button
+                  className="group"
+                  onClick={() => {
+                    router.push(APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(item.code));
+                  }}
+                >
+                  <Eye className="group-hover:text-brand-400" />
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

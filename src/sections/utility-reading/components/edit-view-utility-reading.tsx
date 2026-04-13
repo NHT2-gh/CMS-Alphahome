@@ -292,7 +292,7 @@ export default function EditViewReading({
         <Table className="w-full text-left  text-sm text-gray-700">
           <CMSTableHeader
             className="bg-neutral-100  sticky top-0 z-10"
-            tableHeader={[
+            columns={[
               { key: "room_code", title: "Số phòng" },
               {
                 key: "previous_reading_electricity",

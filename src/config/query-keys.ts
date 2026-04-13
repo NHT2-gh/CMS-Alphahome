@@ -61,4 +61,14 @@ export const queryKeys = {
   categories: {
     all: () => ["categories"],
   },
+
+  services: {
+    allTypeExtra: () => ["services", "type_extra"],
+    roomServiceExtra: (roomId: string) => ["services", "room", roomId],
+  },
+
+  historyRent: {
+    all: (room_id: string) => ["room-history-rent", room_id],
+    create: () => ["room-history-rent", "create"],
+  },
 };

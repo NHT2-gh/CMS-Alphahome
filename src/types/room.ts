@@ -36,7 +36,7 @@ export interface RoomDetail extends Room {
 export interface RoomRentHistory {
   id: string;
   room_id: string;
-  rent_price: string;
+  rent_price: number;
   effective_from: string;
   effective_to: string;
 }

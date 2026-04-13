@@ -2,6 +2,7 @@ import { handlePostgresError } from "@/lib/error/postgres-error";
 import { supabase } from "@/supabase/supabaseClients";
 import { MutationResult } from "@/types/common";
 import { RoomRentHistory } from "@/types/room";
+import { formatDate, formatDateTime } from "@/utils/format-data";
 
 class RentHistory {
   private tableName: string;
@@ -14,7 +15,7 @@ class RentHistory {
       .from(this.tableName)
       .select("*")
       .eq("room_id", roomId)
-      .is("effective_to", null)
+
       .order("effective_from", { ascending: false });
 
     const { data, error } = await query;
@@ -26,16 +27,19 @@ class RentHistory {
     return data || [];
   }
 
-  async updateRentHistory(
+  async createRentHistory(
     roomId: string,
-    rent: number,
+    rent_price: number,
   ): Promise<MutationResult> {
     const query = supabase.from(this.tableName).insert({
       room_id: roomId,
-      rent,
+      rent_price: rent_price,
+      effective_from: formatDateTime(new Date().toISOString(), {
+        withTime: false,
+      }),
     });
 
-    const { data, error } = await query;
+    const { error } = await query;
 
     if (error) {
       handlePostgresError(error);

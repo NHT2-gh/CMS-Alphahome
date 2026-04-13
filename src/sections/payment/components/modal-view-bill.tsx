@@ -178,8 +178,7 @@ export default function ModalViewBill({
             )}
             {currentBill && (
               <BillDetailTable
-                billId={currentBill.id}
-                buildingId={currentBill.rooms.building_id}
+                bill={currentBill}
                 baseRent={currentBill.base_rent}
                 isPreview={false}
               />
