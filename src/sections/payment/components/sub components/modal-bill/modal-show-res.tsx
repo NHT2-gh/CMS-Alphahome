@@ -1,5 +1,4 @@
 import { Modal } from "@/components/ui/modal";
-import { useModal } from "@/hooks/useModal";
 import React from "react";
 
 export default function ModalShowRes({

@@ -85,7 +85,7 @@ export default function Input({
 
       {formatCurrency && type === "number" && (
         <p
-          className={`mt-1.5 ml-2 text-xs ${
+          className={`mt-1.5 ml-2 text-xs absolute bottom-[-2] left-0 ${
             error
               ? "text-error-500"
               : success

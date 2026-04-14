@@ -1,20 +1,22 @@
-import { UtilityReadingDetail } from "@/types/utility_reading";
+import { UtilityReadingDetailDTO } from "@/types/utility_reading";
 import { utilityReadingService } from "@/services/utility_reading.service";
 import { mapErrorToMessage } from "../error/app-error";
 import { Result } from "@/types/response";
 import { AppError } from "../error/error-codes";
 
 export async function createUtilityReading(
-  data: Record<string, UtilityReadingDetail>,
+  data: Record<string, UtilityReadingDetailDTO>,
   isFirstReading: boolean,
 ): Promise<Result> {
   const payload = Object.values(data);
 
   if (!isFirstReading) {
-    payload.filter((item) => item.current_reading !== null);
+    payload.filter(
+      (item) => item.current_reading !== null || item.current_reading !== 0,
+    );
   } else {
     payload.forEach((item) => {
-      item.current_reading = item.previous_reading;
+      item.previous_reading = item.current_reading;
     });
   }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { PageBreadcrumb } from ".";
+import { Breadcrumb } from "../../components/breadcrumb";
 
 interface MainContainerProps {
   title: string;
@@ -14,7 +14,7 @@ export default function MainContainer({
 }: MainContainerProps) {
   return (
     <section>
-      <PageBreadcrumb pageTitle={title} links={links} />
+      <Breadcrumb pageTitle={title} links={links} />
       <section className="rounded-lg bg-white p-5 shadow-theme-sm dark:bg-gray-800 space-y-4 text-gray-600 dark:text-gray-400">
         {children}
       </section>

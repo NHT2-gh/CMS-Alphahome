@@ -26,6 +26,7 @@ export const queryKeys = {
       buildingId,
       date,
     ],
+    update: () => ["utility-reading", "update"],
   },
   contract: {
     byRoomId: (roomId: string) => ["contract", "room", roomId],
@@ -43,20 +44,18 @@ export const queryKeys = {
       pagination?.limit,
       filter,
     ],
-    byTrackingCode: (trackingCode: string) => [
-      "bills",
-      "tracking-code",
-      trackingCode,
-    ],
+    getBill: (trackingCode: string) => ["bills", "tracking-code", trackingCode],
     servicesDetail: (billId: string) => ["bills", "services-detail", billId],
     createSignleBill: () => ["create-one-bill"],
     createMultipleBills: () => ["create-multiple-bills"],
     updateStatusBill: () => ["update-status-bill"],
+    addServiceToBill: () => ["add-service-to-bill"],
   },
 
   transactions: {
     allByBuildingId: (buildingId: string) => ["transactions", buildingId],
     create: () => ["create-transaction"],
+    delete: () => ["delete-transaction"],
   },
   categories: {
     all: () => ["categories"],

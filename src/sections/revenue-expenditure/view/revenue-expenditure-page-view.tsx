@@ -1,5 +1,4 @@
-import React from "react";
-import { MainContainer } from "@/components/_cms/common";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 import { CreateRevenueForm, RevenueExpenditureTable } from "../components";
 
 export default function RevenueExpenditurePageView() {

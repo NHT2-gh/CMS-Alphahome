@@ -40,8 +40,6 @@ class ServiceExtraService {
 
     const { data, error } = await query;
 
-    console.log(data);
-
     if (error) {
       handlePostgresError(error);
     }

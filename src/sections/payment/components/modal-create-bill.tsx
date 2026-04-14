@@ -86,12 +86,13 @@ export default function ModalCreateBill() {
     try {
       if (isMutiRoom && Array.isArray(data.room_selected)) {
         const res = await createMultipleBills.mutateAsync({
-          trackingCode: generateBillCode(),
           month_date: data.month_date,
           room_ids: data.room_selected,
           building_id: building?.id as string,
         });
         setLog(res.results);
+
+        console.log(res.results);
         resultModal.openModal();
       } else {
         const res = await createSingleBill.mutateAsync({

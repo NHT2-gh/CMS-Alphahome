@@ -1,6 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { utilityReadingService } from "@/services/utility_reading.service";
 import { queryKeys } from "@/config/query-keys";
+import { UtilityReadingDetail } from "@/types/utility_reading";
+import { useBuilding } from "@/context/BuildingContext";
 
 export function useUtilityReadingOverview(
   buildingId?: string,
@@ -32,5 +34,21 @@ export function useUtilityReadingByDate(
         endDate!,
       ),
     enabled: !!buildingId && !!startDate && options?.enabled,
+  });
+}
+
+export function useUpdateUtilityReading() {
+  const queryClient = useQueryClient();
+  const { building } = useBuilding();
+  return useMutation({
+    mutationKey: queryKeys.utilityReading.update(),
+    mutationFn: (payload: UtilityReadingDetail[]) =>
+      utilityReadingService.updateUtilityReading(payload),
+
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.utilityReading.overview(building?.id!),
+      });
+    },
   });
 }

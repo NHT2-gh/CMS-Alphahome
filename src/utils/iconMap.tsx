@@ -1,4 +1,10 @@
 import {
+  IcModalAlertDangerIcon,
+  IcModalAlertSuccessIcon,
+  IcModalAlertInfoIcon,
+  IcModalAlertWarningIcon,
+} from "@/assets/svgs";
+import {
   AiIcon,
   BoxCubeIcon,
   CalenderIcon,
@@ -34,6 +40,11 @@ export const iconMap = {
   call: CallIcon,
   mail: MailIcon,
   user: UserIcon,
+
+  "modal-alert-success": IcModalAlertSuccessIcon,
+  "modal-alert-info": IcModalAlertInfoIcon,
+  "modal-alert-warning": IcModalAlertWarningIcon,
+  "modal-alert-danger": IcModalAlertDangerIcon,
 } as const;
 
 export type IconKey = keyof typeof iconMap;

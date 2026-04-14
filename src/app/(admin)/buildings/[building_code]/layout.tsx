@@ -1,9 +1,9 @@
 import React from "react";
-import { MainContainer } from "@/components/_cms/common";
 import { APP_ROUTES } from "@/config/app-routes";
 import { BuildingProvider } from "@/context/BuildingContext";
 import MainLayoutBuildingDetail from "@/layout/building-detail/main-layout-building-detail";
 import { buildingService } from "@/services/building.service";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 
 export default async function BuildingDetailLayout({
   children,

@@ -16,7 +16,7 @@ export const addBillServiceDetaiFormSchema = z.object({
   service_id: z.string(),
   quantity: z.number(),
   calculation_method: z.string(),
-  unit_price: z.string(),
+  unit_price: z.number(),
 });
 
 export const createRoomFormSchema = z.object({

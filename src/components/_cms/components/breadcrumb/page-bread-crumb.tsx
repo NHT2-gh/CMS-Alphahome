@@ -10,7 +10,7 @@ interface BreadcrumbProps {
   links?: { href?: string; label: string }[];
 }
 
-const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
+const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
   const route = useRouter();
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -89,4 +89,4 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
   );
 };
 
-export default PageBreadcrumb;
+export default Breadcrumb;

@@ -7,9 +7,13 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Checkbox, Input } from "@/components/_cms/ui/input";
 import {
   UtilityReadingDetail,
+  UtilityReadingDetailDTO,
   UtilityReadingType,
 } from "@/types/utility_reading";
-import { useUtilityReadingByDate } from "@/hooks/queries/use-utility-reading";
+import {
+  useUpdateUtilityReading,
+  useUtilityReadingByDate,
+} from "@/hooks/queries/use-utility-reading";
 import { useBuilding } from "@/context/BuildingContext";
 import Button from "@/components/ui/button/Button";
 import { createUtilityReading } from "@/lib/server-action/utility-action.action";
@@ -17,6 +21,10 @@ import { showToast } from "@/lib/toast";
 import { formatDateTime } from "@/utils/format-data";
 import { useBuildingServices } from "@/hooks/queries/use-building";
 import { Loader2 } from "lucide-react";
+import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
+import { useModal } from "@/hooks/useModal";
+import { mapErrorToMessage } from "@/lib/error/app-error";
+import { cn } from "@/lib/utils";
 
 interface EditViewReadingProp {
   rangeDateSelected?: [string, string];
@@ -28,6 +36,7 @@ export default function EditViewReading({
 }: EditViewReadingProp) {
   const { building } = useBuilding();
   const { data: rooms, error } = useRooms(building?.id);
+  const modalAlert = useModal();
   const {
     data: buildingServices,
     isFetching,
@@ -48,14 +57,15 @@ export default function EditViewReading({
     rangeDate[0],
     rangeDate[1],
   );
+
   const [isFirstReading, setIsFirstReading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [allowAutoFill, setAllowAutoFill] = useState(
-    utilityReadingByDate?.length === 0,
-  );
+  const [allowAutoFill, setAllowAutoFill] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [readings, setReadings] = useState<
     Record<string, UtilityReadingDetail>
   >({});
+  const updateUtilityReading = useUpdateUtilityReading();
 
   useEffect(() => {
     if (error || !building?.id) {
@@ -69,13 +79,16 @@ export default function EditViewReading({
   useEffect(() => {
     if (!utilityReadingByDate) return;
 
+    if (utilityReadingByDate.length === 0) setAllowAutoFill(true);
+
     const mapped = Object.fromEntries(
       utilityReadingByDate.map((item) => [
         `${item.room_id}-${item.type}`,
         {
+          id: item.id,
           type: item.type,
           previous_reading: item.previous_reading,
-          current_reading: item.current_reading,
+          current_reading: Number(item.current_reading),
           consumption: item.consumption,
           room_id: item.room_id,
           month_date: item.month_date,
@@ -105,6 +118,10 @@ export default function EditViewReading({
         current_reading: "",
         consumption: "",
         room_id: roomId,
+        building_service_id:
+          buildingServices?.find(
+            (service) => service.services.service_type === type,
+          )?.id || "",
       };
 
       const updated = {
@@ -118,7 +135,15 @@ export default function EditViewReading({
         const currVal = Number(updated.current_reading);
 
         if (!isNaN(prevVal) && !isNaN(currVal)) {
-          updated.consumption = currVal - prevVal < 0 ? 0 : currVal - prevVal;
+          const consumption = currVal - prevVal;
+          // if (consumption < 0) {
+          //   setErrorMessage(
+          //     `Số lượng tiêu thụ không được âm\nVui lòng kiểm tra lại số liệu`,
+          //   );
+          // } else {
+          //   setErrorMessage(null);
+          // }
+          updated.consumption = consumption;
         }
       }
 
@@ -160,7 +185,7 @@ export default function EditViewReading({
         };
         return acc;
       },
-      {} as Record<string, UtilityReadingDetail>,
+      {} as Record<string, UtilityReadingDetailDTO>,
     );
 
     const result = await createUtilityReading(initData, isFirstReading);
@@ -180,21 +205,18 @@ export default function EditViewReading({
     }
   };
 
-  const onSubmit = async (
-    data: Record<string, UtilityReadingDetail>,
-    isFirstReading: boolean,
-  ) => {
-    const result = await createUtilityReading(data, isFirstReading);
+  const onSubmit = async (data: Record<string, UtilityReadingDetail>) => {
+    const result = await updateUtilityReading.mutateAsync(Object.values(data));
+    // const result = {
+    //   success: false,
+    //   message: "Lỗi",
+    // };
+
     if (result.success) {
-      showToast.success({
-        title: "Thành công",
-        description: "Tạo bản ghi mới thành công",
-      });
+      modalAlert.openModal();
     } else {
-      showToast.error({
-        title: "Lỗi",
-        description: result.error,
-      });
+      setErrorMessage(mapErrorToMessage(result.message));
+      modalAlert.openModal();
     }
   };
 
@@ -205,53 +227,50 @@ export default function EditViewReading({
         <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
           Thông tin bản ghi mới của tòa nhà {building?.code}
         </h4>
-        <span className="text-sm text-gray-700 dark:text-gray-500 font-normal">
-          Cập nhật lần cuối:{" "}
-          {utilityReadingByDate?.[0].updated_at
-            ? formatDateTime(utilityReadingByDate[0].updated_at, {
-                withTime: true,
-                formatString: "dd-mm-yyyy",
-              })
-            : "Chưa có dữ liệu"}
-        </span>
+
+        {utilityReadingByDate && utilityReadingByDate?.length > 0 && (
+          <span className="text-sm text-gray-700 dark:text-gray-500 font-normal">
+            Cập nhật lần cuối:{" "}
+            {utilityReadingByDate?.[0].updated_at
+              ? formatDateTime(utilityReadingByDate[0].updated_at, {
+                  withTime: true,
+                  formatString: "dd-mm-yyyy",
+                })
+              : "Chưa có dữ liệu"}
+          </span>
+        )}
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit(readings, isFirstReading);
-        }}
-        className="flex justify-between items-end"
-      >
-        {!rangeDateSelected && (
-          <>
-            <FormField
+      <div className="flex justify-between items-end">
+        {/* {!rangeDateSelected && ( */}
+        <div className="flex items-center gap-10">
+          {/* <FormField
               field={{
                 required: true,
                 label: "Thời gian ghi chỉ số",
                 type: "text",
                 readOnly: true,
-                defaultValue: formatDateTime(new Date().toISOString(), {
+                value: formatDateTime(new Date().toISOString(), {
                   withTime: true,
                 }),
               }}
-            />
+            /> */}
 
-            <FormField
-              field={{
-                id: "month_date",
-                label: "Kì ghi chỉ số",
-                type: "text",
-                readOnly: true,
-                defaultValue: `Tháng ${rangeDate[0].split("-")[1]}`,
-              }}
-            />
-          </>
-        )}
+          <FormField
+            field={{
+              id: "month_date",
+              label: "Kì ghi chỉ số",
+              type: "text",
+              readOnly: true,
+              value: `Tháng ${rangeDate[0].split("-")[1]}`,
+            }}
+          />
+        </div>
+        {/* )} */}
 
         <Button
           disabled={!isEdit}
           className="w-fit h-fit ml-auto"
-          type="submit"
+          onClick={() => onSubmit(readings)}
         >
           {rangeDateSelected
             ? "Cập nhật bảng ghi"
@@ -259,7 +278,7 @@ export default function EditViewReading({
               ? "Tạo bảng ghi mới"
               : "Cập nhật bảng ghi"}
         </Button>
-      </form>
+      </div>
 
       <Checkbox
         id="isFirstReading"
@@ -284,6 +303,13 @@ export default function EditViewReading({
           Tự động điền dữ liệu tháng trước
         </Button>
       )}
+
+      {errorMessage && (
+        <span className="text-sm text-red-600 dark:text-red-400 font-normal">
+          Lỗi: {errorMessage}
+        </span>
+      )}
+
       <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
         Danh sách chỉ số
       </h4>
@@ -367,8 +393,18 @@ export default function EditViewReading({
                     />
                   </TableCell>
 
-                  <TableCell>
-                    {readings[`${room.room_id}-electricity`]?.consumption || ""}
+                  <TableCell
+                    className={cn(
+                      Number(
+                        readings[`${room.room_id}-electricity`]?.consumption,
+                      ) < 0 && "text-red-500",
+                    )}
+                  >
+                    {Number(
+                      readings[`${room.room_id}-electricity`]?.consumption,
+                    ) < 0
+                      ? "!"
+                      : readings[`${room.room_id}-electricity`]?.consumption}
                   </TableCell>
 
                   <TableCell key="previous_reading_water">
@@ -409,7 +445,9 @@ export default function EditViewReading({
                     />
                   </TableCell>
                   <TableCell>
-                    {readings[`${room.room_id}-water`]?.consumption}
+                    {Number(readings[`${room.room_id}-water`]?.consumption) < 0
+                      ? "!"
+                      : readings[`${room.room_id}-water`]?.consumption}
                   </TableCell>
                 </TableRow>
               ))
@@ -417,6 +455,16 @@ export default function EditViewReading({
           </TableBody>
         </Table>
       </div>
+
+      <ModalAlert
+        isOpen={modalAlert.isOpen}
+        onClose={() => modalAlert.closeModal()}
+        title={errorMessage ? "Lỗi" : "Đã lưu thành công"}
+        description={errorMessage || "Bạn đã lưu thay đổi thành công"}
+        type={errorMessage ? "danger" : "success"}
+        confirmText="Đóng"
+        onConfirm={() => modalAlert.closeModal()}
+      />
     </div>
   );
 }

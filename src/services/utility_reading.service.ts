@@ -2,7 +2,12 @@ import { adaptUtilityData } from "@/adapters/utility_reading.adapter";
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
-import { UtilityReadingDetail, YearData } from "@/types/utility_reading";
+import { MutationResult } from "@/types/common";
+import {
+  UtilityReadingDetail,
+  UtilityReadingDetailDTO,
+  YearData,
+} from "@/types/utility_reading";
 import { getNextDate, getPreviousMonth } from "@/utils/getTime";
 
 class UtilityReadingService {
@@ -59,7 +64,7 @@ class UtilityReadingService {
   }
 
   async createUtilityReading(
-    payload: UtilityReadingDetail[],
+    payload: UtilityReadingDetailDTO[],
   ): Promise<boolean> {
     const query = supabase.from("room_utility_readings").insert(payload);
 
@@ -70,6 +75,27 @@ class UtilityReadingService {
     }
 
     return true;
+  }
+
+  async updateUtilityReading(
+    payload: UtilityReadingDetail[],
+  ): Promise<MutationResult> {
+    // const edited = payload.map((item) => {
+    //   item.consumption = 0;
+    //   return item;
+    // });
+    const query = supabase.from("room_utility_readings").upsert(payload);
+
+    const { error } = await query;
+
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật thành công",
+    };
   }
 }
 

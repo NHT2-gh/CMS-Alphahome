@@ -66,7 +66,7 @@ export default function RoomsTable() {
         <CMSTableHeader
           selectAll={false}
           handleSelectAll={() => {}}
-          tableHeader={_tableHeader}
+          columns={_tableHeader}
         />
         <TableBody>
           {rooms?.map((room) => (

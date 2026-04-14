@@ -56,7 +56,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     <div className="relative z-20 inline-block w-full">
       <div className="relative flex flex-col items-center">
         <div onClick={toggleDropdown} className="w-full">
-          <div className="mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
+          <div className="mb-2 flex h-11 overflow-auto rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
             <div className="flex flex-wrap flex-auto gap-2">
               {selectedValuesText.length > 0 ? (
                 selectedValuesText.map((text, index) => (
@@ -133,11 +133,16 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             <div className="flex flex-col max-h-[200px]">
               <div
                 className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800`}
-                onClick={() => handleSelect("all")}
+                onClick={() => {
+                  setSelectedOptions(options.map((option) => option.value));
+                  handleOnChange?.(options.map((option) => option.value));
+                }}
               >
                 <div
                   className={`relative flex w-full items-center p-2 pl-2 ${
-                    selectedOptions.includes("all") ? "bg-primary/10" : ""
+                    selectedOptions.length === options.length
+                      ? "bg-primary/10"
+                      : ""
                   }`}
                 >
                   <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">

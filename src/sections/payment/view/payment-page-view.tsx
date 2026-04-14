@@ -5,7 +5,7 @@ import PaymentsListTable from "../components/payments-table";
 export default function PaymentPageView() {
   return (
     <section>
-      {/* <InvoiceMetrics /> */}
+      <InvoiceMetrics />
       <PaymentsListTable />
     </section>
   );

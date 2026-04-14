@@ -66,6 +66,20 @@ class TransactionService {
 
     return data || [];
   }
+
+  async deleteTransaction(id: string): Promise<MutationResult> {
+    const query = supabase.from(this.tableName).delete().eq("id", id);
+
+    const { error } = await query;
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    return {
+      success: true,
+      message: "Thành công xóa giao dịch",
+    };
+  }
 }
 
 export const transactionService = new TransactionService();

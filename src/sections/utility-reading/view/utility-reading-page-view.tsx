@@ -25,7 +25,7 @@ export default function UtilityReadingPageView() {
         <ModalCreatReading />
       </div>
 
-      {utilityReading &&
+      {utilityReading && utilityReading.size > 0 ? (
         Array.from(utilityReading.entries()).map(([year, yearData]) => (
           <div
             key={year}
@@ -74,6 +74,7 @@ export default function UtilityReadingPageView() {
                           : Number(reading.total_consumption)),
                       0,
                     );
+
                   const electricityReading = monthData.utility_readings
                     .filter((item) => item.utility_type === "electricity")
                     .reduce(
@@ -103,7 +104,10 @@ export default function UtilityReadingPageView() {
               </div>
             </div>
           </div>
-        ))}
+        ))
+      ) : (
+        <span>Không có dữ liệu</span>
+      )}
 
       {dateSelected && (
         <Modal

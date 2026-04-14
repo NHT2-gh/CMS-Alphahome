@@ -10,7 +10,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { Checkbox } from "@/components/_cms/ui/input";
 import { useAllBills } from "@/hooks/queries/use-bill";
 import { useBuilding } from "@/context/BuildingContext";
-import { Pagination } from "@/components/_cms/common/table";
+import { Pagination } from "@/components/_cms/components/pagination";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
@@ -18,6 +18,7 @@ import { _filterConfigs, _filterValues } from "@/_mocks/_filter/_fiter_box";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { BillFilterSchema } from "@/schemas/render-filter-schemas/bill-filter.schema";
+import TableNotFound from "@/components/_cms/common/table/state/not_found";
 
 const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   {
@@ -57,14 +58,14 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
 
 export default function PaymentsListTable() {
   const { building } = useBuilding();
-  const { isOpen, openModal, closeModal } = useModal();
   const [limit] = useState<number>(10);
-  const [currentBill, setCurrentBill] = useState<Bill | null>(null);
+  const { isOpen, openModal, closeModal } = useModal();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentBill, setCurrentBill] = useState<Bill | null>(null);
   const { filterValues, updateFilter, applyFilters, removeFilter } = useFilter({
     filterConfigs: BillFilterSchema,
   });
-  const { data: bills } = useAllBills({
+  const { data: bills, isLoading } = useAllBills({
     buildingId: building ? building.id : "",
     pagination: {
       page: currentPage,
@@ -116,21 +117,6 @@ export default function PaymentsListTable() {
                 handleOnChange={(textSearch) => handleSearch(textSearch)}
                 debounceTime={500}
               />
-
-              {/* <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-                <Upload className="size-4" />
-                Export
-              </button> */}
-
-              {/* {isOpenFilter && (
-                <FilterBoxRender
-                  className="p-2 absolute top-12 left-2"
-                  filterConfigs={BillFilterSchema}
-                  filterValues={filterValues}
-                  handleFilterChange={updateFilter}
-                  handleClearAllFilters={clearFilters}
-                />
-              )} */}
             </div>
           </div>
         </div>
@@ -147,7 +133,21 @@ export default function PaymentsListTable() {
               }
             }}
           />
-          <TableBody>
+          <TableBody className="!min-h-[42.5rem]">
+            {bills?.data.length === 0 ||
+              (isLoading && (
+                <TableRow>
+                  <TableCell className="w-full" colSpan={_tableHeader.length}>
+                    <TableNotFound
+                      message={
+                        isLoading
+                          ? "Đang tải dữ liệu..."
+                          : "Hiện tại không có hoá đơn nào tồn tại"
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             {bills?.data.map((bill) => (
               <TableRow key={bill.id}>
                 <TableCell>
@@ -213,6 +213,21 @@ export default function PaymentsListTable() {
                 </TableCell>
               </TableRow>
             ))}
+
+            {selectedBills.length > 0 && (
+              <TableRow>
+                <TableCell colSpan={_tableHeader.length + 1}>
+                  <div className="flex items-center justify-between">
+                    <p>Đã chọn {selectedBills.length}</p>
+                    <div>
+                      <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                        Delete {selectedBills.length} hoá đơn
+                      </button>
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
 

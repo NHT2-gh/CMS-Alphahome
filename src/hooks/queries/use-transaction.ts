@@ -31,3 +31,17 @@ export function useBuildingRevenueCombined(buildingId: string) {
     enabled: !!buildingId,
   });
 }
+
+export function useDeleteTransaction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: queryKeys.transactions.delete(),
+    mutationFn: (payload: { id: string; buildingId: string }) =>
+      transactionService.deleteTransaction(payload.id),
+    onSuccess: (_, payload) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.transactions.allByBuildingId(payload.buildingId),
+      });
+    },
+  });
+}

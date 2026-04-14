@@ -9,7 +9,10 @@ import {
 } from "@/types/bill";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { useBillServicesDetail } from "@/hooks/queries/use-bill";
+import {
+  useAddServiceToBill,
+  useBillServicesDetail,
+} from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
 import { FormField } from "@/components/_cms/components/form";
 import { useForm, useWatch } from "react-hook-form";
@@ -19,7 +22,7 @@ import {
 } from "@/schemas/validation/admin.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/ui/button/Button";
-import { InfoIcon, Trash } from "lucide-react";
+import { InfoIcon, Loader2, Trash } from "lucide-react";
 import { useBuildingServices } from "@/hooks/queries/use-building";
 import {
   useAllServiceExtra,
@@ -63,25 +66,26 @@ export default function BillDetailTable({
   baseRent: number;
   isPreview?: boolean;
 }) {
-  const { data: billServicesDetail } = useBillServicesDetail(bill.id);
+  const { data: billServicesDetail, isLoading: isLoadingBillServicesDetail } =
+    useBillServicesDetail(bill.id);
   const { data: roomServiceExtra } = useGetRoomServiceExtra(bill.room_id);
-  const [billServices, setBillServices] = useState<
-    BillServiceDetail[] | undefined
-  >(undefined);
-  const [roomServiceExtras, setRoomServiceExtras] = useState<
-    RoomServiceExtra[] | undefined
-  >(undefined);
   const { data: servicesExtra } = useAllServiceExtra();
-
+  const createBillServiceDetail = useAddServiceToBill();
   const addServiceForm = useForm<AddBillServiceDetaiFormType>({
     resolver: zodResolver(addBillServiceDetaiFormSchema),
     defaultValues: {
       service_id: "",
       quantity: 0,
       calculation_method: "",
-      unit_price: "",
+      unit_price: 0,
     },
   });
+  const [billServices, setBillServices] = useState<
+    BillServiceDetail[] | undefined
+  >(undefined);
+  const [roomServiceExtras, setRoomServiceExtras] = useState<
+    RoomServiceExtra[] | undefined
+  >(undefined);
   const service_id = useWatch({
     control: addServiceForm.control,
     name: "service_id",
@@ -123,25 +127,20 @@ export default function BillDetailTable({
   };
 
   const onSubmit = (data: AddBillServiceDetaiFormType): void => {
-    console.log(data);
-    // e.preventDefault();
-    // if (form.name && form.price > 0) {
-    //   const total = (
-    //     form.price *
-    //     form.quantity *
-    //     (1 - form.discount / 100)
-    //   ).toFixed(2);
-    //   setSevices((prev) => [...prev, { ...form, total }]);
-    //   setForm({
-    //     name: "",
-    //     price: 0,
-    //     quantity: 1,
-    //     discount: 0,
-    //   });
-    // }
+    try {
+      const result = createBillServiceDetail.mutateAsync({
+        bill_id: bill.id,
+        service_id: data.service_id,
+        quantity: data.quantity,
+        unit_price: data.unit_price,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
+    console.log(billServicesDetail);
     setBillServices(billServicesDetail);
   }, [billServicesDetail]);
 
@@ -177,25 +176,43 @@ export default function BillDetailTable({
                   <TableCell>{formatCurrency(baseRent)}</TableCell>
                   <TableCell>{formatCurrency(baseRent)}</TableCell>
                 </TableRow>
-                {billServices?.map((service, idx) => (
-                  <TableRow key={service.id}>
-                    <TableCell>{idx + 2}</TableCell>
-                    <TableCell>{service.services.service_name}</TableCell>
-                    <TableCell>
-                      {
-                        CalculationMethod[
-                          service.services
-                            .calculation_method as unknown as keyof typeof CalculationMethod
-                        ]
-                      }
-                    </TableCell>
-                    <TableCell>{service.quantity}</TableCell>
-                    <TableCell>{formatCurrency(service.unit_price)}</TableCell>
-                    <TableCell>
-                      {formatCurrency(service.total_amount)}
+                {isLoadingBillServicesDetail ? (
+                  <TableRow>
+                    <TableCell className="w-full">
+                      <Loader2 className="animate-spin" /> Đang tải...
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  billServices?.map((service, idx) => (
+                    <TableRow key={service.id}>
+                      <TableCell>{idx + 2}</TableCell>
+                      <TableCell>{service.services.service_name}</TableCell>
+                      <TableCell>
+                        {service.services.unit ||
+                          CalculationMethod[
+                            service.services
+                              .calculation_method as unknown as keyof typeof CalculationMethod
+                          ]}
+                      </TableCell>
+                      <TableCell>{service.quantity}</TableCell>
+                      <TableCell>
+                        {formatCurrency(service.unit_price)}
+                      </TableCell>
+                      <TableCell>
+                        {formatCurrency(service.total_amount)}
+                      </TableCell>
+
+                      {!isPreview &&
+                        service.services.service_type === "extra" && (
+                          <TableCell className="max-w-[20px] !pl-2">
+                            <button onClick={() => handleDelete(idx)}>
+                              <Trash className="size-4 text-red-400" />
+                            </button>
+                          </TableCell>
+                        )}
+                    </TableRow>
+                  ))
+                )}
 
                 {roomServiceExtras?.map((item, idx) => (
                   <TableRow key={item.id}>
@@ -215,14 +232,14 @@ export default function BillDetailTable({
                     <TableCell>
                       {formatCurrency(item.unit_price * item.quantity)}
                     </TableCell>
-
+                    {/* 
                     {!isPreview && (
                       <TableCell className="max-w-[20px] !pl-2">
                         <button onClick={() => handleDelete(idx)}>
                           <Trash className="size-4 text-red-400" />
                         </button>
                       </TableCell>
-                    )}
+                    )} */}
                   </TableRow>
                 ))}
               </TableBody>
@@ -271,6 +288,7 @@ export default function BillDetailTable({
                   type: "number",
                   placeholder: "Nhập đơn giá",
                   label: "Đơn giá",
+                  formatCurrency: true,
                 }}
               />
 
@@ -295,15 +313,24 @@ export default function BillDetailTable({
                   className: "w-full lg:col-span-2",
                   readOnly: true,
                   value: quantity * Number(unit_price),
+                  formatCurrency: true,
                 }}
               />
 
-              <Button type="submit" className="h-fit lg:col-span-2">
-                Thêm dịch vụ
+              <Button
+                disabled={isLoading || isLoadingBillServicesDetail}
+                type="submit"
+                className="h-fit lg:col-span-2"
+              >
+                {isLoading || isLoadingBillServicesDetail ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Thêm dịch vụ"
+                )}
               </Button>
             </div>
           </form>
-          <div className="flex items-start gap-2 mt-5">
+          <div className="flex items-start gap-2 mt-10">
             <InfoIcon className="text-gray-500 dark:text-gray-400 size-5" />
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Sau khi điền thông tin dịch vụ, nhấn Enter/Return hoặc nhấp vào

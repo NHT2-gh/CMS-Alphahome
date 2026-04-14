@@ -1,4 +1,3 @@
-import { MainContainer } from "@/components/_cms/common";
 import { Contract } from "@/types/contract";
 import { Room, RoomRentHistory } from "@/types/room";
 import React from "react";
@@ -6,6 +5,7 @@ import {
   ViewDetailRoomInfo,
   ViewContract,
 } from "../components/view-edit-detail";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 
 interface RoomDetailPageViewProps {
   room: Room;

@@ -14,6 +14,8 @@ import {
   ResponseStandard,
   ResponseWithStatics,
 } from "@/types/common";
+import { formatDate, formatDateTime } from "@/utils/format-data";
+import { generateBillCode } from "@/utils/random-bill-code";
 
 class BillService {
   page: number;
@@ -115,6 +117,8 @@ class BillService {
         *, 
         services!inner (
           service_name,
+          service_type,
+          unit,
           calculation_method
         )`,
       )
@@ -130,20 +134,16 @@ class BillService {
   }
 
   async createMultipleBills(
-    trackingCode: string,
     month_date: string,
     room_id: string[],
   ): Promise<{ results: CreateMonthlyBillsResponse[] }> {
     const { data: response, error } = await supabase.rpc(
-      "create_multiple_room_monthly_bills",
+      "create_multiple_room_monthly_bills_v2",
       {
-        p_tracking_code: trackingCode,
         p_month_date: month_date,
         p_room_ids: room_id,
       },
     );
-
-    // const response = adaptMonthlyBillsResponse(data);
 
     if (error) {
       handlePostgresError(error);
@@ -177,7 +177,10 @@ class BillService {
   ): Promise<MutationResult> {
     const { error } = await supabase
       .from("room_monthly_bills")
-      .update({ bill_status: status })
+      .update({
+        bill_status: status,
+        updated_at: new Date().toISOString(),
+      })
       .eq("tracking_code", tracking_code);
 
     if (error) {
@@ -187,6 +190,30 @@ class BillService {
     return {
       success: true,
       message: "Cập nhật trạng thái hoá đơn thành công",
+    };
+  }
+
+  async addServiceToBill(
+    bill_id: string,
+    service_id: string,
+    quantity: number,
+    unit_price: number,
+  ): Promise<MutationResult> {
+    const { error } = await supabase.from("bill_service_details").insert({
+      bill_id,
+      service_id,
+      quantity,
+      unit_price,
+      total_amount: quantity * unit_price,
+    });
+
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return {
+      success: true,
+      message: "Thêm dịch vụ vào hoá đơn thành công",
     };
   }
 }

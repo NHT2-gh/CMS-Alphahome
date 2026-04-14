@@ -1,7 +1,7 @@
-import { MainContainer } from "@/components/_cms/common";
 import React from "react";
 import { CreateRoomForm } from "../components/create-room";
 import { APP_ROUTES } from "@/config/app-routes";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 
 interface Props {
   buildingCode: string;

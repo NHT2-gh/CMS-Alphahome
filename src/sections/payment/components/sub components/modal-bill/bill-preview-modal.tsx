@@ -154,7 +154,9 @@ export default function BillPreviewModal({
 
                 <h4>
                   Cú pháp nội dung chuyển khoản: <br />
-                  <b className="text-red-400">`[{building?.code}_Số phòng]`</b>
+                  <b className="text-red-400">
+                    `[{building?.code}_{bill.tracking_code}]`
+                  </b>
                 </h4>
               </div>
             </div>

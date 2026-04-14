@@ -1,16 +1,24 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Upload } from "lucide-react";
+import { Trash, Upload } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { formatCurrency } from "@/utils/format-data";
 import { useBuilding } from "@/context/BuildingContext";
 import { SearchBar } from "@/components/_cms/components/search-bar";
-import { useAllTransactions } from "@/hooks/queries/use-transaction";
+import {
+  useAllTransactions,
+  useDeleteTransaction,
+} from "@/hooks/queries/use-transaction";
 import { PaymentMethod, TransactionType } from "@/types/transcription";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
+import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
+import { useModal } from "@/hooks/useModal";
+import { showToast } from "@/lib/toast";
+import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { mapErrorToMessage } from "@/lib/error/app-error";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "id", title: "Mã giao dịch" },
@@ -24,9 +32,35 @@ const _tableHeader: { key: string; title: string }[] = [
 
 export default function RevenueExpenditureTable() {
   const { building } = useBuilding();
-  const { data: transcriptions } = useAllTransactions(building?.id as string);
+  const { data: transcriptions, isLoading } = useAllTransactions(
+    building?.id as string,
+  );
+  const deleteTransaction = useDeleteTransaction();
   const [filter, setFilterStatus] = useState<TransactionType | "all">("all");
   const [search, setSearch] = useState<string | null>(null);
+  const { isOpen, openModal, closeModal } = useModal();
+  const [transactionSelected, setTransactionSelected] = useState<string | null>(
+    null,
+  );
+
+  const handleDeleteTransaction = useCallback(async (id: string) => {
+    try {
+      const result = await deleteTransaction.mutateAsync({
+        id,
+        buildingId: building?.id as string,
+      });
+      if (result.success) {
+        closeModal();
+        showToast.success({ title: "Xoá thành công" });
+      }
+    } catch (error) {
+      closeModal();
+      showToast.success({
+        title: "Xoá thất bại",
+        description: mapErrorToMessage(error),
+      });
+    }
+  }, []);
   const handleSearch = useCallback((value: string) => {
     if (value.trim() === "") {
       setSearch(null);
@@ -75,6 +109,19 @@ export default function RevenueExpenditureTable() {
       <Table className="w-full">
         <CMSTableHeader columns={_tableHeader} />
         <TableBody>
+          {isLoading && (
+            <TableRow>
+              <TableCell className="w-full" colSpan={_tableHeader.length}>
+                <TableNotFound
+                  message={
+                    isLoading
+                      ? "Đang tải dữ liệu..."
+                      : "Hiện tại không có thu chi nào được ghi nhận"
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          )}
           {transcriptions?.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="uppercase">
@@ -109,10 +156,35 @@ export default function RevenueExpenditureTable() {
                   }
                 </Badge>
               </TableCell>
+
+              <TableCell>
+                <Trash
+                  className="size-4 cursor-pointer text-red-500"
+                  onClick={() => {
+                    setTransactionSelected(item.id);
+                    openModal();
+                  }}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <ModalAlert
+        isOpen={isOpen}
+        onClose={closeModal}
+        onConfirm={() => {
+          handleDeleteTransaction(transactionSelected as string);
+        }}
+        onCancel={() => {
+          closeModal();
+        }}
+        title="Xóa giao dịch"
+        description="Bạn có chắc chắn muốn xóa giao dịch này?"
+        type="danger"
+        confirmText="Xác nhận xóa"
+        cancelText="Hủy"
+      />
     </div>
   );
 }

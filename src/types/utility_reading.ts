@@ -31,6 +31,7 @@ export interface BuildingService {
 }
 
 export interface UtilityReadingDetail {
+  id: string;
   type: UtilityReadingType;
   previous_reading: number | null;
   current_reading: number | null;
@@ -40,4 +41,14 @@ export interface UtilityReadingDetail {
   building_service_id: string;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface UtilityReadingDetailDTO {
+  type: UtilityReadingType;
+  previous_reading: number | null;
+  current_reading: number | null;
+  consumption: number | null;
+  room_id: string;
+  month_date: string;
+  building_service_id: string;
 }

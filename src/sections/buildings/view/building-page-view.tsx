@@ -1,6 +1,6 @@
-import { MainContainer } from "@/components/_cms/common";
 import React from "react";
 import DataTable from "../components/data-table";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 
 export default async function BuildingPageView() {
   return (
