@@ -1,3 +1,6 @@
+import { Profile } from "./profile";
+import { BuildingService } from "./utility_reading";
+
 export interface Building {
   id: string;
   code: string;
@@ -9,4 +12,19 @@ export interface Building {
   total_rooms: number;
   number_available_rooms: number;
   is_active: boolean;
+}
+
+export interface UserBuilding {
+  id: string;
+  building_id: string;
+  created_at: string;
+  created_by: string;
+  profiles: Profile;
+  buildings: Building;
+}
+
+export interface BuildingSetting {
+  info: Building;
+  services: BuildingService[];
+  users: UserBuilding[];
 }

@@ -60,6 +60,51 @@ export const createTransactionSchema = z
     }
   });
 
+export const upsertBuildingServiceSchema = z.object({
+  id: z.string().min(1, "Building service ID is required"),
+  service_id: z.string().min(1, "Service ID is required"),
+  unit_price: z.number().min(1, "Unit price is required"),
+  service_name: z.string().optional(),
+  calculation_method: z.string().optional(),
+  updated_at: z.string().optional(),
+  updated_by: z.string().optional(),
+});
+
+export const updatetBuildingInfoSchema = z.object({
+  code: z.string().min(1, "Code is required"),
+  address: z.string().min(1, "Address is required"),
+  is_active: z.boolean().optional(),
+  price_rent: z.number().min(1, "Price rent is required"),
+  price_deposit: z.number().min(1, "Price deposit is required"),
+  start_date: z.string().min(1, "Start date is required"),
+  end_date: z.string().min(1, "End date is required"),
+});
+
+export const upsertUsersBuildingSchema = z.object({
+  user_id: z.string().min(1, "User ID is required"),
+  full_name: z.string().min(1, "Full name is required").optional(),
+  phone: z.string().min(1, "Phone is required").optional(),
+  email: z.string().min(1, "Email is required").optional(),
+});
+
+export const updateBuildingSettingSchema = z.object({
+  info: updatetBuildingInfoSchema,
+  services: z.array(upsertBuildingServiceSchema).optional(),
+  users: z.array(upsertUsersBuildingSchema).optional(),
+});
+
+export type UpdateBuildingSettingType = z.infer<
+  typeof updateBuildingSettingSchema
+>;
+
+export type UpdateBuildingInfoType = z.infer<typeof updatetBuildingInfoSchema>;
+
+export type UpsertBuildingServiceType = z.infer<
+  typeof upsertBuildingServiceSchema
+>;
+
+export type UpsertUsersBuildingType = z.infer<typeof upsertUsersBuildingSchema>;
+
 export type CreateTransactionType = z.infer<typeof createTransactionSchema>;
 
 export type UpdateRoomInfoType = z.infer<typeof updateRoomInfoSchema>;

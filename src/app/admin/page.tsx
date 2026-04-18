@@ -1,4 +1,4 @@
-import { MainContainer } from "@/components/_cms/common";
+import { MainContainer } from "@/components/_cms/common/page-layout";
 import type { Metadata } from "next";
 import React from "react";
 

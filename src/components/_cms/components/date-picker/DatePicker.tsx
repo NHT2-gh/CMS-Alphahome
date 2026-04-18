@@ -12,7 +12,6 @@ export type PropsType = {
   mode?: "single" | "multiple" | "range" | "time";
   handleOnChange?: Hook | Hook[];
   defaultDate?: DateOption;
-  defaultValue: string;
   placeholder?: string;
   disabled?: boolean;
 };
@@ -21,7 +20,6 @@ export default function DatePicker({
   id,
   mode,
   handleOnChange,
-  defaultValue,
   defaultDate,
   placeholder,
   disabled,
@@ -44,11 +42,10 @@ export default function DatePicker({
   }, [mode, handleOnChange, id, defaultDate]);
 
   return (
-    <div className="relative">
+    <div className="relative z-30">
       <input
         id={id}
         placeholder={placeholder}
-        defaultValue={defaultValue}
         disabled={disabled}
         className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30  bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700  dark:focus:border-brand-800"
       />

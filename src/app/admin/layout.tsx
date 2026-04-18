@@ -1,12 +1,11 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
+import React from "react";
+import Backdrop from "@/layout/Backdrop";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
-import React from "react";
-import { usePathname } from "next/navigation";
-import { _cmsSidebar } from "@/_mocks";
+import { useSidebar } from "@/context/SidebarContext";
+import { NavigationConfig } from "@/layout/navigation-config";
 
 export default function AdminLayout({
   children,
@@ -14,7 +13,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-
   // Dynamic class for main content margin based on sidebar state
   const mainContentMargin = isMobileOpen
     ? "ml-0"
@@ -31,7 +29,7 @@ export default function AdminLayout({
           basePathLogo: "/images/logo/logo",
           typeImage: "svg",
         }}
-        navContent={_cmsSidebar}
+        navContent={NavigationConfig}
       />
       <Backdrop />
       {/* Main Content Area */}

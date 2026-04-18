@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
 import FilterItemLayout from "./filter-item-layout";
-import { InputRangeFilter, ButtonsToggleFilter, CheckboxsFilter } from ".";
+import {
+  InputRangeFilter,
+  ButtonsToggleFilter,
+  CheckboxsFilter,
+  DateRangeFilter,
+} from ".";
 import { FilterItemConfig, FilterValue } from "../type";
 // ----------------------------------------------------------------------
 
@@ -41,6 +46,14 @@ export default function FilterItemRender({
       case "input-range":
         return (
           <InputRangeFilter
+            config={config}
+            onChange={onChange}
+            value={value as string[]}
+          />
+        );
+      case "date-range":
+        return (
+          <DateRangeFilter
             config={config}
             onChange={onChange}
             value={value as string[]}

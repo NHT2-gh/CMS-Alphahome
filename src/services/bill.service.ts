@@ -14,8 +14,6 @@ import {
   ResponseStandard,
   ResponseWithStatics,
 } from "@/types/common";
-import { formatDate, formatDateTime } from "@/utils/format-data";
-import { generateBillCode } from "@/utils/random-bill-code";
 
 class BillService {
   page: number;
@@ -55,6 +53,8 @@ class BillService {
 
         if (key === "tracking_code") {
           query.ilike(key, `%${value}%`);
+        } else if (Array.isArray(value) && key === "month_date") {
+          query.gte(key, value[0]).lte(key, value[1]);
         } else {
           query.eq(key, value);
         }
@@ -165,6 +165,7 @@ class BillService {
         p_return_full: true,
       },
     );
+
     if (error) {
       handlePostgresError(error);
     }
@@ -175,16 +176,23 @@ class BillService {
     tracking_code: string,
     status: BillStatus,
   ): Promise<MutationResult> {
-    const { error } = await supabase
+    const query = supabase
       .from("room_monthly_bills")
       .update({
         bill_status: status,
         updated_at: new Date().toISOString(),
       })
-      .eq("tracking_code", tracking_code);
+      .eq("tracking_code", String(tracking_code.trim()))
+      .select();
+    const { data, error } = await query;
 
-    if (error) {
-      handlePostgresError(error);
+    if (error || data.length === 0) {
+      if (error) handlePostgresError(error);
+      else
+        return {
+          success: false,
+          message: "Lỗi hệ thống",
+        };
     }
 
     return {

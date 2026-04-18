@@ -28,6 +28,8 @@ export interface BuildingService {
   services: Service;
   building_id: string;
   unit_price: number;
+  updated_at: string;
+  updated_by: string;
 }
 
 export interface UtilityReadingDetail {

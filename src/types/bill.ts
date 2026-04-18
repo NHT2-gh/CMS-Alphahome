@@ -2,7 +2,6 @@ export enum BillStatus {
   draft = "Bản nháp",
   confirmed = "Đã xác nhận",
   paid = "Đã thanh toán",
-  overdue = "Quá hạn",
   unpaid = "Không thanh toán",
 }
 

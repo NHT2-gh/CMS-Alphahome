@@ -55,12 +55,12 @@ export default function MainLayoutBuildingDetail({
   const { building } = useBuilding();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState<TabData["id"]>(
-    pathname.split("/")[3] || "overview",
+    pathname.split("/")[5] || "overview",
   );
 
   useEffect(() => {
     if (!building) {
-      router.push(APP_ROUTES.ADMIN.BUILDINGS.BASE);
+      router.push(APP_ROUTES.ADMIN.BUILDINGS.BASE());
       return;
     }
   }, [building]);
@@ -69,7 +69,7 @@ export default function MainLayoutBuildingDetail({
       id: "overview",
       label: "Thống kê",
       icon: <ChartBar />,
-      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.BASE(building?.code || ""),
+      appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(building?.code || ""),
     },
     {
       id: "rooms",
@@ -91,14 +91,7 @@ export default function MainLayoutBuildingDetail({
       icon: <CreditCard />,
       appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.PAYMENT(building?.code || ""),
     },
-    // {
-    //   id: "contracts",
-    //   label: "Hợp đồng",
-    //   icon: <FileText />,
-    //   appRoute: APP_ROUTES.ADMIN.BUILDINGS.ID.CONTRACTS.BASE(
-    //     building?.code || "",
-    //   ),
-    // },
+
     {
       id: "revenue-expenditure",
       label: "Ghi nhận thu chi",

@@ -73,10 +73,10 @@ const TableDropdown: React.FC<DropdownProps> = ({
       <div className="z-10" ref={contentRef}>
         <div
           style={{ display: isOpen ? "block" : "none" }}
-          className="p-2 bg-white border border-gray-200 rounded-2xl shadow-lg dark:border-gray-800 dark:bg-gray-900 w-40"
+          className="p-2 bg-white border border-gray-200 rounded-2xl shadow-lg dark:border-gray-800 dark:bg-gray-900 w-44"
         >
           <div
-            className="space-y-3 px-3 py-2 "
+            className="space-y-3 px-1 py-2 "
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="options-menu"

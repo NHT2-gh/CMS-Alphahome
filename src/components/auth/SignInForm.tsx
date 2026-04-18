@@ -15,10 +15,11 @@ import Checkbox from "@/components/form/input/Checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
+import { DEFAULT_LOGIN_REDIRECT } from "@/config/auth-routes";
+import { signInWithEmail } from "@/lib/server-action/auth.action";
 
 export default function SignInForm() {
   const [isChecked, setIsChecked] = useState(false);
-  const { SignInWithEmail } = useAuth();
   const router = useRouter();
 
   const form = useForm<SignInDataType>({
@@ -34,14 +35,13 @@ export default function SignInForm() {
 
   const onSubmit = async (data: SignInDataType) => {
     try {
-      const result = await SignInWithEmail(data.email, data.password);
-
+      const result = await signInWithEmail(data.email, data.password);
       if (result) {
         showToast.success({
           title: "Đăng nhập thành công",
           description: "Chào mừng bạn quay trở lại!",
         });
-        router.push(APP_ROUTES.ADMIN.DASHBOARD);
+        router.push(DEFAULT_LOGIN_REDIRECT);
       }
     } catch (error: any) {
       if (error.message === "Invalid login credentials") {
@@ -152,21 +152,27 @@ export default function SignInForm() {
                   <div className="flex items-center gap-3">
                     <Checkbox checked={isChecked} onChange={setIsChecked} />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
-                      Keep me logged in
+                      Ghi nhớ đăng nhập
                     </span>
                   </div>
                   <Link
                     href="/reset-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
-                    Forgot password?
+                    Quên mật khẩu?
                   </Link>
                 </div>
-                <div>
-                  <Button type="submit" className="w-full" size="sm">
-                    Sign in
-                  </Button>
-                </div>
+
+                <Button type="submit" className="w-full" size="sm">
+                  Đăng nhập
+                </Button>
+
+                <Link
+                  href={APP_ROUTES.AUTH.SIGN_UP}
+                  className="block text-sm text-center text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                >
+                  Không có tài khoản? Đăng ký
+                </Link>
               </div>
             </form>
           </div>

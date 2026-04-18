@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface ComponentCardProps {
@@ -14,9 +15,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   desc = "",
 }) => {
   return (
-    <div
-      className={`rounded-2xl relative border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 ${className}`}
-    >
+    <div className="rounded-2xl relative border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       {/* Card Header */}
       <div className="px-6 py-5">
         <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
@@ -30,8 +29,13 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
       </div>
 
       {/* Card Body */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-        <div className="space-y-6">{children}</div>
+      <div
+        className={cn(
+          "p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6",
+          className,
+        )}
+      >
+        {children}
       </div>
     </div>
   );

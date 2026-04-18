@@ -12,6 +12,8 @@ export const queryKeys = {
       id,
       "building-revenue-combined",
     ],
+
+    usersBuilding: (userId: string) => ["buildings", "users-building", userId],
   },
   rooms: {
     list: (buildingId: string) => ["rooms", buildingId],
@@ -53,7 +55,11 @@ export const queryKeys = {
   },
 
   transactions: {
-    allByBuildingId: (buildingId: string) => ["transactions", buildingId],
+    allByBuildingId: (
+      buildingId: string,
+      pagination?: Pagination,
+      filters?: Record<string, FilterValue>,
+    ) => ["transactions", buildingId, pagination, filters],
     create: () => ["create-transaction"],
     delete: () => ["delete-transaction"],
   },
@@ -69,5 +75,8 @@ export const queryKeys = {
   historyRent: {
     all: (room_id: string) => ["room-history-rent", room_id],
     create: () => ["room-history-rent", "create"],
+  },
+  profile: {
+    getProfile: (userId: string) => ["profile", userId],
   },
 };

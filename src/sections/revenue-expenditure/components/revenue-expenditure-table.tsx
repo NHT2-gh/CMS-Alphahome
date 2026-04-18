@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Trash, Upload } from "lucide-react";
+import { FilterIcon, Trash, Upload } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { formatCurrency } from "@/utils/format-data";
 import { useBuilding } from "@/context/BuildingContext";
@@ -19,6 +19,11 @@ import { useModal } from "@/hooks/useModal";
 import { showToast } from "@/lib/toast";
 import TableNotFound from "@/components/_cms/common/table/state/not_found";
 import { mapErrorToMessage } from "@/lib/error/app-error";
+import { FilterBoxRender } from "@/components/_cms/components/filter/box";
+import { useFilter } from "@/hooks/use-filter";
+import { TransactionFilterSchema } from "@/schemas/render-filter-schemas/transtion-filter.schema";
+import { Pagination } from "@/components/_cms/components/pagination";
+import Button from "@/components/ui/button/Button";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "id", title: "Mã giao dịch" },
@@ -32,12 +37,31 @@ const _tableHeader: { key: string; title: string }[] = [
 
 export default function RevenueExpenditureTable() {
   const { building } = useBuilding();
-  const { data: transcriptions, isLoading } = useAllTransactions(
-    building?.id as string,
-  );
+  const [limit] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const {
+    filterValues,
+    updateFilter,
+    applyFilters,
+    removeFilter,
+    clearFilters,
+  } = useFilter({
+    filterConfigs: TransactionFilterSchema,
+  });
+  const { data: transcriptions, isLoading } = useAllTransactions({
+    buildingId: building ? building.id : "",
+    pagination: {
+      page: currentPage,
+      limit: limit,
+    },
+    filters: filterValues,
+  });
   const deleteTransaction = useDeleteTransaction();
-  const [filter, setFilterStatus] = useState<TransactionType | "all">("all");
-  const [search, setSearch] = useState<string | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedTransactions, setSelectedTransactions] = useState<string[]>(
+    [],
+  );
+
   const { isOpen, openModal, closeModal } = useModal();
   const [transactionSelected, setTransactionSelected] = useState<string | null>(
     null,
@@ -62,14 +86,14 @@ export default function RevenueExpenditureTable() {
     }
   }, []);
   const handleSearch = useCallback((value: string) => {
-    if (value.trim() === "") {
-      setSearch(null);
-      return;
+    if (value.trim()) {
+      setCurrentPage(1);
+      updateFilter("text_search", value);
+    } else {
+      removeFilter("text_search");
     }
-
-    setSearch(value);
+    applyFilters();
   }, []);
-
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
@@ -85,44 +109,75 @@ export default function RevenueExpenditureTable() {
               value,
             }))}
             onChange={(value) => {
-              setFilterStatus(value as TransactionType);
+              updateFilter("type", value as TransactionType);
             }}
           />
-          <div className="hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center">
-            <SearchBar
-              placeholder="Tìm kiếm"
-              className="ml-auto"
-              handleOnChange={handleSearch}
-              debounceTime={500}
-            />
-            {/* <FilterDropdown
-                    showFilter={showFilter}
-                    setShowFilter={setShowFilter}
-                  /> */}
-            <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-              <Upload className="size-4" />
-              Export
-            </button>
-          </div>
+
+          <SearchBar
+            placeholder="Tìm kiếm"
+            className="ml-auto"
+            handleOnChange={handleSearch}
+            debounceTime={500}
+          />
+
+          <Button
+            variant="outline"
+            className="py-1"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+          >
+            <FilterIcon className="size-4" /> Bộ lọc
+          </Button>
+
+          <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+            <Upload className="size-4" />
+            Export
+          </button>
         </div>
       </div>
+
+      {isFilterOpen && (
+        <FilterBoxRender
+          className="m-4"
+          filterConfigs={TransactionFilterSchema}
+          handleFilterChange={updateFilter}
+          handleClearAllFilters={clearFilters}
+          filterValues={filterValues}
+        />
+      )}
       <Table className="w-full">
-        <CMSTableHeader columns={_tableHeader} />
+        <CMSTableHeader
+          selectAll={
+            selectedTransactions.length === transcriptions?.data.length &&
+            transcriptions?.data.length > 0
+          }
+          columns={_tableHeader}
+          handleSelectAll={(isSelectAll) => {
+            if (isSelectAll) {
+              setSelectedTransactions(
+                transcriptions?.data.map((item) => item.id) || [],
+              );
+            } else {
+              setSelectedTransactions([]);
+            }
+          }}
+        />
         <TableBody>
-          {isLoading && (
+          {(!transcriptions ||
+            transcriptions.data.length === 0 ||
+            isLoading) && (
             <TableRow>
               <TableCell className="w-full" colSpan={_tableHeader.length}>
                 <TableNotFound
                   message={
                     isLoading
                       ? "Đang tải dữ liệu..."
-                      : "Hiện tại không có thu chi nào được ghi nhận"
+                      : "Hiện tại không tìm thấy dữ liệu"
                   }
                 />
               </TableCell>
             </TableRow>
           )}
-          {transcriptions?.map((item) => (
+          {transcriptions?.data?.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="uppercase">
                 {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
@@ -168,8 +223,36 @@ export default function RevenueExpenditureTable() {
               </TableCell>
             </TableRow>
           ))}
+
+          {selectedTransactions.length > 0 && (
+            <TableRow>
+              <TableCell colSpan={_tableHeader.length + 1}>
+                <div className="flex items-center justify-between">
+                  <p>Đã chọn {selectedTransactions.length}</p>
+                  <div>
+                    <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                      Xoá {selectedTransactions.length} hoá đơn
+                    </button>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
+      {transcriptions && transcriptions?.data.length > limit && (
+        <Pagination
+          type="default"
+          pagination={{
+            page: currentPage,
+            limit: limit,
+            total: transcriptions.pagination.total,
+          }}
+          handlePageChange={(page) => {
+            setCurrentPage(page);
+          }}
+        />
+      )}
       <ModalAlert
         isOpen={isOpen}
         onClose={closeModal}

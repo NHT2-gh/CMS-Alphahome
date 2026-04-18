@@ -67,10 +67,12 @@ export default function FormField({
   }
   return (
     <div className={className}>
-      <Label className={`${!field.label && "h-0"} }`} htmlFor={field.id}>
-        {field.label}
-        {field.required && <span className="text-error-500">*</span>}
-      </Label>
+      {field.type !== "switch" && (
+        <Label className={`${!field.label && "h-0"} }`} htmlFor={field.id}>
+          {field.label}
+          {field.required && <span className="text-error-500">*</span>}
+        </Label>
+      )}
 
       {field.name && form ? (
         !customField.includes(field.type) ? (
@@ -121,7 +123,7 @@ export default function FormField({
                     onChange(currentDateString);
                   }
                 }}
-                onChange={onChange}
+                defaultDate={field.type === "date" && value}
                 onBlur={onBlur}
                 value={value}
                 name={name}

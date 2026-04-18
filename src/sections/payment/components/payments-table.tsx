@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Eye } from "lucide-react";
+import { Eye, FilterIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import ModalViewBill from "./modal-view-bill";
 import { useFilter } from "@/hooks/use-filter";
@@ -19,6 +19,8 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { BillFilterSchema } from "@/schemas/render-filter-schemas/bill-filter.schema";
 import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { FilterBoxRender } from "@/components/_cms/components/filter/box";
+import Button from "@/components/ui/button/Button";
 
 const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   {
@@ -62,10 +64,21 @@ export default function PaymentsListTable() {
   const { isOpen, openModal, closeModal } = useModal();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentBill, setCurrentBill] = useState<Bill | null>(null);
-  const { filterValues, updateFilter, applyFilters, removeFilter } = useFilter({
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const {
+    filterValues,
+    updateFilter,
+    applyFilters,
+    removeFilter,
+    clearFilters,
+  } = useFilter({
     filterConfigs: BillFilterSchema,
   });
-  const { data: bills, isLoading } = useAllBills({
+  const {
+    data: bills,
+    isLoading,
+    refetch,
+  } = useAllBills({
     buildingId: building ? building.id : "",
     pagination: {
       page: currentPage,
@@ -86,169 +99,191 @@ export default function PaymentsListTable() {
   }, []);
 
   return (
-    <>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Hoá đơn
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Danh sách hoá đơn
-            </p>
-          </div>
-
-          <div className="flex gap-3.5 relative">
-            <SingleFilterButtonGroup
-              items={Object.entries(BillStatus).map(([value, label]) => ({
-                label,
-                value,
-              }))}
-              onChange={(value) => {
-                setCurrentPage(1);
-                updateFilter("bill_status", value as BillStatus);
-                applyFilters();
-              }}
-            />
-            <div className="flex-col gap-3 sm:flex sm:flex-row sm:items-center">
-              <SearchBar
-                placeholder="Tìm kiếm"
-                className="ml-auto w-[18rem]"
-                handleOnChange={(textSearch) => handleSearch(textSearch)}
-                debounceTime={500}
-              />
-            </div>
-          </div>
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+      <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Hoá đơn
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Danh sách hoá đơn
+          </p>
         </div>
 
-        <Table>
-          <CMSTableHeader
-            selectAll={selectedBills.length === bills?.data.length}
-            columns={_tableHeader}
-            handleSelectAll={(isSelectAll) => {
-              if (isSelectAll) {
-                setSelectedBills(bills?.data.map((bill) => bill.id) || []);
-              } else {
-                setSelectedBills([]);
-              }
+        <div className="flex gap-3.5 relative">
+          <SingleFilterButtonGroup
+            items={Object.entries(BillStatus).map(([value, label]) => ({
+              label,
+              value,
+            }))}
+            onChange={(value) => {
+              setCurrentPage(1);
+              updateFilter("bill_status", value as BillStatus);
+              applyFilters();
             }}
           />
-          <TableBody className="!min-h-[42.5rem]">
-            {bills?.data.length === 0 ||
-              (isLoading && (
-                <TableRow>
-                  <TableCell className="w-full" colSpan={_tableHeader.length}>
-                    <TableNotFound
-                      message={
-                        isLoading
-                          ? "Đang tải dữ liệu..."
-                          : "Hiện tại không có hoá đơn nào tồn tại"
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {bills?.data.map((bill) => (
-              <TableRow key={bill.id}>
-                <TableCell>
-                  <Checkbox
-                    id={bill.id}
-                    checked={selectedBills.includes(bill.id)}
-                    onChange={() => {
-                      setSelectedBills((prev) =>
-                        prev.includes(bill.id)
-                          ? prev.filter((id) => id !== bill.id)
-                          : [...prev, bill.id],
-                      );
-                    }}
-                    label={bill.tracking_code}
-                  />
-                </TableCell>
-                <TableCell>{bill.rooms.code}</TableCell>
-                <TableCell>
-                  {new Date(bill.month_date).getMonth() + 1}
-                </TableCell>
-                <TableCell>{formatCurrency(bill.grand_total)}</TableCell>
-                <TableCell className="capitalize">
-                  <Badge
-                    variant="light"
-                    color={
-                      bill?.bill_status === ("paid" as BillStatus)
-                        ? "success"
-                        : bill?.bill_status === ("draft" as BillStatus)
-                          ? "light"
-                          : bill?.bill_status === ("overdue" as BillStatus)
-                            ? "error"
-                            : bill?.bill_status === ("unpaid" as BillStatus)
-                              ? "dark"
-                              : bill?.bill_status ===
-                                  ("confirmed" as BillStatus)
-                                ? "warning"
-                                : "info"
-                    }
-                  >
-                    {
-                      BillStatus[
-                        bill.bill_status as unknown as keyof typeof BillStatus
-                      ]
-                    }
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {formatDateTime(bill.updated_at, { withTime: true })}
-                </TableCell>
-                <TableCell>
-                  {formatDateTime(bill.created_at, { withTime: true })}
-                </TableCell>
-                <TableCell>{bill.profiles.full_name}</TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => {
-                      setCurrentBill(bill);
-                      openModal();
-                    }}
-                  >
-                    <Eye />
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
 
-            {selectedBills.length > 0 && (
-              <TableRow>
-                <TableCell colSpan={_tableHeader.length + 1}>
-                  <div className="flex items-center justify-between">
-                    <p>Đã chọn {selectedBills.length}</p>
-                    <div>
-                      <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
-                        Delete {selectedBills.length} hoá đơn
-                      </button>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
-        {currentBill && isOpen && (
-          <ModalViewBill currentBill={currentBill} closeModal={closeModal} />
-        )}
-
-        {bills && (
-          <Pagination
-            type="default"
-            pagination={{
-              page: currentPage,
-              limit: limit,
-              total: bills.pagination.total,
-            }}
-            handlePageChange={(page) => {
-              setCurrentPage(page);
-            }}
+          <SearchBar
+            placeholder="Tìm kiếm"
+            className="ml-auto w-[12rem]"
+            handleOnChange={(textSearch) => handleSearch(textSearch)}
+            debounceTime={500}
           />
-        )}
+
+          <Button
+            variant="outline"
+            className="py-1"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+          >
+            <FilterIcon className="size-4" /> Bộ lọc
+          </Button>
+
+          <Button variant="outline" className="py-1" onClick={() => refetch()}>
+            Refresh
+          </Button>
+        </div>
       </div>
-    </>
+      {isFilterOpen && (
+        <FilterBoxRender
+          className="m-4"
+          filterConfigs={BillFilterSchema}
+          handleFilterChange={updateFilter}
+          handleClearAllFilters={clearFilters}
+          filterValues={filterValues}
+        />
+      )}
+
+      <Table>
+        <CMSTableHeader
+          selectAll={
+            selectedBills.length === bills?.data.length &&
+            bills?.data.length > 0
+          }
+          columns={_tableHeader}
+          handleSelectAll={(isSelectAll) => {
+            if (isSelectAll) {
+              setSelectedBills(bills?.data.map((bill) => bill.id) || []);
+            } else {
+              setSelectedBills([]);
+            }
+          }}
+        />
+        <TableBody>
+          {(bills?.data.length === 0 || isLoading) && (
+            <TableRow className="h-[300px]">
+              <TableCell
+                className="w-full h-fit text-base"
+                colSpan={_tableHeader.length}
+              >
+                <TableNotFound
+                  message={
+                    isLoading
+                      ? "Đang tải dữ liệu..."
+                      : "Hiện tại không tìm thấy hoá đơn nào"
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          )}
+          {bills?.data.map((bill) => (
+            <TableRow key={bill.id}>
+              <TableCell>
+                <Checkbox
+                  id={bill.id}
+                  checked={selectedBills.includes(bill.id)}
+                  onChange={() => {
+                    setSelectedBills((prev) =>
+                      prev.includes(bill.id)
+                        ? prev.filter((id) => id !== bill.id)
+                        : [...prev, bill.id],
+                    );
+                  }}
+                  label={bill.tracking_code}
+                />
+              </TableCell>
+              <TableCell>{bill.rooms.code}</TableCell>
+              <TableCell className="text-center">
+                {new Date(bill.month_date).getMonth() + 1}
+              </TableCell>
+              <TableCell>{formatCurrency(bill.grand_total)}</TableCell>
+              <TableCell className="w-[10rem]">
+                <Badge
+                  variant="light"
+                  color={
+                    bill?.bill_status === ("paid" as BillStatus)
+                      ? "success"
+                      : bill?.bill_status === ("draft" as BillStatus)
+                        ? "light"
+                        : bill?.bill_status === ("overdue" as BillStatus)
+                          ? "error"
+                          : bill?.bill_status === ("unpaid" as BillStatus)
+                            ? "dark"
+                            : bill?.bill_status === ("confirmed" as BillStatus)
+                              ? "warning"
+                              : "info"
+                  }
+                >
+                  {
+                    BillStatus[
+                      bill.bill_status as unknown as keyof typeof BillStatus
+                    ]
+                  }
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {formatDateTime(bill.updated_at, { withTime: true })}
+              </TableCell>
+              <TableCell>
+                {formatDateTime(bill.created_at, { withTime: true })}
+              </TableCell>
+              <TableCell>{bill.profiles.full_name}</TableCell>
+              <TableCell>
+                <button
+                  onClick={() => {
+                    setCurrentBill(bill);
+                    openModal();
+                  }}
+                >
+                  <Eye />
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+
+          {selectedBills.length > 0 && (
+            <TableRow>
+              <TableCell colSpan={_tableHeader.length + 1}>
+                <div className="flex items-center justify-between">
+                  <p>Đã chọn {selectedBills.length}</p>
+                  <div>
+                    <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                      Xoá {selectedBills.length} hoá đơn
+                    </button>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {currentBill && isOpen && (
+        <ModalViewBill currentBill={currentBill} closeModal={closeModal} />
+      )}
+
+      {bills && bills?.data.length > 0 && (
+        <Pagination
+          type="default"
+          pagination={{
+            page: currentPage,
+            limit: limit,
+            total: bills.pagination.total,
+          }}
+          handlePageChange={(page) => {
+            setCurrentPage(page);
+          }}
+        />
+      )}
+    </div>
   );
 }

@@ -5,11 +5,11 @@ import {
   BuildingServiceParams,
 } from "@/services/building.service";
 
-export const useBuilding = (params: BuildingServiceParams) => {
+export const useBuildings = (params: BuildingServiceParams) => {
   return useQuery({
     queryKey: queryKeys.buildings.list(params),
     queryFn: () => {
-      return buildingService.getBuildings(params);
+      return buildingService.getAllBuildings(params);
     },
   });
 };
@@ -33,5 +33,17 @@ export const useBuildingServices = (
       return buildingService.getBuildingServices(id!);
     },
     ...options,
+  });
+};
+
+export const useUsersBuilding = (
+  userId: string,
+  params: BuildingServiceParams,
+) => {
+  return useQuery({
+    queryKey: queryKeys.buildings.usersBuilding(userId),
+    queryFn: () => {
+      return buildingService.getBuildingsByUserId(userId, params);
+    },
   });
 };

@@ -1,6 +1,8 @@
+import { FilterValue } from "@/components/_cms/components/filter/box/type";
 import { queryKeys } from "@/config/query-keys";
 import { CreateTransactionType } from "@/schemas/validation/admin.validation";
 import { transactionService } from "@/services/transaction.service";
+import { Pagination } from "@/types/common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useCreateTransaction() {
@@ -17,10 +19,28 @@ export function useCreateTransaction() {
   });
 }
 
-export function useAllTransactions(buildingId: string) {
+export function useAllTransactions({
+  buildingId,
+  pagination,
+  filters,
+}: {
+  buildingId: string;
+  pagination: Pagination;
+  filters: Record<string, FilterValue>;
+}) {
   return useQuery({
-    queryKey: queryKeys.transactions.allByBuildingId(buildingId),
-    queryFn: () => transactionService.getTransaction(buildingId),
+    queryKey: queryKeys.transactions.allByBuildingId(
+      buildingId,
+      pagination,
+      filters,
+    ),
+    queryFn: () =>
+      transactionService.getTransaction(
+        buildingId,
+        pagination.page,
+        pagination.limit,
+        filters,
+      ),
     enabled: !!buildingId,
   });
 }

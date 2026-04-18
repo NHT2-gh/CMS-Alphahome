@@ -12,6 +12,13 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APP_ROUTES } from "@/config/app-routes";
 import { FormField } from "../_cms/components/form";
+import {
+  signInWithEmail,
+  signUpWithEmail,
+} from "@/lib/server-action/auth.action";
+import { showToast } from "@/lib/toast";
+import { mapErrorToMessage } from "@/lib/error/app-error";
+import { profileService } from "@/services/profile.service";
 
 export default function SignUpForm() {
   const form = useForm<SignUpDataType>({
@@ -28,8 +35,28 @@ export default function SignUpForm() {
 
   const { handleSubmit } = form;
 
-  const onSubmit = (data: SignUpDataType) => {
-    console.log(data);
+  const onSubmit = async (data: SignUpDataType) => {
+    try {
+      const user = await signUpWithEmail({
+        email: data.email,
+        password: data.password,
+      });
+      if (user) {
+        try {
+          await profileService.createProfile(
+            user.id,
+            data.fname + " " + data.lname,
+          );
+          await signInWithEmail(data.email, data.password);
+        } catch (error) {
+          showToast.error({ title: mapErrorToMessage(error) });
+        }
+      } else {
+        showToast.error({ title: "Kiểm tra email của bạn" });
+      }
+    } catch (error: any) {
+      showToast.error({ title: mapErrorToMessage(error.message) });
+    }
   };
 
   return (

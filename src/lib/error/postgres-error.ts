@@ -1,9 +1,11 @@
 // src/lib/errors/postgres-error.ts
 
-import { PostgrestError } from "@supabase/supabase-js";
+import { AuthError, PostgrestError } from "@supabase/supabase-js";
 import { AppError, ErrorCode } from "./error-codes";
 
-export const handlePostgresError = (error: PostgrestError): never => {
+export const handlePostgresError = (
+  error: PostgrestError | AuthError,
+): never => {
   switch (error.code) {
     case "23505":
       throw new AppError(ErrorCode.DUPLICATE_DATA);

@@ -15,7 +15,6 @@ import { BillDetailTable } from "./sub components/modal-bill";
 import { BillPreviewModal } from "./sub components/modal-bill";
 import { Contract } from "@/types/contract";
 import { showToast } from "@/lib/toast";
-import { mapErrorToMessage } from "@/lib/error/app-error";
 
 export default function ModalViewBill({
   currentBill,
@@ -34,6 +33,8 @@ export default function ModalViewBill({
         tracking_code: currentBill.tracking_code,
         status: status,
       });
+
+      console.log(currentBill.tracking_code, result);
 
       if (result.success) {
         closeModal();
@@ -72,15 +73,20 @@ export default function ModalViewBill({
                 currentBill?.bill_status === ("paid" as BillStatus)
                   ? "success"
                   : currentBill?.bill_status === ("draft" as BillStatus)
-                    ? "warning"
+                    ? "light"
                     : currentBill?.bill_status === ("overdue" as BillStatus)
                       ? "error"
-                      : "info"
+                      : currentBill?.bill_status === ("unpaid" as BillStatus)
+                        ? "dark"
+                        : currentBill?.bill_status ===
+                            ("confirmed" as BillStatus)
+                          ? "warning"
+                          : "info"
               }
             >
               {
                 BillStatus[
-                  currentBill?.bill_status as unknown as keyof typeof BillStatus
+                  currentBill.bill_status as unknown as keyof typeof BillStatus
                 ]
               }
             </Badge>

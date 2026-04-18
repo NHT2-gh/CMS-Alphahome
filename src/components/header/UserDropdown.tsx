@@ -5,9 +5,16 @@ import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { APP_ROUTES } from "@/config/app-routes";
+import { useAuth } from "@/context/AuthContext";
+import { SystemRole } from "@/types/profile";
+import { signOut } from "@/lib/server-action/auth.action";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, profile } = useAuth();
+  const router = useRouter();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -16,6 +23,21 @@ export default function UserDropdown() {
   function closeDropdown() {
     setIsOpen(false);
   }
+
+  const handleLogout = async () => {
+    try {
+      const result = await signOut();
+
+      if (result) {
+        router.push(APP_ROUTES.AUTH.SIGN_IN);
+      }
+    } catch (error) {
+      showToast.error({
+        title: "Đăng xuất thất bại",
+        description: "Vui lòng thử lại",
+      });
+    }
+  };
   return (
     <div className="relative">
       <button
@@ -31,7 +53,9 @@ export default function UserDropdown() {
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {profile?.full_name}
+        </span>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -60,14 +84,14 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {user?.email}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {SystemRole[profile?.role as unknown as keyof typeof SystemRole]}
           </span>
         </div>
 
-        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        {/* <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
           <li>
             <DropdownItem
               onItemClick={closeDropdown}
@@ -143,11 +167,8 @@ export default function UserDropdown() {
               Support
             </DropdownItem>
           </li>
-        </ul>
-        <Link
-          href={APP_ROUTES.AUTH.SIGN_IN}
-          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
+        </ul> */}
+        <DropdownItem onItemClick={handleLogout}>
           <svg
             className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
             width="24"
@@ -164,7 +185,7 @@ export default function UserDropdown() {
             />
           </svg>
           Sign out
-        </Link>
+        </DropdownItem>
       </Dropdown>
     </div>
   );
