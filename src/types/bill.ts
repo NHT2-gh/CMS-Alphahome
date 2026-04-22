@@ -42,7 +42,7 @@ export interface Service {
   id: string;
   service_name: string;
   service_type: ServiceType;
-  calculation_method: CalculationMethod;
+  calculation_method: keyof typeof CalculationMethod;
   unit?: string;
 }
 

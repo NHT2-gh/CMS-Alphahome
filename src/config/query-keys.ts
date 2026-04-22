@@ -77,6 +77,7 @@ export const queryKeys = {
     create: () => ["room-history-rent", "create"],
   },
   profile: {
-    getProfile: (userId: string) => ["profile", userId],
+    getAll: () => ["profiles"],
+    getProfile: (userId: string) => ["profiles", userId],
   },
 };

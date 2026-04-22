@@ -1,6 +1,11 @@
 import { Profile } from "./profile";
 import { BuildingService } from "./utility_reading";
 
+export enum TenantRole {
+  owner = "Chủ sở hữu",
+  manager = "Quản lý",
+}
+
 export interface Building {
   id: string;
   code: string;
@@ -21,6 +26,12 @@ export interface UserBuilding {
   created_by: string;
   profiles: Profile;
   buildings: Building;
+  role: keyof typeof TenantRole;
+}
+
+export interface UserBuildingUpsertDTO {
+  user_id: string;
+  role: keyof typeof TenantRole;
 }
 
 export interface BuildingSetting {

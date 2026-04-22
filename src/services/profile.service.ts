@@ -10,6 +10,14 @@ class ProfileService {
     this.supabase = supabase;
   }
 
+  async getAllProfile(): Promise<Profile[]> {
+    const query = this.supabase.from(this.tableName).select("*");
+    const { data, error } = await query;
+    if (error) handlePostgresError(error);
+
+    return data;
+  }
+
   async getProfile(userId: string): Promise<Profile> {
     const { data, error } = await this.supabase
       .from(this.tableName)

@@ -33,6 +33,8 @@ export default function UpdateBuildingInfoForm() {
           type: "number",
           label: "Giá thuê",
           placeholder: "Nhập giá thuê",
+          min: 0,
+          formatCurrency: true,
         }}
       />
       <FormField
@@ -42,6 +44,7 @@ export default function UpdateBuildingInfoForm() {
           type: "number",
           label: "Giá cọc",
           placeholder: "Nhập giá cọc",
+          formatCurrency: true,
         }}
       />
       <FormField
@@ -69,7 +72,7 @@ export default function UpdateBuildingInfoForm() {
         field={{
           name: "info.is_active",
           type: "switch",
-          label: "Hoạt động",
+          label: "Đang hoạt động",
         }}
       />
     </>

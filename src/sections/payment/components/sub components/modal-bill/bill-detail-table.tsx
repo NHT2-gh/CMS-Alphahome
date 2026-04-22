@@ -23,9 +23,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/ui/button/Button";
 import { InfoIcon, Loader2, Trash } from "lucide-react";
-import { useBuildingServices } from "@/hooks/queries/use-building";
 import {
-  useAllServiceExtra,
+  useGetServices,
   useGetRoomServiceExtra,
 } from "@/hooks/queries/use-service";
 
@@ -69,7 +68,7 @@ export default function BillDetailTable({
   const { data: billServicesDetail, isLoading: isLoadingBillServicesDetail } =
     useBillServicesDetail(bill.id);
   const { data: roomServiceExtra } = useGetRoomServiceExtra(bill.room_id);
-  const { data: servicesExtra } = useAllServiceExtra();
+  const { data: servicesExtra } = useGetServices("extra");
   const createBillServiceDetail = useAddServiceToBill();
   const addServiceForm = useForm<AddBillServiceDetaiFormType>({
     resolver: zodResolver(addBillServiceDetaiFormSchema),

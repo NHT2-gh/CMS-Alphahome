@@ -93,7 +93,8 @@ export default function Input({
                 : "text-gray-500"
           }`}
         >
-          Định dạng tiền: {formatCurrencyUtil(value as number)}
+          Định dạng tiền:{" "}
+          {isNaN(value as number) ? 0 : formatCurrencyUtil(value as number)}
         </p>
       )}
     </div>

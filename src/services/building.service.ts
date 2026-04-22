@@ -1,8 +1,12 @@
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import { showToast } from "@/lib/toast";
+import {
+  UpdateBuildingInfoType,
+  UpsertUsersBuildingType,
+} from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
 import { Building, UserBuilding } from "@/types/building";
-import { BuildingService as BuildingServiceType } from "@/types/utility_reading";
+import { MutationResult } from "@/types/common";
 
 export interface BuildingFilter {
   query?: string;
@@ -63,30 +67,6 @@ class BuildingService {
     return data[0];
   }
 
-  async getBuildingServices(
-    buildingId: string,
-  ): Promise<BuildingServiceType[] | null> {
-    const query = supabase
-      .from("building_services")
-      .select(
-        `
-        *,
-        services!inner (
-          id,
-          service_name,
-          service_type,
-          calculation_method
-        )`,
-      )
-      .eq("building_id", buildingId);
-
-    const { data, error } = await query;
-
-    if (!data || error) return [];
-
-    return data;
-  }
-
   async getBuildingsByUserId(
     userId: string,
     { page, limit, searchText }: BuildingServiceParams,
@@ -131,7 +111,8 @@ class BuildingService {
           id,
           full_name,
           phone,
-          email
+          email,
+          role
         )
       `,
       )
@@ -143,6 +124,68 @@ class BuildingService {
     if (error) return handlePostgresError(error);
 
     return data;
+  }
+
+  async updateBuildingInfo(
+    buildingId: string,
+    data: UpdateBuildingInfoType,
+  ): Promise<MutationResult> {
+    const updateBuildingQuery = supabase
+      .from("buildings")
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", buildingId)
+      .select();
+
+    const { data: updatedBuilding, error } = await updateBuildingQuery;
+
+    if (!updatedBuilding) {
+      return {
+        success: false,
+        message: "Cập nhật thông tin căn hộ thất bại",
+      };
+    }
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật thông tin căn hộ thành công",
+    };
+  }
+
+  async updateBuildingUsers(
+    buildingId: string,
+    users: UpsertUsersBuildingType[],
+  ): Promise<MutationResult> {
+    const query = supabase
+      .from("users_building")
+      .upsert(
+        users.map((user) => ({
+          building_id: buildingId,
+          user_id: user.user_id,
+          role: user.role,
+        })),
+        { onConflict: "id" },
+      )
+      .select();
+
+    const { error, data } = await query;
+
+    if (!data) {
+      return {
+        success: false,
+        message: "Cập nhật thông tin người dùng thất bại",
+      };
+    }
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    return {
+      success: true,
+      message: "Cập nhật thông tin người dùng thành công",
+    };
   }
 }
 

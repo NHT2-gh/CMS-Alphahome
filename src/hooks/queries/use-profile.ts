@@ -9,3 +9,10 @@ export function useProfile(userId: string) {
     enabled: !!userId,
   });
 }
+
+export function useAllProfile() {
+  return useQuery({
+    queryKey: queryKeys.profile.getAll(),
+    queryFn: () => profileService.getAllProfile(),
+  });
+}

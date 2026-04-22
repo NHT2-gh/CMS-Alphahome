@@ -65,9 +65,11 @@ export const upsertBuildingServiceSchema = z.object({
   service_id: z.string().min(1, "Service ID is required"),
   unit_price: z.number().min(1, "Unit price is required"),
   service_name: z.string().optional(),
+  service_type: z.string().optional(),
+  unit: z.string().nullable().optional(),
   calculation_method: z.string().optional(),
   updated_at: z.string().optional(),
-  updated_by: z.string().optional(),
+  updated_by: z.string().nullable().optional(),
 });
 
 export const updatetBuildingInfoSchema = z.object({
@@ -83,8 +85,9 @@ export const updatetBuildingInfoSchema = z.object({
 export const upsertUsersBuildingSchema = z.object({
   user_id: z.string().min(1, "User ID is required"),
   full_name: z.string().min(1, "Full name is required").optional(),
-  phone: z.string().min(1, "Phone is required").optional(),
-  email: z.string().min(1, "Email is required").optional(),
+  phone: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+  role: z.string(),
 });
 
 export const updateBuildingSettingSchema = z.object({

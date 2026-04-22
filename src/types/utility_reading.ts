@@ -1,4 +1,4 @@
-import { Service } from "./bill";
+import { CalculationMethod, Service, ServiceType } from "./bill";
 
 export type UtilityReadingType = "electricity" | "water";
 
@@ -30,6 +30,15 @@ export interface BuildingService {
   unit_price: number;
   updated_at: string;
   updated_by: string;
+}
+
+export interface BuildingServiceCreateDTO {
+  id: string;
+  service_id: string;
+  service_type: ServiceType;
+  unit_price: number;
+  calculation_method: keyof typeof CalculationMethod;
+  unit?: string;
 }
 
 export interface UtilityReadingDetail {

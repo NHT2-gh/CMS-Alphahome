@@ -4,6 +4,7 @@ import {
   buildingService,
   BuildingServiceParams,
 } from "@/services/building.service";
+import { buildingServicesService } from "@/services/building-services.service";
 
 export const useBuildings = (params: BuildingServiceParams) => {
   return useQuery({
@@ -30,7 +31,7 @@ export const useBuildingServices = (
   return useQuery({
     queryKey: queryKeys.buildings.services(id!),
     queryFn: () => {
-      return buildingService.getBuildingServices(id!);
+      return buildingServicesService.getBuildingServices(id!);
     },
     ...options,
   });

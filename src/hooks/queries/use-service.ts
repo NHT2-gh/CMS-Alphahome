@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/config/query-keys";
-import { serviceExtraService } from "@/services/service_extra.service";
+import { buildingServicesService } from "@/services/building-services.service";
+import { ServiceType } from "@/types/bill";
 
-export const useAllServiceExtra = () => {
+export const useGetServices = (type?: ServiceType) => {
   return useQuery({
     queryKey: queryKeys.services.allTypeExtra(),
     queryFn: () => {
-      return serviceExtraService.getAllServiceExtra();
+      return buildingServicesService.getServices(type);
     },
   });
 };
@@ -15,7 +16,7 @@ export const useGetRoomServiceExtra = (room_id: string) => {
   return useQuery({
     queryKey: queryKeys.services.roomServiceExtra(room_id),
     queryFn: () => {
-      return serviceExtraService.getRoomServiceExtra(room_id);
+      return buildingServicesService.getRoomServiceExtra(room_id);
     },
   });
 };

@@ -8,7 +8,6 @@ import {
   UtilityReadingDetailDTO,
   YearData,
 } from "@/types/utility_reading";
-import { getNextDate, getPreviousMonth } from "@/utils/getTime";
 
 class UtilityReadingService {
   async getUtilityReadingOverview(
@@ -80,10 +79,6 @@ class UtilityReadingService {
   async updateUtilityReading(
     payload: UtilityReadingDetail[],
   ): Promise<MutationResult> {
-    // const edited = payload.map((item) => {
-    //   item.consumption = 0;
-    //   return item;
-    // });
     const query = supabase.from("room_utility_readings").upsert(payload);
 
     const { error } = await query;
