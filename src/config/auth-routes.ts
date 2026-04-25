@@ -6,13 +6,12 @@ import { SystemRole } from "@/types/profile";
 import { APP_ROUTES } from "./app-routes";
 
 export const ROUTES = {
-  public: ["/"],
   auth: ["/auth/login", "/auth/sign-up"],
   /**
    * Private route prefixes
    * Chỉ cần match prefix → không cần khai báo từng route
    */
-  privatePrefixes: ["/admin"],
+  privatePrefixes: ["/"],
   /**
    * API routes (skip middleware)
    */
@@ -34,7 +33,7 @@ export const ROUTES = {
 /**
  * Default redirects
  */
-export const DEFAULT_LOGIN_REDIRECT = "/admin";
+export const DEFAULT_LOGIN_REDIRECT = "/";
 export const DEFAULT_AUTH_REDIRECT = "/auth/login";
 
 /**
@@ -48,11 +47,8 @@ export function isExactMatch(path: string, routes: readonly string[]) {
  * Check prefix match
  */
 export function isPrefixMatch(path: string, prefixes: readonly string[]) {
+  if (isAuthRoute(path)) return false;
   return prefixes.some((prefix) => path.startsWith(prefix));
-}
-
-export function isPublicRoute(path: string) {
-  return isExactMatch(path, ROUTES.public);
 }
 
 export function isAuthRoute(path: string) {

@@ -13,38 +13,21 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
-  // Skip static & next internals
   if (pathname.startsWith("/_next") || pathname.includes(".")) {
     return response;
   }
 
-  // 🔥 VERIFY REAL USER (important)
+  const supabase = supabaseServer(request, response);
+
   const {
     data: { user },
-  } = await supabaseServer(request, response).auth.getUser();
-
-  const { data: profile } = await supabaseServer(request, response)
-    .from("profiles")
-    .select("role")
-    .eq("id", user?.id)
-    .single();
+  } = await supabase.auth.getUser();
 
   const isAuthenticated = !!user;
 
   // ✅ Logged in → block auth pages
-  if (isAuthenticated) {
-    if (isAuthRoute(pathname))
-      return NextResponse.redirect(
-        new URL(DEFAULT_LOGIN_REDIRECT, request.url),
-      );
-
-    // if (profile) {
-    //   if (!hasPermission(profile.role, pathname)) {
-    //     return NextResponse.redirect(
-    //       new URL(DEFAULT_LOGIN_REDIRECT, request.url),
-    //     );
-    //   }
-    // }
+  if (isAuthenticated && isAuthRoute(pathname)) {
+    return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, request.url));
   }
 
   // ❌ Not logged in → block private pages
@@ -55,5 +38,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // ✅ Không redirect bừa nữa
   return response;
 }

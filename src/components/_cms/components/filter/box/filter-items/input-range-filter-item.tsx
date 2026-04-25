@@ -83,12 +83,12 @@ export default function InputRangeFilterItem({
 
   return (
     <div className="space-y-3">
-      {config.options.length > 0 && (
+      {"options" in config && config.options && config.options.length > 0 && (
         <FilterItemRender
           config={{
             subLabel: "Chọn nhanh",
             type: "checkbox",
-            options: "options" in config ? config.options : [],
+            options: config.options,
             key: config.key,
           }}
           onChange={handleSelectChange}

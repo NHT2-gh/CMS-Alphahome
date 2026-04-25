@@ -1,11 +1,10 @@
 import React from "react";
-import { InvoiceMetrics } from "../components";
-import PaymentsListTable from "../components/payments-table";
+import { BillMetrics, PaymentsListTable } from "../components";
 
 export default function PaymentPageView() {
   return (
     <section>
-      <InvoiceMetrics />
+      <BillMetrics />
       <PaymentsListTable />
     </section>
   );

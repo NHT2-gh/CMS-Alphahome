@@ -16,6 +16,7 @@ import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import TableDropdown from "@/components/common/TableDropdown";
 import { NotFound } from "@/components/_cms/common/table/state";
 import { useAuth } from "@/context/AuthContext";
+import useAllRooms from "@/hooks/queries/use-room";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "code", title: "Mã căn hộ" },
@@ -32,9 +33,10 @@ export default function DataTable() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const router = useRouter();
   const { user } = useAuth();
-  const { isLoading, data } = useUsersBuilding(user?.id!, {
+  const { isLoading, data: buildings } = useBuildings({
     searchText,
   });
+
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -113,7 +115,7 @@ export default function DataTable() {
           columns={_tableHeader}
         />
         <TableBody>
-          {isLoading || data?.length === 0 ? (
+          {isLoading || buildings?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={_tableHeader.length}>
                 <NotFound
@@ -126,50 +128,28 @@ export default function DataTable() {
               </TableCell>
             </TableRow>
           ) : (
-            data?.map((item) => (
+            buildings?.map((item) => (
               <TableRow key={item.id}>
-                <TableCell>{item.buildings.code}</TableCell>
+                <TableCell>{item.code}</TableCell>
 
-                <TableCell>{item.buildings.address}</TableCell>
+                <TableCell>{item.address}</TableCell>
 
-                <TableCell>
-                  {formatCurrency(item.buildings.price_rent)}
-                </TableCell>
+                <TableCell>{formatCurrency(item.price_rent)}</TableCell>
 
-                <TableCell>
-                  {formatCurrency(item.buildings.price_deposit)}
-                </TableCell>
+                <TableCell>{formatCurrency(item.price_deposit)}</TableCell>
 
-                <TableCell>{item.buildings.start_date || "NULL"}</TableCell>
+                <TableCell>{item.start_date || "NULL"}</TableCell>
 
-                <TableCell>{item.buildings.end_date || "NULL"}</TableCell>
-
-                <TableCell className="min-w-[8rem]">
-                  <Tooltip
-                    content={`Trống ${item.buildings.number_available_rooms}/${item.buildings.total_rooms} phòng`}
-                    position="top"
-                  >
-                    <ProgressBar
-                      progress={
-                        ((item.buildings.total_rooms -
-                          item.buildings.number_available_rooms) /
-                          item.buildings.total_rooms) *
-                        100
-                      }
-                      size="lg"
-                      label="inside"
-                    />
-                  </Tooltip>
-                </TableCell>
+                <TableCell>{item.end_date || "NULL"}</TableCell>
 
                 <TableCell>
                   <Badge
                     variant="light"
-                    color={item.buildings.is_active ? "success" : "error"}
+                    color={item.is_active ? "success" : "error"}
                     size="sm"
                   >
                     <span className="capitalize">
-                      {item.buildings.is_active ? "Active" : "Inactive"}
+                      {item.is_active ? "Active" : "Inactive"}
                     </span>
                   </Badge>
                 </TableCell>
@@ -200,9 +180,7 @@ export default function DataTable() {
                         <DropdownItem
                           onItemClick={() =>
                             router.push(
-                              APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(
-                                item.buildings.code,
-                              ),
+                              APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(item.code),
                             )
                           }
                         >
@@ -211,9 +189,7 @@ export default function DataTable() {
                         <DropdownItem
                           onItemClick={() =>
                             router.push(
-                              APP_ROUTES.ADMIN.BUILDINGS.ID.SETTINGS(
-                                item.buildings.code,
-                              ),
+                              APP_ROUTES.ADMIN.BUILDINGS.ID.SETTINGS(item.code),
                             )
                           }
                         >

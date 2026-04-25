@@ -29,7 +29,7 @@ export default function UserDropdown() {
       const result = await signOut();
 
       if (result) {
-        router.push(APP_ROUTES.AUTH.SIGN_IN);
+        router.replace(APP_ROUTES.AUTH.SIGN_IN);
       }
     } catch (error) {
       showToast.error({

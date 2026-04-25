@@ -10,7 +10,7 @@ import {
   createTransactionSchema,
   CreateTransactionType,
 } from "@/schemas/validation/admin.validation";
-import useRooms from "@/hooks/queries/use-room";
+import useAllRooms from "@/hooks/queries/use-room";
 import Button from "@/components/ui/button/Button";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ export default function CreateRevenueForm() {
   const { building } = useBuilding();
   const { data: categories } = useCategories();
   const createTransaction = useCreateTransaction();
-  const { data: rooms } = useRooms(building?.id);
+  const { data: rooms } = useAllRooms(building?.id);
   const { data: buildingRevenueCombined } = useBuildingRevenueCombined(
     building?.id as string,
   );
@@ -91,7 +91,7 @@ export default function CreateRevenueForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-6 gap-6 border-b border-gray-200 pb-6 dark:border-gray-700"
+      className="grid grid-cols-6 gap-y-10 gap-x-6 border-b border-gray-200 pb-6 dark:border-gray-700"
     >
       <FormField
         form={createRevenueForm}
@@ -111,6 +111,18 @@ export default function CreateRevenueForm() {
               label: "Khác",
             },
           ],
+        }}
+      />
+
+      <FormField
+        form={createRevenueForm}
+        field={{
+          id: "transaction_date",
+          name: "transaction_date",
+          label: "Ngày giao dịch",
+          type: "date",
+          placeholder: "Chọn ngày",
+          defaultValue: new Date().toISOString().split("T")[0],
         }}
       />
       <FormField
@@ -135,22 +147,13 @@ export default function CreateRevenueForm() {
         className="col-span-1"
         field={{
           name: "amount",
-          label: "Số tiền",
+          label: "Số tiền (Auto fill với hạng mục mặc định)",
           type: "number",
           placeholder: "Nhập số tiền",
+          formatCurrency: true,
         }}
       />
 
-      <FormField
-        form={createRevenueForm}
-        field={{
-          id: "transaction_date",
-          name: "transaction_date",
-          label: "Ngày giao dịch",
-          type: "date",
-          placeholder: "Chọn ngày",
-        }}
-      />
       <FormField
         form={createRevenueForm}
         field={{

@@ -174,7 +174,7 @@ class BillService {
 
   async updateStatusBill(
     tracking_code: string,
-    status: BillStatus,
+    status: keyof typeof BillStatus,
   ): Promise<MutationResult> {
     const query = supabase
       .from("room_monthly_bills")

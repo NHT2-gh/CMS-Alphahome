@@ -28,6 +28,7 @@ export async function getBuildingSettingAction(
       })) || [],
     users:
       users?.map((user) => ({
+        id: user.id,
         user_id: user.profiles.id,
         full_name: user.profiles.full_name,
         phone: user.profiles.phone,

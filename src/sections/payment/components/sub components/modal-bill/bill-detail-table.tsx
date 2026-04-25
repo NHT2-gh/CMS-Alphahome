@@ -317,7 +317,9 @@ export default function BillDetailTable({
               />
 
               <Button
-                disabled={isLoading || isLoadingBillServicesDetail}
+                disabled={
+                  isLoading || isLoadingBillServicesDetail || !service_id
+                }
                 type="submit"
                 className="h-fit lg:col-span-2"
               >
@@ -332,8 +334,8 @@ export default function BillDetailTable({
           <div className="flex items-start gap-2 mt-10">
             <InfoIcon className="text-gray-500 dark:text-gray-400 size-5" />
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Sau khi điền thông tin dịch vụ, nhấn Enter/Return hoặc nhấp vào
-              &apos;Thêm dịch vụ&apos; để thêm nó vào danh sách.
+              Sau khi điền thông tin dịch vụ, nhấp vào &apos;Thêm dịch vụ&apos;
+              để thêm nó vào danh sách.
             </p>
           </div>
         </div>

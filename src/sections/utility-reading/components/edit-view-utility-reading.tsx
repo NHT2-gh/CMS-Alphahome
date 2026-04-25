@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FormField } from "@/components/_cms/components/form";
-import useRooms from "@/hooks/queries/use-room";
+import useAllRooms from "@/hooks/queries/use-room";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Checkbox, Input } from "@/components/_cms/ui/input";
@@ -35,7 +35,7 @@ export default function EditViewReading({
   rangeDateSelected,
 }: EditViewReadingProp) {
   const { building } = useBuilding();
-  const { data: rooms, error } = useRooms(building?.id);
+  const { data: rooms, error } = useAllRooms(building?.id);
   const modalAlert = useModal();
   const {
     data: buildingServices,

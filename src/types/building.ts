@@ -14,8 +14,7 @@ export interface Building {
   price_deposit: number;
   start_date: string | null;
   end_date: string | null;
-  total_rooms: number;
-  number_available_rooms: number;
+
   is_active: boolean;
 }
 
@@ -26,11 +25,6 @@ export interface UserBuilding {
   created_by: string;
   profiles: Profile;
   buildings: Building;
-  role: keyof typeof TenantRole;
-}
-
-export interface UserBuildingUpsertDTO {
-  user_id: string;
   role: keyof typeof TenantRole;
 }
 

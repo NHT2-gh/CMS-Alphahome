@@ -4,7 +4,7 @@ import {
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
-import { MutationResult } from "@/types/common";
+import { GetWithFilterParams, MutationResult } from "@/types/common";
 import { CreateRoomResponse, Room, RoomOverview } from "@/types/room";
 
 class RoomService {
@@ -13,12 +13,23 @@ class RoomService {
     this.tableName = "rooms";
   }
 
-  async getRooms(buildingId: string): Promise<RoomOverview[]> {
+  async getRooms(
+    buildingId: string,
+    params?: GetWithFilterParams,
+  ): Promise<RoomOverview[]> {
     const query = supabase
       .from("room_overview")
       .select("*")
       .eq("building_id", buildingId)
       .order("code", { ascending: true });
+
+    if (params?.filters) {
+      Object.entries(params.filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          query.eq(key, value);
+        }
+      });
+    }
 
     const { data: rooms, error } = await query;
 

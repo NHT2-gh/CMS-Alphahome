@@ -24,7 +24,7 @@ export default function TabsLayout({
     const tab = layout.tabs.find((t) => t.id === tabId);
     if (!tab) return [];
 
-    return fields.filter((field) => tab.fields.includes(field.name));
+    return fields.filter((field) => tab.fields.includes(field.name!));
   };
 
   const hasTabErrors = (tabId: string) => {

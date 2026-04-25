@@ -1,12 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/config/query-keys";
-import {
-  buildingService,
-  BuildingServiceParams,
-} from "@/services/building.service";
+import { buildingService } from "@/services/building.service";
 import { buildingServicesService } from "@/services/building-services.service";
+import { GetWithFilterParams } from "@/types/common";
 
-export const useBuildings = (params: BuildingServiceParams) => {
+export const useBuildings = (params: GetWithFilterParams) => {
   return useQuery({
     queryKey: queryKeys.buildings.list(params),
     queryFn: () => {
@@ -39,7 +37,7 @@ export const useBuildingServices = (
 
 export const useUsersBuilding = (
   userId: string,
-  params: BuildingServiceParams,
+  params: GetWithFilterParams,
 ) => {
   return useQuery({
     queryKey: queryKeys.buildings.usersBuilding(userId),

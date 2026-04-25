@@ -37,7 +37,7 @@ export default function AccordionLayout({
     const section = layout.sections.find((s) => s.id === sectionId);
     if (!section) return [];
 
-    return fields.filter((field) => section.fields.includes(field.name));
+    return fields.filter((field) => section.fields.includes(field.name!));
   };
 
   const hasSectionErrors = (sectionId: string) => {

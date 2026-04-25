@@ -26,7 +26,7 @@ export default function StepperLayout({
     const step = layout.steps[stepIndex];
     if (!step) return [];
 
-    return fields.filter((field) => step.fields.includes(field.name));
+    return fields.filter((field) => step.fields.includes(field.name!));
   };
 
   const hasStepErrors = (stepIndex: number) => {

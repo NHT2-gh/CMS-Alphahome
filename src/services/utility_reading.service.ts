@@ -1,6 +1,5 @@
 import { adaptUtilityData } from "@/adapters/utility_reading.adapter";
 import { handlePostgresError } from "@/lib/error/postgres-error";
-import { showToast } from "@/lib/toast";
 import { supabase } from "@/supabase/supabaseClients";
 import { MutationResult } from "@/types/common";
 import {

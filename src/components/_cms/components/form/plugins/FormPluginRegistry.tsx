@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { FieldRendererProps } from "@/types/form";
 import React from "react";

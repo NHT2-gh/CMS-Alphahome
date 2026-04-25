@@ -24,7 +24,9 @@ export default function ModalViewBill({
   closeModal: () => void;
 }) {
   const { data: contract } = useContract(currentBill?.room_id);
-  const [status, setStatus] = useState<BillStatus>(currentBill.bill_status);
+  const [status, setStatus] = useState<keyof typeof BillStatus>(
+    currentBill.bill_status,
+  );
   const updateStatusBill = useUpdateStatusBill();
 
   const handleUpdateStatus = async () => {
@@ -70,16 +72,19 @@ export default function ModalViewBill({
             <Badge
               variant="light"
               color={
-                currentBill?.bill_status === ("paid" as BillStatus)
+                currentBill?.bill_status === ("paid" as keyof typeof BillStatus)
                   ? "success"
-                  : currentBill?.bill_status === ("draft" as BillStatus)
+                  : currentBill?.bill_status ===
+                      ("draft" as keyof typeof BillStatus)
                     ? "light"
-                    : currentBill?.bill_status === ("overdue" as BillStatus)
+                    : currentBill?.bill_status ===
+                        ("overdue" as keyof typeof BillStatus)
                       ? "error"
-                      : currentBill?.bill_status === ("unpaid" as BillStatus)
+                      : currentBill?.bill_status ===
+                          ("unpaid" as keyof typeof BillStatus)
                         ? "dark"
                         : currentBill?.bill_status ===
-                            ("confirmed" as BillStatus)
+                            ("confirmed" as keyof typeof BillStatus)
                           ? "warning"
                           : "info"
               }
@@ -137,7 +142,7 @@ export default function ModalViewBill({
                     })),
                     defaultValue: status,
                     handleOnChange(value) {
-                      setStatus(value as BillStatus);
+                      setStatus(value as keyof typeof BillStatus);
                     },
                   }}
                 />

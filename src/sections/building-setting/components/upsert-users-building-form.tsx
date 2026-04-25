@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
-import { Profile } from "@/types/profile";
 import { Plus, Trash, X } from "lucide-react";
 import { TenantRole } from "@/types/building";
 import Button from "@/components/ui/button/Button";
@@ -11,7 +9,10 @@ import { useAllProfile } from "@/hooks/queries/use-profile";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { UpdateBuildingSettingType } from "@/schemas/validation/admin.validation";
+import {
+  UpdateBuildingSettingType,
+  UpsertUsersBuildingType,
+} from "@/schemas/validation/admin.validation";
 
 export default function UpsertUsersBuildingForm() {
   const formBuildingSetting = useFormContext<UpdateBuildingSettingType>();
@@ -19,24 +20,31 @@ export default function UpsertUsersBuildingForm() {
   const { fields, append, remove } = useFieldArray({
     control: formBuildingSetting.control,
     name: "users",
+    keyName: "fieldId",
   });
   const [isEdit, setIsEdit] = useState<boolean>();
-  const [userSelected, setUserSelected] = useState<Record<string, Profile>>({
+  const [userSelected, setUserSelected] = useState<
+    Record<string, UpsertUsersBuildingType>
+  >({
     [crypto.randomUUID()]: {
       id: "",
+      user_id: "",
       full_name: "",
+      email: "",
+      phone: "",
       role: "user",
     },
   });
 
   const handleUpdateUserSelected = (
     key: string,
-    field: keyof Profile,
+    field: keyof UpsertUsersBuildingType,
     value: string,
   ) => {
     setUserSelected((prev) => {
       const userInfo = prev[key] ?? {
-        id: "",
+        id: undefined,
+        user_id: "",
         full_name: "",
         email: "",
         phone: "",
@@ -50,10 +58,6 @@ export default function UpsertUsersBuildingForm() {
       return { ...prev, [key]: updatedUserSelected };
     });
   };
-
-  useEffect(() => {
-    console.log("USER SELECTED", fields);
-  }, [fields]);
   return (
     <>
       <Button
@@ -75,7 +79,7 @@ export default function UpsertUsersBuildingForm() {
         />
         <TableBody>
           {fields.map((field, index) => (
-            <TableRow key={field.id}>
+            <TableRow key={field.fieldId}>
               <TableCell>{field.full_name}</TableCell>
               <TableCell>{field.email}</TableCell>
               <TableCell>{field.phone}</TableCell>
@@ -84,13 +88,12 @@ export default function UpsertUsersBuildingForm() {
               </TableCell>
 
               <TableCell>
-                <Button
-                  variant="outline"
-                  className="bg-red-400 p-2 hover:bg-red-500"
+                <button
+                  className="text-error-500"
                   onClick={() => remove(index)}
                 >
-                  <Trash className="size-4 text-white" />
-                </Button>
+                  <Trash className="size-4" />
+                </button>
               </TableCell>
             </TableRow>
           ))}
@@ -118,7 +121,8 @@ export default function UpsertUsersBuildingForm() {
                     placeholder="Chọn người dùng"
                     handleOnChange={(value) => {
                       const profile = profiles?.find((p) => p.id === value);
-                      handleUpdateUserSelected(key, "id", value);
+                      handleUpdateUserSelected(key, "id", crypto.randomUUID());
+                      handleUpdateUserSelected(key, "user_id", value);
                       handleUpdateUserSelected(
                         key,
                         "full_name",
@@ -138,7 +142,7 @@ export default function UpsertUsersBuildingForm() {
                     type="text"
                     placeholder="Email"
                     readOnly
-                    value={userSelected[key]?.email || "Chưa có"}
+                    value={user.email || "Chưa có"}
                   />
                 </TableCell>
                 <TableCell className="max-w-[10rem]">
@@ -147,7 +151,7 @@ export default function UpsertUsersBuildingForm() {
                     type="text"
                     placeholder="Số điện thoại"
                     readOnly
-                    value={userSelected[key]?.phone || "Chưa có"}
+                    value={user.phone || "Chưa có"}
                   />
                 </TableCell>
                 <TableCell>
@@ -160,7 +164,7 @@ export default function UpsertUsersBuildingForm() {
                         label: value,
                       })) || []
                     }
-                    value={userSelected[key]?.role}
+                    value={user.role}
                     handleOnChange={(value) => {
                       handleUpdateUserSelected(key, "role", value);
                     }}
@@ -171,7 +175,8 @@ export default function UpsertUsersBuildingForm() {
                     className="bg-brand-500 p-2"
                     onClick={() => {
                       append({
-                        user_id: userSelected[key].id,
+                        id: userSelected[key].id,
+                        user_id: userSelected[key].user_id,
                         full_name: userSelected[key].full_name,
                         email: userSelected[key].email,
                         phone: userSelected[key].phone,
@@ -182,6 +187,7 @@ export default function UpsertUsersBuildingForm() {
                         ...prev,
                         [key]: {
                           id: "",
+                          user_id: "",
                           full_name: "",
                           email: "",
                           phone: "",

@@ -6,19 +6,10 @@ import {
 } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
 import { Building, UserBuilding } from "@/types/building";
-import { MutationResult } from "@/types/common";
+import { GetWithFilterParams, MutationResult } from "@/types/common";
 
 export interface BuildingFilter {
   query?: string;
-  filters?: {
-    [key: string]: string | number;
-  };
-}
-
-export interface BuildingServiceParams {
-  page?: number;
-  limit?: number;
-  searchText?: string;
   filters?: {
     [key: string]: string | number;
   };
@@ -29,7 +20,7 @@ class BuildingService {
     page,
     limit,
     searchText,
-  }: BuildingServiceParams): Promise<Building[]> {
+  }: GetWithFilterParams): Promise<Building[]> {
     const query = supabase
       .from("buildings")
       .select("*")
@@ -69,7 +60,7 @@ class BuildingService {
 
   async getBuildingsByUserId(
     userId: string,
-    { page, limit, searchText }: BuildingServiceParams,
+    { page, limit, searchText }: GetWithFilterParams,
   ): Promise<UserBuilding[]> {
     const query = supabase
       .from("users_building")
@@ -116,8 +107,7 @@ class BuildingService {
         )
       `,
       )
-      .eq("building_id", buildingId)
-      .order("created_at", { ascending: false });
+      .eq("building_id", buildingId);
 
     const { data, error } = await query;
 
@@ -156,17 +146,17 @@ class BuildingService {
 
   async updateBuildingUsers(
     buildingId: string,
-    users: UpsertUsersBuildingType[],
+    usersBuilding: UpsertUsersBuildingType[],
   ): Promise<MutationResult> {
     const query = supabase
       .from("users_building")
       .upsert(
-        users.map((user) => ({
+        usersBuilding.map((user) => ({
+          id: user.id,
           building_id: buildingId,
           user_id: user.user_id,
           role: user.role,
         })),
-        { onConflict: "id" },
       )
       .select();
 
@@ -185,6 +175,27 @@ class BuildingService {
     return {
       success: true,
       message: "Cập nhật thông tin người dùng thành công",
+    };
+  }
+
+  async deleteBuildingUser(
+    buildingId: string,
+    userBuildingIds: string[],
+  ): Promise<MutationResult> {
+    const query = supabase
+      .from("users_building")
+      .delete()
+      .eq("building_id", buildingId)
+      .in("id", userBuildingIds);
+
+    const { error } = await query;
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    return {
+      success: true,
+      message: "Xóa người dùng khỏi căn hộ thành công",
     };
   }
 }

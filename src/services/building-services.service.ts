@@ -102,5 +102,23 @@ class BuildingServicesService {
     }
     return { success: true, message: "Cập nhật phí dịch vụ thành công" };
   }
+
+  async deleteBuildingServices(
+    buildingId: string,
+    buildingServicesIds: string[],
+  ): Promise<MutationResult> {
+    const query = supabase
+      .from("building_services")
+      .delete()
+      .eq("building_id", buildingId)
+      .in("id", buildingServicesIds);
+
+    const { error } = await query;
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    return { success: true, message: "Xóa phí dịch vụ thành công" };
+  }
 }
 export const buildingServicesService = new BuildingServicesService();

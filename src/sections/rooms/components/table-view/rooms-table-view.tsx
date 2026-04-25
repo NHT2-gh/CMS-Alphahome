@@ -1,12 +1,11 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { RoomOverview } from "@/types/room";
+import { RoomOverview, RoomStatus } from "@/types/room";
 import { useRouter } from "next/navigation";
-import useRooms from "@/hooks/queries/use-room";
-import TableAction from "./rooms-table-action";
+import useAllRooms from "@/hooks/queries/use-room";
 import { Eye, PlusCircle } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { APP_ROUTES } from "@/config/app-routes";
@@ -15,31 +14,46 @@ import { useBuilding } from "@/context/BuildingContext";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useFilter } from "@/hooks/use-filter";
+import { RoomFilterSchema } from "@/schemas/render-filter-schemas/room-filter.schema";
+import { SearchBar } from "@/components/_cms/components/search-bar";
+import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
+import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
+import { showToast } from "@/lib/toast";
 
-const _tableHeader: { key: keyof RoomOverview | string; title: string }[] = [
+const _tableHeader: TableHeaderColumn[] = [
   { key: "code", title: "Mã phòng" },
-  { key: "occupants_count", title: "Số người" },
+  { key: "occupants_count", title: "Số người", isHiddenOnMobile: true },
   { key: "current_rent", title: "Giá thuê" },
-  { key: "area", title: "Diện tích" },
-  { key: "furniture_status", title: "Nội thất" },
+  { key: "area", title: "Diện tích", isHiddenOnMobile: true },
+  { key: "furniture_status", title: "Nội thất", isHiddenOnMobile: true },
   { key: "tenant_name", title: "Tên người thuê" },
   { key: "end_date", title: "Hạn hợp đồng" },
   { key: "status", title: "Trạng thái" },
 ];
 export default function RoomsTable() {
   const { building } = useBuilding();
-  const { data: rooms, error } = useRooms(building?.id);
-  const [search, setSearch] = useState<string | undefined>(undefined);
-  const router = useRouter();
+  const { filterValues, updateFilter, applyFilters } = useFilter({
+    filterConfigs: RoomFilterSchema,
+  });
+  const {
+    data: rooms,
+    error,
+    isLoading,
+  } = useAllRooms(building?.id, {
+    filters: filterValues,
+  });
 
-  const handleSearch = useCallback((value: string) => {
-    if (value.trim() === "") {
-      setSearch(undefined);
-      return;
+  useEffect(() => {
+    if (error) {
+      showToast.error({
+        title: "Lỗi khi tải danh sách phòng",
+      });
     }
+  }, [error]);
 
-    setSearch(value);
-  }, []);
+  const router = useRouter();
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
@@ -53,101 +67,129 @@ export default function RoomsTable() {
           </p>
         </div>
         <div className="flex items-center gap-6">
-          <TableAction handleSearch={handleSearch} />
+          <SingleFilterButtonGroup
+            items={Object.entries(RoomStatus).map(([value, label]) => ({
+              label,
+              value,
+            }))}
+            onChange={(value) => {
+              updateFilter("status", value as RoomStatus);
+              applyFilters();
+            }}
+          />
           <Link href={APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.CREATE()}>
-            <Button>
+            <Button className="w-fit ">
               <PlusCircle className="size-5" />
-              Thêm phòng
+              <span className="hidden md:flex">Thêm phòng</span>
             </Button>
           </Link>
         </div>
       </div>
-      <Table>
-        <CMSTableHeader
-          selectAll={false}
-          handleSelectAll={() => {}}
-          columns={_tableHeader}
-        />
-        <TableBody>
-          {rooms?.map((room) => (
-            <TableRow
-              className={cn(
-                "cursor-pointer hover:bg-blue-50",
-                { "bg-gray-100": room.status === "available" },
-                {
-                  "bg-red-100":
+      <div className="max-w-full overflow-x-auto">
+        <Table>
+          <CMSTableHeader columns={_tableHeader} />
+          <TableBody>
+            {(rooms?.length === 0 || isLoading) && (
+              <TableRow className="">
+                <TableCell
+                  className="w-full h-fit text-base"
+                  colSpan={_tableHeader.length}
+                >
+                  <TableNotFound
+                    message={
+                      isLoading
+                        ? "Đang tải dữ liệu..."
+                        : "Hiện tại không tìm thấy phòng phù hợp"
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+
+            {rooms?.map((room) => (
+              <TableRow
+                onDoubleClick={() => {
+                  router.push(
+                    APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.room_id),
+                  );
+                }}
+                className={cn(
+                  "cursor-pointer hover:bg-blue-50",
+                  {
+                    "bg-gray-100":
+                      room.status === ("available" as keyof typeof RoomStatus),
+                  },
+                  {
+                    "bg-red-100":
+                      room.end_date &&
+                      new Date().getTime() - new Date(room.end_date).getTime() >
+                        0 &&
+                      room.status === ("rented" as keyof typeof RoomStatus),
+                  },
+                )}
+                key={room.room_id}
+              >
+                <TableCell>{room.code}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {room.occupants_count || 0}
+                </TableCell>
+                <TableCell>{formatCurrency(room.current_rent)}</TableCell>
+
+                <TableCell className="hidden md:table-cell">
+                  {room.area}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {room.furniture_status === "basic"
+                    ? "Cơ bản"
+                    : room.furniture_status === "unfurnished"
+                      ? "Không có"
+                      : "Đầy đủ"}
+                </TableCell>
+                <TableCell className="min-w-[100px] truncate">
+                  {room.tenant_name ? room.tenant_name : "--"}
+                </TableCell>
+
+                <TableCell
+                  className={
                     room.end_date &&
                     new Date().getTime() - new Date(room.end_date).getTime() >
                       0 &&
-                    room.status === "rented",
-                },
-              )}
-              key={room.room_id}
-            >
-              <TableCell>{room.code}</TableCell>
-              <TableCell>{room.occupants_count || 0}</TableCell>
-              <TableCell>{formatCurrency(room.current_rent)}</TableCell>
-
-              <TableCell>{room.area}</TableCell>
-              <TableCell>
-                {room.furniture_status === "basic"
-                  ? "Cơ bản"
-                  : room.furniture_status === "unfurnished"
-                    ? "Không có"
-                    : "Đầy đủ"}
-              </TableCell>
-              <TableCell>
-                {room.tenant_name ? room.tenant_name : "Chưa có"}
-              </TableCell>
-
-              <TableCell
-                className={
-                  room.end_date &&
-                  new Date().getTime() - new Date(room.end_date).getTime() >
-                    0 &&
-                  room.status === "rented"
-                    ? "font-bold"
-                    : ""
-                }
-              >
-                {room.end_date ? formatDateTime(room.end_date) : "Chưa có"}
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant="light"
-                  color={room.status === "available" ? "success" : "error"}
-                  size="sm"
+                    room.status === "rented"
+                      ? "font-bold"
+                      : ""
+                  }
                 >
-                  <span className="capitalize">
-                    {room.status === "available" ? "Đang trống" : "Đã thuê"}
-                  </span>
-                </Badge>
-              </TableCell>
-
-              {/* <TableCell>
-                <button
-                  className="disabled:opacity-30"
-                  disabled={room.status === "available"}
-                >
-                  <BadgeDollarSign className="size-6 " />
-                </button>
-              </TableCell> */}
-
-              {building?.id && (
-                <TableCell>
-                  <Link
-                    href={APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.code)}
-                  >
-                    <button className="disabled:opacity-30">
-                      <Eye className="size-6 " />
-                    </button>
-                  </Link>
+                  {room.end_date ? formatDateTime(room.end_date) : "Chưa có"}
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                <TableCell>
+                  <Badge
+                    variant="light"
+                    color={room.status === "available" ? "success" : "error"}
+                    size="sm"
+                    className="p-2 md:px-2 md:py-1"
+                  >
+                    <span className="capitalize hidden md:block">
+                      {RoomStatus[room.status]}
+                    </span>
+                  </Badge>
+                </TableCell>
+
+                {building?.id && (
+                  <TableCell className="hidden md:table-cell">
+                    <Link
+                      href={APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.code)}
+                    >
+                      <button className="disabled:opacity-30">
+                        <Eye className="size-6 " />
+                      </button>
+                    </Link>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

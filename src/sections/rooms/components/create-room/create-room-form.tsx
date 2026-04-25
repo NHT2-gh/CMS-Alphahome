@@ -107,7 +107,7 @@ export default function CreateRoomForm() {
     }
   };
   return (
-    <>
+    <div className="space-y-10">
       <ComponentCard title="Thông tin phòng" className="">
         <form
           className="space-y-4 grid grid-cols-2 gap-4"
@@ -170,7 +170,6 @@ export default function CreateRoomForm() {
       </ComponentCard>
 
       <DropzoneComponent
-        className="col-span-2"
         images={images}
         isUploading={isUploading}
         onChange={(images) => {
@@ -190,6 +189,6 @@ export default function CreateRoomForm() {
       >
         {isUploading ? "Đang tải lên..." : "Hoàn tất"}
       </Button>
-    </>
+    </div>
   );
 }

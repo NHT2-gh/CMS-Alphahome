@@ -18,7 +18,7 @@ export interface Bill {
   tracking_code: string;
   room_id: string;
   grand_total: number;
-  bill_status: BillStatus;
+  bill_status: keyof typeof BillStatus;
   month_date: string;
   rooms: {
     building_id: string;

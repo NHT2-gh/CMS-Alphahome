@@ -15,7 +15,7 @@ export default function MainContainer({
   return (
     <section>
       <Breadcrumb pageTitle={title} links={links} />
-      <section className="rounded-lg bg-white p-5 shadow-theme-sm dark:bg-gray-800 space-y-4 text-gray-600 dark:text-gray-400">
+      <section className="rounded-lg bg-white p-3 md:p-5 shadow-theme-sm dark:bg-gray-800 space-y-4 text-gray-600 dark:text-gray-400">
         {children}
       </section>
     </section>

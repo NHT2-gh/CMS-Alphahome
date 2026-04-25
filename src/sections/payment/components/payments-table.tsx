@@ -3,7 +3,6 @@ import React, { useCallback, useState } from "react";
 
 import { Eye, FilterIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
-import ModalViewBill from "./modal-view-bill";
 import { useFilter } from "@/hooks/use-filter";
 import { Bill, BillStatus } from "@/types/bill";
 import Badge from "@/components/ui/badge/Badge";
@@ -21,6 +20,7 @@ import { BillFilterSchema } from "@/schemas/render-filter-schemas/bill-filter.sc
 import TableNotFound from "@/components/_cms/common/table/state/not_found";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import Button from "@/components/ui/button/Button";
+import { ModalViewBill } from ".";
 
 const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   {
@@ -210,15 +210,19 @@ export default function PaymentsListTable() {
                 <Badge
                   variant="light"
                   color={
-                    bill?.bill_status === ("paid" as BillStatus)
+                    bill?.bill_status === ("paid" as keyof typeof BillStatus)
                       ? "success"
-                      : bill?.bill_status === ("draft" as BillStatus)
+                      : bill?.bill_status ===
+                          ("draft" as keyof typeof BillStatus)
                         ? "light"
-                        : bill?.bill_status === ("overdue" as BillStatus)
+                        : bill?.bill_status ===
+                            ("overdue" as keyof typeof BillStatus)
                           ? "error"
-                          : bill?.bill_status === ("unpaid" as BillStatus)
+                          : bill?.bill_status ===
+                              ("unpaid" as keyof typeof BillStatus)
                             ? "dark"
-                            : bill?.bill_status === ("confirmed" as BillStatus)
+                            : bill?.bill_status ===
+                                ("confirmed" as keyof typeof BillStatus)
                               ? "warning"
                               : "info"
                   }

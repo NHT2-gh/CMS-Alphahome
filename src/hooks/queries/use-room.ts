@@ -7,16 +7,18 @@ import {
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
 import { roomService } from "@/services/room.service";
+import { GetWithFilterParams } from "@/types/common";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default function useRooms(
+export default function useAllRooms(
   buildingId?: string,
+  params?: GetWithFilterParams,
   options?: { enabled?: boolean },
 ) {
   return useQuery({
-    queryKey: queryKeys.rooms.list(buildingId!),
+    queryKey: queryKeys.rooms.list(buildingId!, params!),
     queryFn: () => {
-      return roomService.getRooms(buildingId!);
+      return roomService.getRooms(buildingId!, params);
     },
 
     enabled: options?.enabled ?? !!buildingId,

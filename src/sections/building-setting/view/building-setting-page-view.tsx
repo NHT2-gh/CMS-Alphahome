@@ -20,8 +20,9 @@ import {
 import Button from "@/components/ui/button/Button";
 import { buildingService } from "@/services/building.service";
 import { buildingServicesService } from "@/services/building-services.service";
-import { cn } from "@/utils";
-import { CheckCircle2 } from "lucide-react";
+import { diffArray } from "@/utils/diff-array";
+import { mapErrorToMessage } from "@/lib/error/app-error";
+import { Alert } from "@/components/_cms/components/alert";
 
 export default function BuildingSettingView() {
   const { building } = useBuilding();
@@ -42,6 +43,21 @@ export default function BuildingSettingView() {
     },
     mode: "onChange",
   });
+
+  const [initialData, setInitialData] = useState<UpdateBuildingSettingType>({
+    info: {
+      code: building?.code! || "",
+      address: building?.address! || "",
+      price_rent: building?.price_rent! || 0,
+      price_deposit: building?.price_deposit! || 0,
+      start_date: building?.start_date! || "",
+      end_date: building?.end_date! || "",
+      is_active: building?.is_active || false,
+    },
+    services: [],
+    users: [],
+  });
+
   const [result, setResult] = useState<
     Record<
       string,
@@ -50,14 +66,15 @@ export default function BuildingSettingView() {
         message: string;
       }
     >
-  >({
-    info: { success: false, message: "" },
-    services: { success: false, message: "" },
-    users: { success: false, message: "" },
-  });
+  >({});
 
   useEffect(() => {
     getBuildingSettingAction(building?.id!).then(({ services, users }) => {
+      setInitialData({
+        info: initialData.info,
+        services: services || [],
+        users: users || [],
+      });
       updateBuildingSetting.reset({
         info: {
           code: building?.code! || "",
@@ -80,7 +97,7 @@ export default function BuildingSettingView() {
   } = updateBuildingSetting;
 
   const onSubmit = async (data: UpdateBuildingSettingType) => {
-    if (dirtyFields.info) {
+    if (dirtyFields.info && Object.values(dirtyFields.info).some(Boolean)) {
       try {
         const res = await buildingService.updateBuildingInfo(
           building?.id!,
@@ -96,7 +113,6 @@ export default function BuildingSettingView() {
           }));
         }
       } catch (error) {
-        console.log(error);
         setResult((prev) => ({
           ...prev,
           info: {
@@ -106,45 +122,113 @@ export default function BuildingSettingView() {
         }));
       }
     }
-    if (dirtyFields.services) {
+    if (
+      dirtyFields.services &&
+      dirtyFields.services.length > 0 &&
+      initialData.services &&
+      initialData.services.length > 0 &&
+      data.services &&
+      data.services.length > 0
+    ) {
+      const diffServices = diffArray<UpsertBuildingServiceType>({
+        initial: initialData.services,
+        current: data.services,
+        dirtyFields: dirtyFields.services,
+      });
+
       try {
-        const res = await buildingServicesService.upsertBuildingServices(
-          building?.id!,
-          data.services as UpsertBuildingServiceType[],
-        );
-        if (res.success) {
-          setResult((prev) => ({
-            ...prev,
-            services: {
-              success: true,
-              message: "Cập nhật phí dịch vụ thành công",
-            },
-          }));
+        if (diffServices.upsert.length > 0) {
+          const res = await buildingServicesService.upsertBuildingServices(
+            building?.id!,
+            diffServices.upsert as UpsertBuildingServiceType[],
+          );
+          if (res.success) {
+            setResult((prev) => ({
+              ...prev,
+              services: {
+                success: true,
+                message:
+                  (result.services?.message || "") +
+                  `\nCập nhật thành công ${diffServices.upsert.length} phí dịch vụ`,
+              },
+            }));
+          }
+        }
+        if (diffServices.deleted.length > 0) {
+          const res = await buildingServicesService.deleteBuildingServices(
+            building?.id!,
+            diffServices.deleted.map((item) => item.id) as string[],
+          );
+          if (res.success) {
+            setResult((prev) => ({
+              ...prev,
+              services: {
+                success: true,
+                message:
+                  (result.services?.message || "") +
+                  `\nXóa thành công ${diffServices.deleted.length} phí dịch vụ`,
+              },
+            }));
+          }
         }
       } catch (error) {
         setResult((prev) => ({
           ...prev,
           services: {
             success: false,
-            message: "Cập nhật phí dịch vụ thất bại",
+            message: mapErrorToMessage(error),
           },
         }));
       }
     }
     if (dirtyFields.users) {
       try {
-        const res = await buildingService.updateBuildingUsers(
-          building?.id!,
-          data.users as UpsertUsersBuildingType[],
-        );
-        if (res.success) {
-          setResult((prev) => ({
-            ...prev,
-            users: {
-              success: true,
-              message: "Cập nhật danh sách quản lý thành công",
-            },
-          }));
+        if (
+          initialData.users &&
+          initialData.users.length > 0 &&
+          data.users &&
+          data.users.length > 0
+        ) {
+          const diffUsers = diffArray<UpsertUsersBuildingType>({
+            initial: initialData.users,
+            current: data.users,
+            dirtyFields: dirtyFields.users,
+          });
+
+          if (diffUsers.upsert.length > 0) {
+            const res = await buildingService.updateBuildingUsers(
+              building?.id!,
+              diffUsers.upsert as UpsertUsersBuildingType[],
+            );
+            if (res.success) {
+              setResult((prev) => ({
+                ...prev,
+                users: {
+                  success: true,
+                  message:
+                    (result.users?.message || "") +
+                    `\nCập nhật thành công ${diffUsers.upsert.length} quản lý toà nhà`,
+                },
+              }));
+            }
+          }
+          if (diffUsers.deleted.length > 0) {
+            const res = await buildingService.deleteBuildingUser(
+              building?.id!,
+              diffUsers.deleted.map((item) => item.id) as string[],
+            );
+            if (res.success) {
+              setResult((prev) => ({
+                ...prev,
+                users: {
+                  success: true,
+                  message:
+                    (result.users?.message || "") +
+                    `\nXóa thành công ${diffUsers.deleted.length} quản lý toà nhà`,
+                },
+              }));
+            }
+          }
         }
       } catch (error) {
         setResult((prev) => ({
@@ -157,7 +241,7 @@ export default function BuildingSettingView() {
       }
     }
 
-    console.log("DATA", data, dirtyFields);
+    console.log(dirtyFields);
   };
 
   return (
@@ -171,46 +255,47 @@ export default function BuildingSettingView() {
         >
           <ComponentCard
             title="Thông tin toà nhà"
-            className={cn(
-              "grid grid-cols-2 gap-y-8 gap-x-10 border-green-500",
-              {
-                "border-green-500": result.info.success,
-              },
+            className="grid grid-cols-2 gap-10"
+          >
+            <UpdateBuildingInfoForm />
+            {result.info && (
+              <Alert
+                className="col-span-2"
+                variant={result.info.success ? "success" : "error"}
+                title={result.info.success ? "Thành công" : "Thất bại"}
+                message={result.info.message}
+              />
             )}
-          >
-            <>
-              {result.info.success && (
-                <p className="absolute right-4 top-5 text-right text-green-700">
-                  <CheckCircle2 className="inline-block mr-2" />
-                  {result.info.message}
-                </p>
-              )}
-              <UpdateBuildingInfoForm />
-            </>
           </ComponentCard>
 
-          <ComponentCard
-            title="Chi tiết phí dịch vụ"
-            className={cn({
-              "border-green-500": result.services.success,
-            })}
-          >
+          <ComponentCard title="Chi tiết phí dịch vụ">
             <UpsertBuildingServicesForm />
+            {result.services && (
+              <Alert
+                className="col-span-2"
+                variant={result.services.success ? "success" : "error"}
+                title={result.services.success ? "Thành công" : "Thất bại"}
+                message={result.services.message}
+              />
+            )}
           </ComponentCard>
 
-          <ComponentCard
-            title="Danh sách quản lý"
-            className={cn("", {
-              "border-green-500": result.users.success,
-            })}
-          >
+          <ComponentCard title="Danh sách quản lý">
             <UpsertUsersBuildingForm />
+            {result.users && (
+              <Alert
+                className="col-span-2"
+                variant={result.users.success ? "success" : "error"}
+                title={result.users.success ? "Thành công" : "Thất bại"}
+                message={result.users.message}
+              />
+            )}
           </ComponentCard>
 
           <Button
             type="submit"
             className="block ml-auto mt-5"
-            // disabled={!isValid || !isDirty}
+            disabled={!isValid || !isDirty}
           >
             Lưu thay đổi
           </Button>

@@ -9,7 +9,7 @@ import {
   useCreateSingleRoomMonthlyBill,
 } from "@/hooks/queries/use-bill";
 import { useContract } from "@/hooks/queries/use-contract";
-import useRooms from "@/hooks/queries/use-room";
+import useAllRooms from "@/hooks/queries/use-room";
 import { useModal } from "@/hooks/useModal";
 import {
   createInvoiceFormSchema,
@@ -40,7 +40,7 @@ export default function ModalCreateBill() {
   const createModal = useModal();
   const resultModal = useModal();
   const { building } = useBuilding();
-  const { data: rooms, isFetched: isFetchedRooms } = useRooms(building?.id);
+  const { data: rooms, isFetched: isFetchedRooms } = useAllRooms(building?.id);
   const [isMutiRoom, setIsMutiRoom] = useState(false);
   const [currentContract, setCurrentContract] = useState<Contract | undefined>(
     undefined,
@@ -179,7 +179,7 @@ export default function ModalCreateBill() {
 
               <Switch
                 label="Tạo phiếu thu cho nhiều phòng"
-                defaultChecked={false}
+                defaultValue={false}
                 onChange={(checked) => setIsMutiRoom(checked)}
               />
             </div>
@@ -286,7 +286,7 @@ export default function ModalCreateBill() {
                         {log
                           .filter((item) => item.status === "success")
                           .map((item) => (
-                            <p>{item.room_id}</p>
+                            <p key={item.room_id}>{item.room_id}</p>
                           ))}
                       </h4>
                       <h4>
@@ -294,7 +294,7 @@ export default function ModalCreateBill() {
                         {log
                           .filter((item) => item.status === "error")
                           .map((item) => (
-                            <p>{item.room_id}</p>
+                            <p key={item.room_id}>{item.room_id}</p>
                           ))}
                       </h4>
                       <h4>
@@ -302,7 +302,7 @@ export default function ModalCreateBill() {
                         {log
                           .filter((item) => item.status === "already_exists")
                           .map((item) => (
-                            <p>{item.room_id}</p>
+                            <p key={item.room_id}>{item.room_id}</p>
                           ))}
                       </h4>
                     </div>

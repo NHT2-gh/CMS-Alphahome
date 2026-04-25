@@ -50,6 +50,9 @@ export default function FilterValuesRender({
           </span>
         ) : Array.isArray(value) ? (
           value.slice(0, 2).map((item) => {
+            if (!("options" in config) || !config.options) {
+              return null;
+            }
             const label = config.options.find(
               (options) => options.value === item,
             )?.label;

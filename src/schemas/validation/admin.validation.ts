@@ -61,7 +61,7 @@ export const createTransactionSchema = z
   });
 
 export const upsertBuildingServiceSchema = z.object({
-  id: z.string().min(1, "Building service ID is required"),
+  id: z.string().optional(),
   service_id: z.string().min(1, "Service ID is required"),
   unit_price: z.number().min(1, "Unit price is required"),
   service_name: z.string().optional(),
@@ -83,6 +83,7 @@ export const updatetBuildingInfoSchema = z.object({
 });
 
 export const upsertUsersBuildingSchema = z.object({
+  id: z.string(),
   user_id: z.string().min(1, "User ID is required"),
   full_name: z.string().min(1, "Full name is required").optional(),
   phone: z.string().nullable().optional(),

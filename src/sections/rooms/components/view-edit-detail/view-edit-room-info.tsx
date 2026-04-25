@@ -147,7 +147,7 @@ export default function ViewEditRoomInfo({
 
   return (
     <>
-      <ComponentCard title="Thông tin phòng" className="">
+      <ComponentCard title="Thông tin phòng" className="space-y-5">
         <form
           className="space-y-4 grid grid-cols-2 gap-4"
           onSubmit={handleSubmit(onSubmit)}

@@ -1,10 +1,9 @@
 import { FilterValue } from "@/components/_cms/components/filter/box/type";
-import { BuildingFilter } from "@/services/building.service";
-import { Pagination } from "@/types/common";
+import { GetWithFilterParams, Pagination } from "@/types/common";
 
 export const queryKeys = {
   buildings: {
-    list: (params: BuildingFilter) => ["buildings", params],
+    list: (params: GetWithFilterParams) => ["buildings", params],
     detail: (id: string) => ["buildings", id],
     services: (id: string) => ["buildings", id, "services"],
     buildingRevenueCombined: (id: string) => [
@@ -16,7 +15,11 @@ export const queryKeys = {
     usersBuilding: (userId: string) => ["buildings", "users-building", userId],
   },
   rooms: {
-    list: (buildingId: string) => ["rooms", buildingId],
+    list: (buildingId: string, params?: GetWithFilterParams) => [
+      "rooms",
+      buildingId,
+      params,
+    ],
     create: () => ["rooms", "create"],
     update: () => ["rooms", "update"],
   },

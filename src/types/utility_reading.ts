@@ -19,7 +19,7 @@ export interface YearData {
 export interface UtilityReadingResponse {
   month: string;
   utility_type: UtilityReadingType;
-  total_consumption: string;
+  total_consumption: number;
   total_rooms: number;
 }
 

@@ -22,7 +22,7 @@ const _metrics = [
     value: "$3,450.50",
   },
 ];
-export default function InvoiceMetrics() {
+export default function BillMetrics() {
   // const { building } = useBuilding();
   // const { data: bills } = useAllBills(building ? building.id : "");
   return (

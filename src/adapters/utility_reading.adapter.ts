@@ -38,7 +38,7 @@ export function adaptUtilityData(
 
     monthData.utility_readings.push({
       utility_type: row.utility_type as UtilityReadingType,
-      total_consumption: String(row.total_consumption),
+      total_consumption: row.total_consumption,
     });
   });
 

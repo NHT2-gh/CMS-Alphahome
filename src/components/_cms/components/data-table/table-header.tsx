@@ -3,18 +3,21 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { Checkbox } from "../../ui/input";
 
+export interface TableHeaderColumn {
+  key: string;
+  title: string;
+  className?: string;
+  description?: string;
+  isHiddenOnMobile?: boolean;
+}
+
 export default function CMSTableHeader({
   columns,
   selectAll = false,
   handleSelectAll,
   className,
 }: {
-  columns: {
-    key: string;
-    title: string;
-    className?: string;
-    description?: string;
-  }[];
+  columns: TableHeaderColumn[];
   className?: string;
   selectAll?: boolean;
   handleSelectAll?: (isSelectAll: boolean) => void;
@@ -31,7 +34,7 @@ export default function CMSTableHeader({
         {handleSelectAll ? (
           <TableCell
             isHeader
-            className="font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
+            className="font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
           >
             <Checkbox
               id={columns[0].key}
@@ -43,7 +46,7 @@ export default function CMSTableHeader({
         ) : (
           <TableCell
             isHeader
-            className="font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
+            className="font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
           >
             {columns[0].title}
           </TableCell>
@@ -54,9 +57,9 @@ export default function CMSTableHeader({
             key={index}
             isHeader
             className={cn(
-              "px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400",
               cell.className,
               { "text-center": cell.description },
+              { "hidden md:table-cell": cell.isHiddenOnMobile },
             )}
           >
             {cell.title}

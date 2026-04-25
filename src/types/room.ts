@@ -1,8 +1,16 @@
 import { Contract } from "./contract";
 
-export type FurnitureStatus = "unfurnished" | "basic" | "fully_furnished";
+export enum FurnitureStatus {
+  unfurnished = "unfurnished",
+  basic = "basic",
+  fully_furnished = "fully_furnished",
+}
 
-export type RoomStatus = "available" | "on_hold" | "rented";
+export enum RoomStatus {
+  available = "Trống",
+  on_hold = "Giữ phòng",
+  rented = "Đã thuê",
+}
 
 export interface RoomOverview {
   room_id: string;
@@ -10,7 +18,7 @@ export interface RoomOverview {
   occupants_count: number;
   deposit_amount: number;
   current_rent: number;
-  status: RoomStatus;
+  status: keyof typeof RoomStatus;
   area: number;
   furniture_status: FurnitureStatus;
   tenant_name: string;

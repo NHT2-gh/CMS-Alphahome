@@ -8,7 +8,7 @@ export const APP_ROUTES = {
   },
 
   ADMIN: {
-    BASE: "/admin",
+    BASE: "",
     USERS: {
       BASE: "/users",
       ADD: () => `${APP_ROUTES.ADMIN.USERS.BASE}/add`,

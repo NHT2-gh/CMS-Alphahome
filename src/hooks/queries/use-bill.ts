@@ -109,14 +109,20 @@ export function useUpdateStatusBill() {
   const { building } = useBuilding();
   return useMutation({
     mutationKey: queryKeys.bills.updateStatusBill(),
-    mutationFn: (paylod: { tracking_code: string; status: BillStatus }) =>
-      billService.updateStatusBill(paylod.tracking_code, paylod.status),
-    onSuccess: () => {
+    mutationFn: (paylod: {
+      tracking_code: string;
+      status: keyof typeof BillStatus;
+    }) => billService.updateStatusBill(paylod.tracking_code, paylod.status),
+    onSuccess: (_, payload) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.bills.allByBuildingId(building?.id!, {
-          page: 1,
-          limit: 10,
-        }),
+        queryKey: queryKeys.bills.allByBuildingId(
+          building?.id!,
+          {
+            page: 1,
+            limit: 10,
+          },
+          {},
+        ),
       });
     },
   });

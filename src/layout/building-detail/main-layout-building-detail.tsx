@@ -41,7 +41,8 @@ const TabButton: React.FC<TabButtonProps> = ({
       onClick={onClick}
     >
       {icon}
-      {label}
+
+      <span className="hidden md:flex items-center gap-2">{label}</span>
     </button>
   );
 };

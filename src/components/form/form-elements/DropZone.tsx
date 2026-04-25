@@ -8,7 +8,7 @@ import { Check, ClosedCaption, Loader2, UploadCloud, X } from "lucide-react";
 
 interface DropzoneComponentProps {
   images: ImageItem[] | [];
-  onChange: (images: ImageItem[]) => void; // update ngược lên
+  onChange: (images: ImageItem[]) => void;
   onUpload?: (images: ImageItem[]) => void;
   className?: string;
   isUploading?: boolean;
@@ -40,7 +40,7 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
       status: "idle" as UploadStatus,
     }));
 
-    onChange([...images, ...newImages]);
+    onChange([...(images || []), ...newImages]);
   };
 
   const handleRemoveImage = (id: string) => {

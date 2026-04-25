@@ -67,22 +67,19 @@ const TableRow: React.FC<TableRowProps> = ({
 // TableCell Component
 const TableCell: React.FC<TableCellProps> = ({
   children,
-  isHeader = false,
   className,
   colSpan,
 }) => {
-  const CellTag = isHeader ? "th" : "td";
   return (
-    <CellTag
+    <td
       colSpan={colSpan}
       className={cn(
-        "w-fit font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start",
-        { "px-6 py-3": !isHeader },
+        "min-w-fit font-medium text-gray-500 px-3 py-2 md:px-6 md:py-3 text-theme-xs dark:text-gray-400 text-start",
         className,
       )}
     >
       {children}
-    </CellTag>
+    </td>
   );
 };
 
