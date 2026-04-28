@@ -83,7 +83,7 @@ export default function PaginationWithIcon({
   );
 
   return (
-    <div className="flex items-center justify-between gap-8 px-6 py-4 sm:justify-normal">
+    <div className="flex items-center justify-between gap-2 md:gap-8 md:px-6 py-4 sm:justify-normal">
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -109,7 +109,7 @@ export default function PaginationWithIcon({
       </button>
 
       <span className="block text-sm font-medium text-gray-700 dark:text-gray-400 sm:hidden">
-        Page {currentPage} of {totalPages}
+        Trang {currentPage} / {totalPages}
       </span>
 
       <ul className="hidden items-center gap-0.5 sm:flex">

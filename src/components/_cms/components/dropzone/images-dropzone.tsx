@@ -1,21 +1,59 @@
 "use client";
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import ComponentCard from "@/components/common/ComponentCard";
+import Image from "next/image";
+import Button from "@/components/ui/button/Button";
+import { Check, ClosedCaption, Loader2, UploadCloud, X } from "lucide-react";
+import { ComponentCard } from "../../common/component-card";
 
 interface DropzoneComponentProps {
-  handleOnDrop: (file: File[]) => void;
+  images: ImageItem[] | [];
+  onChange: (images: ImageItem[]) => void;
+  onUpload?: (images: ImageItem[]) => void;
+  className?: string;
+  isUploading?: boolean;
 }
 
-export default function DropzoneComponent({
-  handleOnDrop,
+type UploadStatus = "idle" | "uploading" | "success" | "error";
+
+export type ImageItem = {
+  id: string;
+  file: File;
+  previewUrl: string;
+  uploadedUrl?: string;
+  status: UploadStatus;
+  error?: string;
+};
+
+export default function ImagesDropzone({
+  images,
+  onChange,
+  onUpload,
+  className,
+  isUploading,
 }: DropzoneComponentProps) {
   const onDrop = (acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
-    handleOnDrop(acceptedFiles);
-    // Handle file uploads here
+    const newImages = acceptedFiles.map((file) => ({
+      id: crypto.randomUUID(), // unique id
+      previewUrl: URL.createObjectURL(file),
+      file: file,
+      status: "idle" as UploadStatus,
+    }));
+
+    onChange([...(images || []), ...newImages]);
   };
 
+  const handleRemoveImage = (id: string) => {
+    const imageToRemove = images.find((img) => img.id === id);
+
+    if (imageToRemove) {
+      URL.revokeObjectURL(imageToRemove.previewUrl);
+    }
+
+    const updatedImages = images.filter((img) => img.id !== id);
+
+    onChange(updatedImages);
+  };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -25,8 +63,49 @@ export default function DropzoneComponent({
       "image/svg+xml": [],
     },
   });
+
   return (
-    <ComponentCard title="Dropzone">
+    <ComponentCard title="Hình ảnh" className={className}>
+      {images && images.length > 0 && (
+        <div className="flex gap-4">
+          {images.map((image, index) => (
+            <div key={index} className="relative">
+              {image.status === "idle" && (
+                <button
+                  onClick={() => handleRemoveImage(image.id)}
+                  className="absolute top-1 right-1 bg-white rounded-full p-1"
+                >
+                  <X />
+                </button>
+              )}
+
+              {image.status === "uploading" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                  <Loader2 className="animate-spin" />
+                </div>
+              )}
+              {image.status === "error" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-red-500/50">
+                  <X className="text-white" />
+                </div>
+              )}
+              {image.status === "success" && (
+                <div className="absolute top-1 right-1 bg-white rounded-full p-1">
+                  <Check className="text-green-500 stroke-2" />
+                </div>
+              )}
+              <Image
+                src={image.previewUrl}
+                alt="Uploaded"
+                width={150}
+                height={150}
+                className="rounded-sm aspect-square object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
@@ -77,6 +156,19 @@ export default function DropzoneComponent({
           </div>
         </form>
       </div>
+      <Button
+        onClick={() => {
+          onUpload?.(images);
+        }}
+        disabled={
+          !images ||
+          images?.filter((item) => item.status === "idle").length === 0 ||
+          isUploading
+        }
+        className="absolute top-1 md:top-2 right-3 p-2"
+      >
+        {isUploading ? <Loader2 className="animate-spin" /> : <UploadCloud />}
+      </Button>
     </ComponentCard>
   );
 }

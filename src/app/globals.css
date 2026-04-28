@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -662,7 +662,8 @@
 
 .task {
   border-radius: 0.75rem;
-  box-shadow: 0px 1px 3px 0px rgba(16, 24, 40, 0.1),
+  box-shadow:
+    0px 1px 3px 0px rgba(16, 24, 40, 0.1),
     0px 1px 2px 0px rgba(16, 24, 40, 0.06);
   opacity: 0.8;
   cursor: grabbing; /* Changes the cursor to indicate dragging */
@@ -784,7 +785,9 @@ span.flatpickr-weekday,
 }
 
 .flatpickr-day.inRange {
-  box-shadow: -5px 0 0 #f9fafb, 5px 0 0 #f9fafb !important;
+  box-shadow:
+    -5px 0 0 #f9fafb,
+    5px 0 0 #f9fafb !important;
   @apply dark:shadow-datepicker!;
 }
 
@@ -1001,7 +1004,8 @@ pre[class*="language-"].line-numbers {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -1009,8 +1013,9 @@ pre[class*="language-"].line-numbers {
   }
 }
 
-.spec-item-pending {
-  background-color: #fffbeb !important;
-  border-color: #fbbf24 !important;
-  border-width: 2px !important;
+.flatpickr-calendar.open {
+  @media (width <= 400px) {
+    right: -27px !important;
+    padding: 10px 5px !important;
+  }
 }

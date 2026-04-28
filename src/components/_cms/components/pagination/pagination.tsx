@@ -47,7 +47,7 @@ export default function Pagination(
     }
   };
   return (
-    <div className="px-4 py-4 w-full flex items-center justify-between bg-white rounded-b-xl border-t border-gray-200 dark:bg-white/3 dark:border-white/5">
+    <div className="px-4 py-4 w-full flex flex-col md:flex-row md:items-center justify-between bg-white rounded-b-xl border-t border-gray-200 dark:bg-white/3 dark:border-white/5">
       <div className="flex items-center gap-4">
         <p className="text-sm font-medium text-gray-700 dark:text-gray-400">
           {`Hiển thị ${(props.pagination.page! - 1) * props.pagination.limit! + 1} đến ${Math.min(props.pagination.page! * props.pagination.limit!, props.pagination.total || 0)} ${props.pagination.total ? `/ ${props.pagination.total}` : ""}`}

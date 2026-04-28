@@ -14,7 +14,6 @@ export interface Building {
   price_deposit: number;
   start_date: string | null;
   end_date: string | null;
-
   is_active: boolean;
 }
 

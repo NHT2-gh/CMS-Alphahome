@@ -44,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       type={type}
       className={cn(
-        `inline-flex p-2 md:px-5 md:py-3.5 items-center justify-center font-medium gap-2 rounded-lg transition`,
+        `inline-flex text-theme-sm shrink-0 p-2 h-fit md:px-5 md:py-3 items-center justify-center font-medium gap-2 rounded-lg transition`,
         variantClasses[variant],
         { "cursor-not-allowed opacity-50": disabled || loading },
         className,

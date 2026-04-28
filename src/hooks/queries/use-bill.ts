@@ -4,6 +4,7 @@ import { useBuilding } from "@/context/BuildingContext";
 import { billService } from "@/services/bill.service";
 import { BillStatus } from "@/types/bill";
 import { Pagination } from "@/types/common";
+import { generateBillCode } from "@/utils/random-bill-code";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type CreateMultipleBillsPayload = {
@@ -13,7 +14,6 @@ type CreateMultipleBillsPayload = {
 };
 
 type CreateOneBillsPayload = {
-  trackingCode: string;
   month_date: string;
   room_id: string;
   building_id: string;
@@ -87,7 +87,7 @@ export function useCreateSingleRoomMonthlyBill() {
     mutationKey: queryKeys.bills.createSignleBill(),
     mutationFn: (payload: CreateOneBillsPayload) =>
       billService.createSignleBill(
-        payload.trackingCode,
+        generateBillCode(),
         payload.month_date,
         payload.room_id,
       ),

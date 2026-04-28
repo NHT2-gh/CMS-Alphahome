@@ -8,7 +8,7 @@ import {
   updateRoomInfoSchema,
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
-import DropzoneComponent, {
+import ImagesDropzone, {
   ImageItem,
 } from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
@@ -16,19 +16,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilding } from "@/context/BuildingContext";
 import { useUpdateRoom } from "@/hooks/queries/use-room";
 import { FormField } from "@/components/_cms/components/form";
-import ComponentCard from "@/components/common/ComponentCard";
 import { uploadImage } from "@/supabase/storage/storageClinets";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { formatCurrency } from "@/utils/format-data";
 import { useCreateRentHistory } from "@/hooks/queries/use-rent-history";
-import { preventDefault } from "@fullcalendar/core/internal";
+import { ComponentCard } from "@/components/_cms/common/component-card";
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
@@ -44,7 +37,7 @@ export default function ViewEditRoomInfo({
   const createRentHistory = useCreateRentHistory();
   const [isUploading, setIsUploading] = useState(false);
   const [isViewDetailHistory, setIsViewDetailHistory] = useState(false);
-  const [rentPrice, setRenPrice] = useState<number>(rentHistory[0].rent_price);
+  const [rentPrice, setRentPrice] = useState<number>(rentHistory[0].rent_price);
   const [images, setImages] =
     useState<ImageItem[]>(
       currentRoom.images?.map((item) => {
@@ -124,9 +117,10 @@ export default function ViewEditRoomInfo({
       if (Number(value) !== rentPrice) {
         const result = await createRentHistory.mutateAsync({
           roomId: currentRoom.id,
-          rent: value,
+          rent: Number(value),
         });
         if (result.success) {
+          setRentPrice(value);
           showToast.success({ title: "Cập nhật giá phòng thành công" });
         }
       } else return;
@@ -147,9 +141,9 @@ export default function ViewEditRoomInfo({
 
   return (
     <>
-      <ComponentCard title="Thông tin phòng" className="space-y-5">
+      <ComponentCard title="Thông tin phòng" className="space-y-3 md:space-y-5">
         <form
-          className="space-y-4 grid grid-cols-2 gap-4"
+          className="grid grid-cols-2 gap-4"
           onSubmit={handleSubmit(onSubmit)}
         >
           <FormField
@@ -201,7 +195,7 @@ export default function ViewEditRoomInfo({
           />
         </form>
 
-        <DropzoneComponent
+        <ImagesDropzone
           className="col-span-2"
           images={images}
           isUploading={isUploading}
@@ -243,13 +237,20 @@ export default function ViewEditRoomInfo({
               onChange: (e) => {
                 const value = e.target.value;
 
-                setRenPrice(Number(value));
+                setRentPrice(Number(value));
               },
             }}
           />
 
-          <Button type="submit" className="block mt-3 ml-auto">
-            Cập nhận giá
+          <Button
+            disabled={
+              rentPrice === rentHistory[0].rent_price ||
+              currentRoom.status === "rented"
+            }
+            type="submit"
+            className="block mt-3 ml-auto"
+          >
+            Cập nhật giá
           </Button>
         </form>
 
@@ -260,13 +261,18 @@ export default function ViewEditRoomInfo({
           Xem chi tiết lịch sử cập nhật
         </a>
 
+        <p className="mt-4 md:mt-8 text-xs text-gray-500 italic">
+          Lưu ý: Không thể thay đổi giá thuê khi hợp đồng cho thuê của phòng này
+          còn hiệu lực.
+        </p>
+
         {isViewDetailHistory && (
           <div className="bg-white border border-neutral-300 p-4 mt-2 w-full rounded-md">
             <div className="space-y-3">
               <p className="font-medium">Lịch sử cập nhật giá phòng</p>
               <Table className="mt-2">
                 <CMSTableHeader
-                  className="border border-neutral-300"
+                  className="border border-neutral-300 rounded-lg"
                   columns={[
                     { key: "rent_price", title: "Giá thuê" },
                     { key: "effective_from", title: "Ngày bắt đầu" },
@@ -276,7 +282,7 @@ export default function ViewEditRoomInfo({
                 <TableBody>
                   {rentHistory.map((item) => (
                     <TableRow
-                      className="border border-neutral-300 text-xs"
+                      className="border border-neutral-300 text-xs rounded-lg"
                       key={item.id}
                     >
                       <TableCell>{formatCurrency(item.rent_price)}</TableCell>

@@ -96,13 +96,13 @@ export default function RevenueExpenditureTable() {
   }, []);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
-      <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center justify-between border-b border-gray-200 p-3 md:p-5 dark:border-gray-800">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Danh sách thu chi
           </h3>
         </div>
-        <div className="flex gap-3.5">
+        <div className="flex gap-3.5 items-center">
           <SingleFilterButtonGroup
             items={Object.entries(TransactionType).map(([value, label]) => ({
               label,
@@ -115,23 +115,22 @@ export default function RevenueExpenditureTable() {
 
           <SearchBar
             placeholder="Tìm kiếm"
-            className="ml-auto"
+            className="grow-0"
             handleOnChange={handleSearch}
             debounceTime={500}
           />
 
           <Button
             variant="outline"
-            className="py-1"
+            disabled={
+              isLoading ||
+              !transcriptions ||
+              transcriptions?.data.length < limit
+            }
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <FilterIcon className="size-4" /> Bộ lọc
           </Button>
-
-          <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-            <Upload className="size-4" />
-            Export
-          </button>
         </div>
       </div>
 
@@ -144,102 +143,104 @@ export default function RevenueExpenditureTable() {
           filterValues={filterValues}
         />
       )}
-      <Table className="w-full">
-        <CMSTableHeader
-          selectAll={
-            selectedTransactions.length === transcriptions?.data.length &&
-            transcriptions?.data.length > 0
-          }
-          columns={_tableHeader}
-          handleSelectAll={(isSelectAll) => {
-            if (isSelectAll) {
-              setSelectedTransactions(
-                transcriptions?.data.map((item) => item.id) || [],
-              );
-            } else {
-              setSelectedTransactions([]);
-            }
-          }}
-        />
-        <TableBody>
-          {(!transcriptions ||
-            transcriptions.data.length === 0 ||
-            isLoading) && (
-            <TableRow>
-              <TableCell className="w-full" colSpan={_tableHeader.length}>
-                <TableNotFound
-                  message={
-                    isLoading
-                      ? "Đang tải dữ liệu..."
-                      : "Hiện tại không tìm thấy dữ liệu"
-                  }
-                />
-              </TableCell>
-            </TableRow>
-          )}
-          {transcriptions?.data?.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell className="uppercase">
-                {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
-              </TableCell>
-              <TableCell>{item.categories.name}</TableCell>
-              <TableCell>{item.description}</TableCell>
-              <TableCell>{formatCurrency(item.amount)}</TableCell>
-              <TableCell>{item.transaction_date}</TableCell>
-              <TableCell>
-                {
-                  PaymentMethod[
-                    item.payment_method as unknown as keyof typeof PaymentMethod
-                  ]
-                }
-              </TableCell>
-
-              <TableCell>
-                <Badge
-                  variant="solid"
-                  className="min-w-[80px] !text-sm "
-                  color={
-                    item.type === ("income" as TransactionType)
-                      ? "success"
-                      : "error"
-                  }
-                >
+      <div className="max-w-full overflow-x-auto">
+        <Table>
+          <CMSTableHeader
+            // selectAll={
+            //   selectedTransactions.length === transcriptions?.data.length &&
+            //   transcriptions?.data.length > 0
+            // }
+            columns={_tableHeader}
+            // handleSelectAll={(isSelectAll) => {
+            //   if (isSelectAll) {
+            //     setSelectedTransactions(
+            //       transcriptions?.data.map((item) => item.id) || [],
+            //     );
+            //   } else {
+            //     setSelectedTransactions([]);
+            //   }
+            // }}
+          />
+          <TableBody>
+            {(!transcriptions ||
+              transcriptions.data.length === 0 ||
+              isLoading) && (
+              <TableRow>
+                <TableCell className="w-full" colSpan={_tableHeader.length}>
+                  <TableNotFound
+                    message={
+                      isLoading
+                        ? "Đang tải dữ liệu..."
+                        : "Hiện tại không tìm thấy dữ liệu"
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+            {transcriptions?.data?.map((item) => (
+              <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
+                <TableCell className="uppercase">
+                  {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
+                </TableCell>
+                <TableCell>{item.categories.name}</TableCell>
+                <TableCell>{item.description}</TableCell>
+                <TableCell>{formatCurrency(item.amount)}</TableCell>
+                <TableCell>{item.transaction_date}</TableCell>
+                <TableCell>
                   {
-                    TransactionType[
-                      item.type as unknown as keyof typeof TransactionType
+                    PaymentMethod[
+                      item.payment_method as unknown as keyof typeof PaymentMethod
                     ]
                   }
-                </Badge>
-              </TableCell>
+                </TableCell>
 
-              <TableCell>
-                <Trash
-                  className="size-4 cursor-pointer text-red-500"
-                  onClick={() => {
-                    setTransactionSelected(item.id);
-                    openModal();
-                  }}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>
+                  <Badge
+                    variant="solid"
+                    className="min-w-[80px] !text-sm "
+                    color={
+                      item.type === ("income" as TransactionType)
+                        ? "success"
+                        : "error"
+                    }
+                  >
+                    {
+                      TransactionType[
+                        item.type as unknown as keyof typeof TransactionType
+                      ]
+                    }
+                  </Badge>
+                </TableCell>
 
-          {selectedTransactions.length > 0 && (
-            <TableRow>
-              <TableCell colSpan={_tableHeader.length + 1}>
-                <div className="flex items-center justify-between">
-                  <p>Đã chọn {selectedTransactions.length}</p>
-                  <div>
-                    <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
-                      Xoá {selectedTransactions.length} hoá đơn
-                    </button>
+                <TableCell className="!min-w-fit">
+                  <Trash
+                    className="size-4 cursor-pointer text-red-500"
+                    onClick={() => {
+                      setTransactionSelected(item.id);
+                      openModal();
+                    }}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {selectedTransactions.length > 0 && (
+              <TableRow>
+                <TableCell colSpan={_tableHeader.length + 1}>
+                  <div className="flex items-center justify-between">
+                    <p>Đã chọn {selectedTransactions.length}</p>
+                    <div>
+                      <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                        Xoá {selectedTransactions.length} hoá đơn
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       {transcriptions && transcriptions?.data.length > limit && (
         <Pagination
           type="default"

@@ -13,9 +13,11 @@ interface MultiSelectProps {
   placeholder?: string;
   handleOnChange?: (selected: string[]) => void;
   disabled?: boolean;
+  id?: string;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
+  id,
   options,
   defaultSelected = [],
   placeholder,
@@ -48,12 +50,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   const selectedValuesText = selectedOptions.map(
     (value) =>
-      options.find((option) => option.value === value)?.label ||
-      (value === "all" ? "Tất cả" : ""),
+      options.find((option) => option.value === value && option.value !== "")
+        ?.label || (value === "all" ? "Tất cả" : ""),
   );
 
   return (
-    <div className="relative z-20 inline-block w-full">
+    <div id={id} className="relative z-40 inline-block w-full">
       <div className="relative flex flex-col items-center">
         <div onClick={toggleDropdown} className="w-full">
           <div className="mb-2 flex h-11 overflow-auto rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
@@ -134,7 +136,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               <div
                 className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800`}
                 onClick={() => {
-                  setSelectedOptions(options.map((option) => option.value));
+                  setSelectedOptions(
+                    selectedOptions.length !== options.length
+                      ? options.map((option) => option.value)
+                      : [],
+                  );
                   handleOnChange?.(options.map((option) => option.value));
                 }}
               >
@@ -146,7 +152,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   }`}
                 >
                   <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
-                    Tất cả
+                    {selectedOptions.length !== options.length
+                      ? "Tất cả"
+                      : "Bỏ tất cả"}
                   </div>
                 </div>
               </div>

@@ -14,11 +14,7 @@ export default function ModalCreateReading() {
       <Button onClick={openModal} className="mb-6 ml-auto" variant="primary">
         <PlusIcon className="size-4" strokeWidth={2} /> Thêm bản ghi
       </Button>
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="max-w-[80%] p-5 lg:p-10"
-      >
+      <Modal isOpen={isOpen} onClose={closeModal}>
         <EditViewReading />
       </Modal>
     </>

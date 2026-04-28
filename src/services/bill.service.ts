@@ -53,8 +53,12 @@ class BillService {
 
         if (key === "tracking_code") {
           query.ilike(key, `%${value}%`);
-        } else if (Array.isArray(value) && key === "month_date") {
-          query.gte(key, value[0]).lte(key, value[1]);
+        } else if (Array.isArray(value)) {
+          if (key === "month_date") {
+            query.gte(key, value[0]).lte(key, value[1]);
+          } else {
+            query.in(key, value);
+          }
         } else {
           query.eq(key, value);
         }
@@ -118,7 +122,7 @@ class BillService {
         services!inner (
           service_name,
           service_type,
-          unit,
+          unit_name,
           calculation_method
         )`,
       )

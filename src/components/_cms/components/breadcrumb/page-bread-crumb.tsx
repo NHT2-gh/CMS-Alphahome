@@ -20,15 +20,50 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
       >
         {pageTitle}
       </h2>
-      {links ? (
-        <nav>
-          <ol className="flex items-center gap-1.5">
-            <li className="inline-flex items-center gap-1.5 text-sm">
-              <CustomLink className="" href="/" variant="colored" color="info">
-                Home
-              </CustomLink>
+
+      <nav>
+        <ol className="flex items-center gap-1.5">
+          <li className="inline-flex items-center gap-1.5 text-sm">
+            <CustomLink className="" href="/" variant="colored" color="info">
+              Home
+            </CustomLink>
+            <svg
+              className="stroke-current"
+              width="17"
+              height="16"
+              viewBox="0 0 17 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+                stroke=""
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </li>
+
+          {links?.map((link) => (
+            <li key={link.label} className="group flex items-center gap-1.5">
+              {link.href ? (
+                <CustomLink
+                  className=""
+                  href={link.href}
+                  variant="colored"
+                  color="info"
+                >
+                  {link.label}
+                </CustomLink>
+              ) : (
+                <span className="text-sm text-gray-800 dark:text-white/90">
+                  {link.label}
+                </span>
+              )}
+
               <svg
-                className="stroke-current"
+                className="stroke-current group-last:hidden"
                 width="17"
                 height="16"
                 viewBox="0 0 17 16"
@@ -44,47 +79,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
                 />
               </svg>
             </li>
-
-            {links?.map((link) => (
-              <li key={link.label} className="group flex items-center gap-1.5">
-                {link.href ? (
-                  <CustomLink
-                    className=""
-                    href={link.href}
-                    variant="colored"
-                    color="info"
-                  >
-                    {link.label}
-                  </CustomLink>
-                ) : (
-                  <span className="text-sm text-gray-800 dark:text-white/90">
-                    {link.label}
-                  </span>
-                )}
-
-                <svg
-                  className="stroke-current group-last:hidden"
-                  width="17"
-                  height="16"
-                  viewBox="0 0 17 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
-                    stroke=""
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      ) : (
-        <Button onClick={() => route.back()}>Quay lại trang trước</Button>
-      )}
+          ))}
+        </ol>
+      </nav>
     </div>
   );
 };

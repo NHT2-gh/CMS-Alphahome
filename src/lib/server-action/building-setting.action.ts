@@ -20,7 +20,7 @@ export async function getBuildingSettingAction(
         service_id: String(service.services.id),
         service_name: service.services.service_name,
         service_type: service.services.service_type,
-        unit: service.services.unit,
+        unit: service.services.unit_name,
         calculation_method: service.services.calculation_method,
         unit_price: service.unit_price,
         updated_at: service.updated_at,

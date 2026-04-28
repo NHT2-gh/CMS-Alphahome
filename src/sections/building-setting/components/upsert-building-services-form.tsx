@@ -116,7 +116,7 @@ export default function UpsertBuildingServicesForm() {
                               label:
                                 service.service_name +
                                 " (" +
-                                (service.unit ||
+                                (service.unit_name ||
                                   CalculationMethod[
                                     service.calculation_method as unknown as keyof typeof CalculationMethod
                                   ]) +
@@ -143,7 +143,7 @@ export default function UpsertBuildingServicesForm() {
                           ),
                           {
                             value: "other-" + String(fields[index].service_id!),
-                            label: fields[index].unit!,
+                            label: fields[index].unit_name!,
                           },
                         ],
                       }}
@@ -206,13 +206,17 @@ export default function UpsertBuildingServicesForm() {
                             handleUpdateAddingRow(
                               key,
                               "calculation_method",
-                              service.unit
+                              service.unit_name
                                 ? "other-" + service.id
                                 : service.calculation_method,
                             );
 
-                            if (service.unit) {
-                              handleUpdateAddingRow(key, "unit", service.unit);
+                            if (service.unit_name) {
+                              handleUpdateAddingRow(
+                                key,
+                                "unit_name",
+                                service.unit_name,
+                              );
                             }
                           }
                         },
@@ -228,7 +232,7 @@ export default function UpsertBuildingServicesForm() {
                         value: addingItem.calculation_method.startsWith(
                           "other-",
                         )
-                          ? addingItem.unit
+                          ? addingItem.unit_name
                           : CalculationMethod[
                               addingItem.calculation_method as unknown as keyof typeof CalculationMethod
                             ],

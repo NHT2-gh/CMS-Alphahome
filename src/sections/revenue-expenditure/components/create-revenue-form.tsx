@@ -91,13 +91,14 @@ export default function CreateRevenueForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-6 gap-y-10 gap-x-6 border-b border-gray-200 pb-6 dark:border-gray-700"
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6 border-b border-gray-200 pb-6 dark:border-gray-700"
     >
       <FormField
         form={createRevenueForm}
         className="col-span-2"
         field={{
           name: "category_id",
+          required: true,
           label: "Hạng mục",
           type: "select",
           placeholder: "Chọn hạng mục",
@@ -116,8 +117,11 @@ export default function CreateRevenueForm() {
 
       <FormField
         form={createRevenueForm}
+        className="md:col-span-1 col-span-2"
         field={{
           id: "transaction_date",
+          required: true,
+
           name: "transaction_date",
           label: "Ngày giao dịch",
           type: "date",
@@ -127,9 +131,10 @@ export default function CreateRevenueForm() {
       />
       <FormField
         form={createRevenueForm}
-        className="col-span-1"
         field={{
           name: "type",
+          required: true,
+
           label: "Loại",
           type: "select",
           placeholder: "Chọn loại",
@@ -144,10 +149,11 @@ export default function CreateRevenueForm() {
 
       <FormField
         form={createRevenueForm}
-        className="col-span-1"
         field={{
           name: "amount",
-          label: "Số tiền (Auto fill với hạng mục mặc định)",
+          required: true,
+
+          label: "Số tiền",
           type: "number",
           placeholder: "Nhập số tiền",
           formatCurrency: true,
@@ -158,7 +164,7 @@ export default function CreateRevenueForm() {
         form={createRevenueForm}
         field={{
           name: "payment_method",
-          label: "Phương thức thanh toán",
+          label: "Thanh toán",
           type: "select",
           placeholder: "Chọn phương thức thanh toán",
           options: [
@@ -172,21 +178,9 @@ export default function CreateRevenueForm() {
 
       <FormField
         form={createRevenueForm}
-        className="col-span-4"
-        field={{
-          name: "description",
-          label: "Mô tả chi tiết",
-          type: "text",
-          placeholder: "Nhập mô tả chi tiết",
-        }}
-      />
-
-      <FormField
-        form={createRevenueForm}
-        className="col-span-2"
         field={{
           name: "room_id",
-          label: "Liên kết số phòng (nếu có)",
+          label: "Số phòng",
           type: "select",
           placeholder: "Chọn số phòng",
           options: [
@@ -202,7 +196,21 @@ export default function CreateRevenueForm() {
         }}
       />
 
-      <Button type="submit" className="w-[8rem] col-end-7 h-fit ml-auto">
+      <FormField
+        form={createRevenueForm}
+        className="col-span-2 lg:col-span-4"
+        field={{
+          name: "description",
+          label: "Mô tả chi tiết",
+          type: "text",
+          placeholder: "Nhập mô tả chi tiết",
+        }}
+      />
+
+      <Button
+        type="submit"
+        className="w-full md:w-[8rem] col-span-2 md:col-span-1 md:col-end-4 lg:col-end-7 h-fit self-end"
+      >
         Thêm
       </Button>
     </form>

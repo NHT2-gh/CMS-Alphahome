@@ -4,7 +4,7 @@ import {
   createRoomFormSchema,
   CreateRoomFormType,
 } from "@/schemas/validation/admin.validation";
-import DropzoneComponent, {
+import ImagesDropzone, {
   ImageItem,
 } from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
@@ -16,7 +16,7 @@ import { FormField } from "@/components/_cms/components/form";
 import { uploadImage } from "@/supabase/storage/storageClinets";
 import { useCreateRoom } from "@/hooks/queries/use-room";
 import { showToast } from "@/lib/toast";
-import ComponentCard from "@/components/common/ComponentCard";
+import { ComponentCard } from "@/components/_cms/common/component-card";
 
 export default function CreateRoomForm() {
   const { building } = useBuilding();
@@ -169,7 +169,7 @@ export default function CreateRoomForm() {
         </form>
       </ComponentCard>
 
-      <DropzoneComponent
+      <ImagesDropzone
         images={images}
         isUploading={isUploading}
         onChange={(images) => {

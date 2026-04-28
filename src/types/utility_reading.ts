@@ -28,6 +28,7 @@ export interface BuildingService {
   services: Service;
   building_id: string;
   unit_price: number;
+  unit_name?: string;
   updated_at: string;
   updated_by: string;
 }
@@ -38,7 +39,7 @@ export interface BuildingServiceCreateDTO {
   service_type: ServiceType;
   unit_price: number;
   calculation_method: keyof typeof CalculationMethod;
-  unit?: string;
+  unit_name?: string;
 }
 
 export interface UtilityReadingDetail {

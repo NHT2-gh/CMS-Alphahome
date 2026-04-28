@@ -23,25 +23,31 @@ export default function BillPreviewModal({
   const { isOpen, openModal, closeModal } = useModal();
   const { building } = useBuilding();
   const billRef = useRef<HTMLDivElement>(null);
-  const { copyImage } = useCopyImage();
+  const { isMobile, copyImage } = useCopyImage();
   const [loading, setLoading] = useState(false);
-
+  const [resultLog, setResultLog] = useState<string | undefined>(undefined);
   const handleCopy = async () => {
-    try {
-      setLoading(true);
-      await copyImage(billRef.current);
-      alert("Đã copy bill dưới dạng ảnh!");
-    } catch (err) {
-      console.error(err);
-      alert("Copy thất bại!");
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    const result = await copyImage(billRef.current);
+
+    if (result.method === "clipboard") {
+      setResultLog("Đã copy ảnh vào clipboard");
+    } else if (result.method === "download") {
+      setResultLog("Trình duyệt không hỗ trợ copy, đã tải ảnh");
+    } else {
+      setResultLog("Có lỗi xảy ra");
     }
+
+    setLoading(false);
   };
 
   return (
     <>
-      <Button variant="outline" onClick={openModal}>
+      <Button
+        variant="outline"
+        onClick={openModal}
+        className="flex-1 md:flex-none"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -66,22 +72,17 @@ export default function BillPreviewModal({
         </svg>
         Xem phiếu
       </Button>
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="relative max-w-[720px] m-5 rounded-3xl bg-white dark:bg-gray-900"
-      >
-        <div ref={billRef}>
-          <div className="flex items-center justify-between px-6 py-4">
-            <h3 className="text-lg text-gray-700 dark:text-gray-500">
-              Phiếu: #{bill.tracking_code}
-            </h3>
-          </div>
-          <div className="max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <Modal isOpen={isOpen} onClose={closeModal} className="relative p-0 ">
+        <div ref={billRef} className="p-4 md:p-8 ">
+          <h3 className="text-lg text-gray-700 dark:text-gray-500">
+            Phiếu: #{bill.tracking_code}
+          </h3>
+
+          <div className="">
             {/* <p className="mb-5">
               Mã phiếu:<b> #{bill.tracking_code}</b>
             </p> */}
-            <div className="mb-9 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className=" mb-2 md:mb-9 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Từ
@@ -104,7 +105,7 @@ export default function BillPreviewModal({
                 </span>
               </div>
 
-              <div className="sm:text-right">
+              <div className="md:text-right">
                 <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Đến
                 </span>
@@ -136,12 +137,20 @@ export default function BillPreviewModal({
             <BillDetailTable bill={bill} baseRent={bill.base_rent} />
 
             <div className="flex items-center justify-center gap-2">
-              <Image
+              {/* <Image
                 width={200}
                 height={179}
                 src={`/images/payment-qr/${building?.id}.webp`}
                 alt={`Payment QR of builiding ${building?.code}`}
-              />
+              /> */}
+
+              <div
+                style={{
+                  minWidth: "200px",
+                  minHeight: "179px",
+                  backgroundImage: `url(/images/payment-qr/${building?.id}.webp)`,
+                }}
+              ></div>
               <div className="space-y-3">
                 <h4>
                   Chủ tài khoản: <br />
@@ -161,13 +170,17 @@ export default function BillPreviewModal({
               </div>
             </div>
           </div>
+        </div>
+        <div className="absolute bottom-5 left-5 flex gap-4 items-center">
           <button
-            className="bg-blue-100 p-2 rounded-2xl absolute bottom-5 left-5"
+            className="bg-blue-100 p-2 rounded-2xl "
             onClick={handleCopy}
             disabled={loading}
           >
             {loading ? "Đang xử lý..." : "📋 Copy phiếu"}
           </button>
+
+          {resultLog && <span>{resultLog}</span>}
         </div>
       </Modal>
     </>

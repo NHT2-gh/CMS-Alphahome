@@ -23,7 +23,7 @@ export default function SingleFilterButtonGroup({
   return (
     <div
       className={cn(
-        "hidden h-11 items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 lg:inline-flex dark:bg-gray-900",
+        "hidden h-11 min-w-fit items-center gap-0.5 p-0.5 rounded-lg bg-gray-100 lg:inline-flex dark:bg-gray-900",
         className,
       )}
     >
@@ -32,11 +32,14 @@ export default function SingleFilterButtonGroup({
           onChange(null);
           setCurrentValue(null);
         }}
-        className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
-          currentValue === null
-            ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-            : "text-gray-500 dark:text-gray-400"
-        }`}
+        className={cn(
+          "text-theme-sm h-10 shrink-0 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white",
+          {
+            "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800":
+              currentValue === null,
+            "text-gray-500 dark:text-gray-400": currentValue !== null,
+          },
+        )}
       >
         Tất cả
       </button>
@@ -47,11 +50,14 @@ export default function SingleFilterButtonGroup({
             onChange(item.value);
             setCurrentValue(item.value);
           }}
-          className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
-            currentValue === item.value
-              ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-              : "text-gray-500 dark:text-gray-400"
-          }`}
+          className={cn(
+            "text-theme-sm h-10 shrink-0 w-fit rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white",
+            {
+              "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800":
+                currentValue === item.value,
+              "text-gray-500 dark:text-gray-400": currentValue !== item.value,
+            },
+          )}
         >
           {item.label}
         </button>

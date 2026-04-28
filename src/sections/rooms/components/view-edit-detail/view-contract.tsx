@@ -1,10 +1,9 @@
-import ComponentCard from "@/components/common/ComponentCard";
-import Badge from "@/components/ui/badge/Badge";
-import Button from "@/components/ui/button/Button";
-import { Contract } from "@/types/contract";
-import { formatDateTime, formatCurrency } from "@/utils/format-data";
-import { UserCircle2, UserIcon } from "lucide-react";
 import React from "react";
+import { UserCircle2 } from "lucide-react";
+import { Contract } from "@/types/contract";
+import Badge from "@/components/ui/badge/Badge";
+import { formatDateTime, formatCurrency } from "@/utils/format-data";
+import { ComponentCard } from "@/components/_cms/common/component-card";
 
 interface ViewContractProps {
   contract?: Contract;
@@ -15,9 +14,9 @@ export default function ViewContract({ contract }: ViewContractProps) {
     <ComponentCard title="Thông tin hợp đồng" className="">
       {contract ? (
         <section className="space-y-3">
-          <ul className="grid grid-cols-2 gap-3">
-            <li className="col-span-2">
-              <b>Mã hợp đồng:</b> {contract.id.split("-")[0].toUpperCase()}
+          <ul className="grid md:grid-cols-2 gap-3">
+            <li className="md:col-span-2">
+              <b>Mã hợp đồng:</b> {contract.id.split("-")[0].toUpperCase()}...
             </li>
 
             <li>
@@ -42,7 +41,7 @@ export default function ViewContract({ contract }: ViewContractProps) {
             </li>
           </ul>
 
-          <div className="space-y-2">
+          <div className="space-y-2 pt-3 border-t border-dashed">
             <h3 className="text-lg font-semibold inline-flex gap-2 text-neutral-800">
               <UserCircle2 /> Thông tin người thuê
             </h3>

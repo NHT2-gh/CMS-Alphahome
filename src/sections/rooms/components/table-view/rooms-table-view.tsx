@@ -110,7 +110,7 @@ export default function RoomsTable() {
               <TableRow
                 onDoubleClick={() => {
                   router.push(
-                    APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.room_id),
+                    APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.code),
                   );
                 }}
                 className={cn(

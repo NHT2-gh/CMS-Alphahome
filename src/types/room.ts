@@ -34,6 +34,7 @@ export interface Room {
   furniture_status: FurnitureStatus;
   description: string;
   images: string[];
+  status: keyof typeof RoomStatus;
 }
 
 export interface RoomDetail extends Room {

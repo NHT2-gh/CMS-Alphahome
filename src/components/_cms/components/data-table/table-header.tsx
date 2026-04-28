@@ -30,11 +30,14 @@ export default function CMSTableHeader({
         className,
       )}
     >
-      <TableRow className="">
+      <TableRow>
         {handleSelectAll ? (
           <TableCell
             isHeader
-            className="font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
+            className={cn(
+              "font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start",
+              { "hidden md:table-cell": columns[0].isHiddenOnMobile },
+            )}
           >
             <Checkbox
               id={columns[0].key}
@@ -46,7 +49,10 @@ export default function CMSTableHeader({
         ) : (
           <TableCell
             isHeader
-            className="font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start"
+            className={cn(
+              "font-medium text-gray-500 px-2 sm:px-6 text-theme-xs dark:text-gray-400 text-start",
+              { "hidden md:table-cell": columns[0].isHiddenOnMobile },
+            )}
           >
             {columns[0].title}
           </TableCell>

@@ -1,7 +1,12 @@
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import { UpsertBuildingServiceType } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
-import { RoomServiceExtra, Service, ServiceType } from "@/types/bill";
+import {
+  BillServiceDetail,
+  RoomServiceExtra,
+  Service,
+  ServiceType,
+} from "@/types/bill";
 import { MutationResult } from "@/types/common";
 import { BuildingService } from "@/types/utility_reading";
 
@@ -12,7 +17,7 @@ class BuildingServicesService {
     this.tableName = "services";
     this.tableRoomServiceExtra = "room_service_extras";
   }
-  async getRoomServiceExtra(roomId: string): Promise<RoomServiceExtra[]> {
+  async getRoomServiceExtra(roomId: string): Promise<BillServiceDetail[]> {
     const query = supabase
       .from(this.tableRoomServiceExtra)
       .select(
@@ -62,7 +67,7 @@ class BuildingServicesService {
             service_name,
             service_type,
             calculation_method,
-            unit
+            unit_name
           )`,
       )
       .eq("building_id", buildingId);

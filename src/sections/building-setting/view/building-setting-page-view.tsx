@@ -11,7 +11,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getBuildingSettingAction } from "@/lib/server-action/building-setting.action";
 import { useBuilding } from "@/context/BuildingContext";
-import ComponentCard from "@/components/common/ComponentCard";
+import { ComponentCard } from "@/components/_cms/common/component-card";
 import {
   UpdateBuildingInfoForm,
   UpsertBuildingServicesForm,

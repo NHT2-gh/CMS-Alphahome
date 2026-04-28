@@ -161,10 +161,11 @@ const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
           onUpload?.(images);
         }}
         disabled={
+          !images ||
           images?.filter((item) => item.status === "idle").length === 0 ||
           isUploading
         }
-        className="absolute top-3 right-3 p-2"
+        className="absolute top-1 md:top-2 right-3 p-2"
       >
         {isUploading ? <Loader2 className="animate-spin" /> : <UploadCloud />}
       </Button>

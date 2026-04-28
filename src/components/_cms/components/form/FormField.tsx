@@ -68,9 +68,11 @@ export default function FormField({
   return (
     <div className={className}>
       {field.type !== "switch" && (
-        <Label className={`${!field.label && "h-0"} }`} htmlFor={field.id}>
+        <Label className={`${!field.label && "h-0"} }`} htmlFor={field.name}>
           {field.label}
-          {field.required && <span className="text-error-500">*</span>}
+          {field.required && (
+            <span className="text-error-500 ml-1 align-middle">*</span>
+          )}
         </Label>
       )}
 
@@ -113,6 +115,7 @@ export default function FormField({
             render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <FieldComponent
                 {...field}
+                id={field.name}
                 disabled={disabled}
                 handleOnChange={(
                   value: string | Date,

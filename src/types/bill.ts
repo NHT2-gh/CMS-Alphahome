@@ -43,7 +43,7 @@ export interface Service {
   service_name: string;
   service_type: ServiceType;
   calculation_method: keyof typeof CalculationMethod;
-  unit?: string;
+  unit_name?: string;
 }
 
 export interface RoomServiceExtra {
@@ -60,7 +60,8 @@ export interface BillServiceDetail {
   services: Service;
   quantity: number;
   unit_price: number;
-  total_amount: number;
+  room_id?: string;
+  total_amount?: number;
 }
 
 export interface CreateSingleMonthlyBillResponse {

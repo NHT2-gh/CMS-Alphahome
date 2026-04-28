@@ -23,7 +23,7 @@ export default function FilterBoxRender({
     <div
       slot="filter-box"
       className={cn(
-        "p-3 border rounded-lg bg-neutral-50 grid gap-5 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]",
+        "p-3 border rounded-lg bg-neutral-50 grid gap-5 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]",
         className,
       )}
     >

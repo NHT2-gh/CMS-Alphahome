@@ -2,7 +2,7 @@ import { handlePostgresError } from "@/lib/error/postgres-error";
 import { supabase } from "@/supabase/supabaseClients";
 import { MutationResult } from "@/types/common";
 import { RoomRentHistory } from "@/types/room";
-import { formatDate, formatDateTime } from "@/utils/format-data";
+import { formatDateTime } from "@/utils/format-data";
 
 class RentHistory {
   private tableName: string;

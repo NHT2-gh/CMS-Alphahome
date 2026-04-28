@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import React, { useRef, useEffect } from "react";
 
 export interface ModalProps {
@@ -6,6 +7,7 @@ export interface ModalProps {
   onClose: () => void;
   className?: string;
   children: React.ReactNode;
+  ref?: React.RefObject<HTMLDivElement | null>;
   showCloseButton?: boolean; // New prop to control close button visibility
   isFullscreen?: boolean; // Default to false for backwards compatibility
 }
@@ -15,6 +17,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   children,
   className,
+  ref,
   showCloseButton = true, // Default to true for backwards compatibility
   isFullscreen = false,
 }) => {
@@ -50,27 +53,25 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  const contentClasses = isFullscreen
-    ? "w-full h-full"
-    : "relative w-full rounded-3xl bg-white  dark:bg-gray-900";
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999">
-      {!isFullscreen && (
-        <div
-          className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
-          onClick={onClose}
-        ></div>
-      )}
+    <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999 md:pt-[calc(4rem+4.875rem)] md:pb-[4rem] md:pl-[5.625rem]">
+      <div
+        className="hidden md:block fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
+        onClick={onClose}
+      ></div>
+
       <div
         ref={modalRef}
-        className={`${contentClasses}  ${className}`}
+        className={cn(
+          "w-screen h-screen max-h-screen p-4 bg-white relative md:w-[90%] md:h-fit md:max-h-[80vh] md:overflow-y-auto md:rounded-3xl md:bg-white md:dark:bg-gray-900 md:p-8",
+          className,
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11"
+            className="absolute right-3 top-5 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11"
           >
             <svg
               width="24"
@@ -88,7 +89,9 @@ export const Modal: React.FC<ModalProps> = ({
             </svg>
           </button>
         )}
-        <div>{children}</div>
+        <div ref={ref} className="max-h-full overflow-scroll">
+          {children}
+        </div>
       </div>
     </div>
   );

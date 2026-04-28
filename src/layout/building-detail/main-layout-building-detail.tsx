@@ -56,7 +56,7 @@ export default function MainLayoutBuildingDetail({
   const { building } = useBuilding();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState<TabData["id"]>(
-    pathname.split("/")[5] || "overview",
+    pathname.split("/")[4] || "overview",
   );
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function MainLayoutBuildingDetail({
   ];
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 overflow-visible">
       <div className="border-b border-gray-200 dark:border-gray-800">
         <nav className="flex space-x-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-600">
           {tabData.map((tab) => (

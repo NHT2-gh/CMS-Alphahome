@@ -110,11 +110,7 @@ export default function UtilityReadingPageView() {
       )}
 
       {dateSelected && (
-        <Modal
-          isOpen={isOpen}
-          onClose={closeModal}
-          className="max-w-[80%] p-5 lg:p-10"
-        >
+        <Modal isOpen={isOpen} onClose={closeModal} className="py-4 md:py-8">
           <EditViewReading rangeDateSelected={dateSelected} />
         </Modal>
       )}

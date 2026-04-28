@@ -1,11 +1,10 @@
 import z from "zod";
 
 export const createInvoiceFormSchema = z.object({
-  bill_code: z.string().min(1, "Bill code is required"),
   room_selected: z
     .union([z.string(), z.array(z.string()).min(1, "Room is required")])
     .optional(),
-  month_date: z.string(),
+  month_date: z.string().min(1, "Kì thanh toán trường bắt buộc"),
 });
 
 export const createUtilityReadingFormSchema = z.object({
@@ -66,7 +65,7 @@ export const upsertBuildingServiceSchema = z.object({
   unit_price: z.number().min(1, "Unit price is required"),
   service_name: z.string().optional(),
   service_type: z.string().optional(),
-  unit: z.string().nullable().optional(),
+  unit_name: z.string().nullable().optional(),
   calculation_method: z.string().optional(),
   updated_at: z.string().optional(),
   updated_by: z.string().nullable().optional(),

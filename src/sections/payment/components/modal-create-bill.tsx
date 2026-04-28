@@ -50,9 +50,7 @@ export default function ModalCreateBill() {
   >(null);
   const form = useForm<CreateInvoiceFormType>({
     resolver: zodResolver(createInvoiceFormSchema),
-    defaultValues: {
-      bill_code: generateBillCode(),
-    },
+    defaultValues: {},
   });
   const roomCode = useWatch({
     control: form.control,
@@ -96,7 +94,6 @@ export default function ModalCreateBill() {
         resultModal.openModal();
       } else {
         const res = await createSingleBill.mutateAsync({
-          trackingCode: data.bill_code,
           month_date: data.month_date,
           room_id: data.room_selected as string,
           building_id: building?.id as string,
@@ -121,16 +118,12 @@ export default function ModalCreateBill() {
       <Modal
         isOpen={createModal.isOpen}
         onClose={createModal.closeModal}
-        className="relative max-w-[70vw] m-5 rounded-3xl bg-white dark:bg-gray-900"
+        className=""
       >
-        <div className="flex items-center justify-between px-6 py-4">
-          <h3 className="text-xl font-bold text-gray-700 dark:text-gray-500">
-            Tạo phiếu thu
-          </h3>
-        </div>
-        <div className="max-h-[90vh] min-h-[50vh] overflow-y-auto p-4 sm:p-6">
+        <h2 className="text-2xl font-bold mb-5">Tạo phiếu thu</h2>
+        <div className="">
           <div className="rounded-2xl border border-gray-200 bg-white  dark:border-gray-800 dark:bg-white/3">
-            <div className="p-6 space-y-4">
+            <div className="p-4 md:p-6 space-y-4">
               <h4 className="flex items-center gap-3 font-semibold">
                 <Receipt /> Thông tin hoá đơn
               </h4>
@@ -139,16 +132,6 @@ export default function ModalCreateBill() {
                 className="grid grid-cols-1 gap-5 md:grid-cols-2"
                 onSubmit={handleSubmit(onSubmit)}
               >
-                <FormField
-                  form={form}
-                  field={{
-                    name: "bill_code",
-                    label: "Số hóa đơn",
-                    type: "text",
-                    readOnly: true,
-                  }}
-                />
-
                 <FormField
                   form={form}
                   field={{
@@ -243,18 +226,8 @@ export default function ModalCreateBill() {
               className="mt-4 float-end"
               disabled={(!contract && !isMutiRoom) || !roomCode}
             >
-              {isLoading || isSubmitting ? (
-                <></>
-              ) : isSubmitted ? (
-                <CheckCheck />
-              ) : (
-                <Save />
-              )}
-              {isLoading || isSubmitting
-                ? "Đang xử lý..."
-                : isSubmitted
-                  ? "Đã tạo phiếu"
-                  : "Tạo phiếu thu"}
+              {isLoading || isSubmitting ? <></> : <Save />}
+              {isLoading || isSubmitting ? "Đang xử lý..." : "Tạo phiếu thu"}
             </Button>
 
             {log &&

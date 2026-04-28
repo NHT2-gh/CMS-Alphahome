@@ -25,6 +25,7 @@ import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
 import { useModal } from "@/hooks/useModal";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { cn } from "@/lib/utils";
+import TableNotFound from "@/components/_cms/common/table/state/not_found";
 
 interface EditViewReadingProp {
   rangeDateSelected?: [string, string];
@@ -48,7 +49,7 @@ export default function EditViewReading({
     rangeDateSelected
       ? rangeDateSelected
       : [
-          `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-01`,
+          `${currentDate.getFullYear()}-${currentDate.getMonth() + 2}-01`,
           formatDateTime(new Date().toISOString()),
         ],
   );
@@ -221,11 +222,11 @@ export default function EditViewReading({
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-3 md:gap-5">
       {/* <FormInModal /> */}
       <div>
         <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
-          Thông tin bản ghi mới của tòa nhà {building?.code}
+          Thông tin bản ghi của tòa nhà {building?.code}
         </h4>
 
         {utilityReadingByDate && utilityReadingByDate?.length > 0 && (
@@ -240,45 +241,16 @@ export default function EditViewReading({
           </span>
         )}
       </div>
-      <div className="flex justify-between items-end">
-        {/* {!rangeDateSelected && ( */}
-        <div className="flex items-center gap-10">
-          {/* <FormField
-              field={{
-                required: true,
-                label: "Thời gian ghi chỉ số",
-                type: "text",
-                readOnly: true,
-                value: formatDateTime(new Date().toISOString(), {
-                  withTime: true,
-                }),
-              }}
-            /> */}
 
-          <FormField
-            field={{
-              id: "month_date",
-              label: "Kì ghi chỉ số",
-              type: "text",
-              readOnly: true,
-              value: `Tháng ${rangeDate[0].split("-")[1]}`,
-            }}
-          />
-        </div>
-        {/* )} */}
-
-        <Button
-          disabled={!isEdit}
-          className="w-fit h-fit ml-auto"
-          onClick={() => onSubmit(readings)}
-        >
-          {rangeDateSelected
-            ? "Cập nhật bảng ghi"
-            : allowAutoFill
-              ? "Tạo bảng ghi mới"
-              : "Cập nhật bảng ghi"}
-        </Button>
-      </div>
+      <FormField
+        field={{
+          id: "month_date",
+          label: "Kì ghi chỉ số",
+          type: "text",
+          readOnly: true,
+          value: `Tháng ${rangeDate[0].split("-")[1]}`,
+        }}
+      />
 
       <Checkbox
         id="isFirstReading"
@@ -309,12 +281,23 @@ export default function EditViewReading({
           Lỗi: {errorMessage}
         </span>
       )}
+      <Button
+        disabled={!isEdit}
+        className="w-fit h-fit ml-auto"
+        onClick={() => onSubmit(readings)}
+      >
+        {rangeDateSelected
+          ? "Cập nhật bảng ghi"
+          : allowAutoFill
+            ? "Tạo bảng ghi mới"
+            : "Cập nhật bảng ghi"}
+      </Button>
 
       <h4 className="text-lg font-medium text-gray-800 dark:text-white/90">
         Danh sách chỉ số
       </h4>
 
-      <div className="w-full grow space-y-2 border border-neutral-200 rounded-xl max-h-[40vh] overflow-y-scroll">
+      <div className="w-full grow space-y-2 border border-neutral-200 rounded-xl max-h-[55vh] md:max-h-[40vh] overflow-y-scroll">
         <Table className="w-full text-left  text-sm text-gray-700">
           <CMSTableHeader
             className="bg-neutral-100  sticky top-0 z-10"
@@ -341,8 +324,14 @@ export default function EditViewReading({
           <TableBody className="max-h-[300px] min-h-[300px] w-full overflow-y-scroll">
             {isLoading || isFetching ? (
               <TableRow>
-                <TableCell className="text-center">
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                <TableCell className="w-full h-fit text-base" colSpan={7}>
+                  <TableNotFound
+                    message={
+                      isLoading
+                        ? "Đang tải dữ liệu..."
+                        : "Hiện tại không tìm thấy hoá đơn nào"
+                    }
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -356,7 +345,7 @@ export default function EditViewReading({
                     <Input
                       disabled={isFirstReading}
                       min="0"
-                      className="max-w-[120px] max-h-10"
+                      className="min-w-[80px] max-w-[120px] max-h-10"
                       value={
                         readings[`${room.room_id}-electricity`]
                           ?.previous_reading || 0
@@ -376,7 +365,7 @@ export default function EditViewReading({
                   <TableCell key="current_reading_electricity">
                     <Input
                       min="0"
-                      className="max-w-[120px] max-h-10"
+                      className="min-w-[80px] max-w-[120px] max-h-10"
                       value={
                         readings[`${room.room_id}-electricity`]
                           ?.current_reading || 0
@@ -411,7 +400,7 @@ export default function EditViewReading({
                     <Input
                       disabled={isFirstReading}
                       min="0"
-                      className="max-w-[120px] max-h-10"
+                      className="min-w-[80px] max-w-[120px] max-h-10"
                       value={
                         readings[`${room.room_id}-water`]?.previous_reading || 0
                       }
@@ -429,7 +418,7 @@ export default function EditViewReading({
                   <TableCell key="current_reading_water">
                     <Input
                       min="0"
-                      className="max-w-[120px] max-h-10"
+                      className="min-w-[80px] max-w-[120px] max-h-10"
                       value={
                         readings[`${room.room_id}-water`]?.current_reading || 0
                       }

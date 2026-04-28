@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ChevronDownIcon } from "@/icons";
 import {
   Bill,
   BillServiceDetail,
@@ -8,53 +7,26 @@ import {
   RoomServiceExtra,
 } from "@/types/bill";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
-import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import {
-  useAddServiceToBill,
-  useBillServicesDetail,
-} from "@/hooks/queries/use-bill";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useBillServicesDetail } from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
-import { FormField } from "@/components/_cms/components/form";
-import { useForm, useWatch } from "react-hook-form";
-import {
-  addBillServiceDetaiFormSchema,
-  AddBillServiceDetaiFormType,
-} from "@/schemas/validation/admin.validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Button from "@/components/ui/button/Button";
-import { InfoIcon, Loader2, Trash } from "lucide-react";
-import {
-  useGetServices,
-  useGetRoomServiceExtra,
-} from "@/hooks/queries/use-service";
+import { Loader2, Trash } from "lucide-react";
+import { useGetRoomServiceExtra } from "@/hooks/queries/use-service";
+import AddServiceForm from "./add-service-form";
+import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
 
-interface Product {
-  name: string;
-  price: number;
-  quantity: number;
-  discount: number;
-  total: string;
-}
-
-interface FormData {
-  name: string;
-  price: number;
-  quantity: number;
-  discount: number;
-}
-
-const _tableHeader: { key: keyof BillServiceDetail | string; title: string }[] =
-  [
-    {
-      key: "id",
-      title: "S. No.",
-    },
-    { key: "service_name", title: "Tên dịch vụ" },
-    { key: "calculation_method", title: "Đơn vị tính" },
-    { key: "quanlity", title: "Số lượng" },
-    { key: "unit_price", title: "Đơn giá" },
-    { key: "total", title: "Tổng" },
-  ];
+const _tableHeader: TableHeaderColumn[] = [
+  {
+    key: "id",
+    title: "S. No.",
+    isHiddenOnMobile: true,
+  },
+  { key: "service_name", title: "Tên dịch vụ" },
+  { key: "calculation_method", title: "Đơn vị tính", isHiddenOnMobile: true },
+  { key: "quanlity", title: "Số lượng" },
+  { key: "unit_price", title: "Đơn giá" },
+  { key: "total", title: "Tổng" },
+];
 
 export default function BillDetailTable({
   bill,
@@ -68,84 +40,34 @@ export default function BillDetailTable({
   const { data: billServicesDetail, isLoading: isLoadingBillServicesDetail } =
     useBillServicesDetail(bill.id);
   const { data: roomServiceExtra } = useGetRoomServiceExtra(bill.room_id);
-  const { data: servicesExtra } = useGetServices("extra");
-  const createBillServiceDetail = useAddServiceToBill();
-  const addServiceForm = useForm<AddBillServiceDetaiFormType>({
-    resolver: zodResolver(addBillServiceDetaiFormSchema),
-    defaultValues: {
-      service_id: "",
-      quantity: 0,
-      calculation_method: "",
-      unit_price: 0,
-    },
-  });
   const [billServices, setBillServices] = useState<
     BillServiceDetail[] | undefined
   >(undefined);
-  const [roomServiceExtras, setRoomServiceExtras] = useState<
-    RoomServiceExtra[] | undefined
-  >(undefined);
-  const service_id = useWatch({
-    control: addServiceForm.control,
-    name: "service_id",
-  });
-  const quantity = useWatch({
-    control: addServiceForm.control,
-    name: "quantity",
-  });
-  const unit_price = useWatch({
-    control: addServiceForm.control,
-    name: "unit_price",
-  });
+  const [openAddServiceForm, setOpenServiceForm] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (service_id) {
-      const service = servicesExtra?.find(
-        (item) => String(item.id) === String(service_id),
-      );
-
-      if (service) {
-        addServiceForm.setValue(
-          "calculation_method",
-          service.unit ||
-            CalculationMethod[
-              service.calculation_method as unknown as keyof typeof CalculationMethod
-            ],
-        );
-      }
-    }
-  }, [service_id]);
-
-  const {
-    handleSubmit,
-    formState: { isLoading, isSubmitted },
-  } = addServiceForm;
-
-  const handleDelete = (index: number): void => {
-    setRoomServiceExtras((prev) => prev?.filter((_, i) => i !== index));
-  };
-
-  const onSubmit = (data: AddBillServiceDetaiFormType): void => {
-    try {
-      const result = createBillServiceDetail.mutateAsync({
-        bill_id: bill.id,
-        service_id: data.service_id,
-        quantity: data.quantity,
-        unit_price: data.unit_price,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDeleteServiceExtra = (id: string): void => {
+    console.log("id", id);
   };
 
   useEffect(() => {
-    console.log(billServicesDetail);
-    setBillServices(billServicesDetail);
-  }, [billServicesDetail]);
-
-  useEffect(() => {
-    setRoomServiceExtras(roomServiceExtra);
-  }, [roomServiceExtra]);
+    setBillServices([
+      {
+        id: "0",
+        unit_price: baseRent,
+        service_id: "0",
+        quantity: 1,
+        total_amount: baseRent,
+        services: {
+          id: "0",
+          calculation_method: "per_room",
+          service_name: "Tiền phòng",
+          service_type: "fixed",
+        },
+      } as BillServiceDetail,
+      ...(billServicesDetail || []),
+      ...(roomServiceExtra || []),
+    ]);
+  }, [billServicesDetail, roomServiceExtra]);
 
   const total: number = billServices
     ? billServices.reduce(
@@ -164,17 +86,21 @@ export default function BillDetailTable({
               Không có dịch vụ nào được thêm
             </div>
           ) : (
-            <table className="min-w-full text-left text-sm text-gray-700 dark:border-gray-800">
+            <Table className="min-w-full text-left text-sm text-gray-700 dark:border-gray-800">
               <CMSTableHeader columns={_tableHeader} />
               <TableBody className="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-white/3">
-                <TableRow>
-                  <TableCell>1</TableCell>
-                  <TableCell>Tiền phòng</TableCell>
-                  <TableCell>{CalculationMethod.per_room}</TableCell>
-                  <TableCell>1</TableCell>
+                {/* <TableRow>
+                  <TableCell className="hidden md:table-cell w-[50px] text-center">
+                    1
+                  </TableCell>
+                  <TableCell className="min-w-[6rem]">Tiền phòng</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {CalculationMethod.per_room}
+                  </TableCell>
+                  <TableCell className="max-w-[3.125rem]">1</TableCell>
                   <TableCell>{formatCurrency(baseRent)}</TableCell>
                   <TableCell>{formatCurrency(baseRent)}</TableCell>
-                </TableRow>
+                </TableRow> */}
                 {isLoadingBillServicesDetail ? (
                   <TableRow>
                     <TableCell className="w-full">
@@ -183,11 +109,15 @@ export default function BillDetailTable({
                   </TableRow>
                 ) : (
                   billServices?.map((service, idx) => (
-                    <TableRow key={service.id}>
-                      <TableCell>{idx + 2}</TableCell>
-                      <TableCell>{service.services.service_name}</TableCell>
-                      <TableCell>
-                        {service.services.unit ||
+                    <TableRow key={service.id} className="">
+                      <TableCell className="hidden md:table-cell w-[50px] text-center">
+                        {idx + 1}
+                      </TableCell>
+                      <TableCell className="min-w-[6rem]">
+                        {service.services.service_name}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {service.services.unit_name ||
                           CalculationMethod[
                             service.services
                               .calculation_method as unknown as keyof typeof CalculationMethod
@@ -198,13 +128,20 @@ export default function BillDetailTable({
                         {formatCurrency(service.unit_price)}
                       </TableCell>
                       <TableCell>
-                        {formatCurrency(service.total_amount)}
+                        {formatCurrency(
+                          service.total_amount ??
+                            service.unit_price * service.quantity,
+                        )}
                       </TableCell>
 
                       {!isPreview &&
                         service.services.service_type === "extra" && (
-                          <TableCell className="max-w-[20px] !pl-2">
-                            <button onClick={() => handleDelete(idx)}>
+                          <TableCell className="!w-[50px] !pl-2">
+                            <button
+                              onClick={() =>
+                                handleDeleteServiceExtra(service.service_id)
+                              }
+                            >
                               <Trash className="size-4 text-red-400" />
                             </button>
                           </TableCell>
@@ -212,133 +149,25 @@ export default function BillDetailTable({
                     </TableRow>
                   ))
                 )}
-
-                {roomServiceExtras?.map((item, idx) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      {idx + (billServices?.length || 0) + 2}
-                    </TableCell>
-                    <TableCell>{item.services.service_name}</TableCell>
-                    <TableCell>
-                      {item.services.unit ||
-                        CalculationMethod[
-                          item.services
-                            .calculation_method as unknown as keyof typeof CalculationMethod
-                        ]}
-                    </TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{formatCurrency(item.unit_price)}</TableCell>
-                    <TableCell>
-                      {formatCurrency(item.unit_price * item.quantity)}
-                    </TableCell>
-                    {/* 
-                    {!isPreview && (
-                      <TableCell className="max-w-[20px] !pl-2">
-                        <button onClick={() => handleDelete(idx)}>
-                          <Trash className="size-4 text-red-400" />
-                        </button>
-                      </TableCell>
-                    )} */}
-                  </TableRow>
-                ))}
               </TableBody>
-            </table>
+            </Table>
           )}
         </div>
       </div>
       {/* Add Service Form */}
       {!isPreview && (
-        <div className="mt-5 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:p-6 dark:border-gray-800 dark:bg-gray-900">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-3 lg:grid-cols-13">
-              <FormField
-                className="w-full lg:col-span-3"
-                form={addServiceForm}
-                field={{
-                  name: "service_id",
-                  type: "select",
-                  label: "Dịch vụ",
-                  placeholder: "Chọn dịch vụ",
-                  options:
-                    servicesExtra?.map((item) => ({
-                      label: item.service_name,
-                      value: item.id,
-                    })) ?? [],
-                }}
-              />
+        <>
+          <button
+            onClick={() => {
+              setOpenServiceForm(!openAddServiceForm);
+            }}
+            className="italic text-brand-500 text-sm"
+          >
+            {openAddServiceForm ? "Ẩn thêm dịch vụ" : "Thêm dịch vụ"}
+          </button>
 
-              <FormField
-                className="w-full lg:col-span-2"
-                form={addServiceForm}
-                field={{
-                  name: "calculation_method",
-                  type: "text",
-                  placeholder: "Đơn vị tính",
-                  label: "Đơn vị tính",
-                  readOnly: true,
-                }}
-              />
-
-              <FormField
-                className="w-full lg:col-span-2"
-                form={addServiceForm}
-                field={{
-                  name: "unit_price",
-                  type: "number",
-                  placeholder: "Nhập đơn giá",
-                  label: "Đơn giá",
-                  formatCurrency: true,
-                }}
-              />
-
-              <FormField
-                className="w-full lg:col-span-2"
-                form={addServiceForm}
-                field={{
-                  name: "quantity",
-                  type: "number",
-                  placeholder: "Nhập số lượng",
-                  label: "Số lượng",
-                  className: "w-full lg:col-span-2",
-                }}
-              />
-
-              <FormField
-                className="w-full lg:col-span-2"
-                field={{
-                  type: "number",
-                  defaultValue: 0,
-                  label: "Tổng tiền",
-                  className: "w-full lg:col-span-2",
-                  readOnly: true,
-                  value: quantity * Number(unit_price),
-                  formatCurrency: true,
-                }}
-              />
-
-              <Button
-                disabled={
-                  isLoading || isLoadingBillServicesDetail || !service_id
-                }
-                type="submit"
-                className="h-fit lg:col-span-2"
-              >
-                {isLoading || isLoadingBillServicesDetail ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  "Thêm dịch vụ"
-                )}
-              </Button>
-            </div>
-          </form>
-          <div className="flex items-start gap-2 mt-10">
-            <InfoIcon className="text-gray-500 dark:text-gray-400 size-5" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Sau khi điền thông tin dịch vụ, nhấp vào &apos;Thêm dịch vụ&apos;
-              để thêm nó vào danh sách.
-            </p>
-          </div>
-        </div>
+          {openAddServiceForm && <AddServiceForm billId={bill.id} />}
+        </>
       )}
       {/* Total Summary */}
       <div className="flex flex-wrap justify-between sm:justify-end">

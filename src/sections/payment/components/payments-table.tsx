@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { Eye, FilterIcon } from "lucide-react";
+import { Eye, FilterIcon, RefreshCcwIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import { useFilter } from "@/hooks/use-filter";
 import { Bill, BillStatus } from "@/types/bill";
@@ -21,8 +21,11 @@ import TableNotFound from "@/components/_cms/common/table/state/not_found";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import Button from "@/components/ui/button/Button";
 import { ModalViewBill } from ".";
+import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
+import { useRouter } from "next/navigation";
+import { APP_ROUTES } from "@/config/app-routes";
 
-const _tableHeader: { key: keyof Bill | string; title: string }[] = [
+const _tableHeader: TableHeaderColumn[] = [
   {
     key: "tracking_code",
     title: "Mã hoá đơn",
@@ -51,15 +54,18 @@ const _tableHeader: { key: keyof Bill | string; title: string }[] = [
   {
     key: "created_at",
     title: "Thời gian tạo",
+    isHiddenOnMobile: true,
   },
   {
     key: "created_by",
     title: "Người tạo",
+    isHiddenOnMobile: true,
   },
 ];
 
 export default function PaymentsListTable() {
   const { building } = useBuilding();
+  const route = useRouter();
   const [limit] = useState<number>(10);
   const { isOpen, openModal, closeModal } = useModal();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -101,7 +107,7 @@ export default function PaymentsListTable() {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-        <div>
+        <div className="hidden md:block xl:shrink-0">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Hoá đơn
           </h3>
@@ -110,7 +116,7 @@ export default function PaymentsListTable() {
           </p>
         </div>
 
-        <div className="flex gap-3.5 relative">
+        <div className="w-full flex items-center justify-end gap-3.5 relative">
           <SingleFilterButtonGroup
             items={Object.entries(BillStatus).map(([value, label]) => ({
               label,
@@ -121,25 +127,27 @@ export default function PaymentsListTable() {
               updateFilter("bill_status", value as BillStatus);
               applyFilters();
             }}
+            className="hidden lg:inline-flex"
           />
 
           <SearchBar
             placeholder="Tìm kiếm"
-            className="ml-auto w-[12rem]"
+            className="grow md:grow-[unset] md:max-w-[20rem]"
             handleOnChange={(textSearch) => handleSearch(textSearch)}
             debounceTime={500}
           />
 
           <Button
             variant="outline"
-            className="py-1"
+            className="text-sm"
+            disabled={isLoading || !bills || bills?.data.length < limit}
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <FilterIcon className="size-4" /> Bộ lọc
           </Button>
 
-          <Button variant="outline" className="py-1" onClick={() => refetch()}>
-            Refresh
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCcwIcon className="size-4" />
           </Button>
         </div>
       </div>
@@ -152,124 +160,133 @@ export default function PaymentsListTable() {
           filterValues={filterValues}
         />
       )}
-
-      <Table>
-        <CMSTableHeader
-          selectAll={
-            selectedBills.length === bills?.data.length &&
-            bills?.data.length > 0
-          }
-          columns={_tableHeader}
-          handleSelectAll={(isSelectAll) => {
-            if (isSelectAll) {
-              setSelectedBills(bills?.data.map((bill) => bill.id) || []);
-            } else {
-              setSelectedBills([]);
+      <div className="max-w-full overflow-x-auto">
+        <Table>
+          <CMSTableHeader
+            selectAll={
+              selectedBills.length === bills?.data.length &&
+              bills?.data.length > 0
             }
-          }}
-        />
-        <TableBody>
-          {(bills?.data.length === 0 || isLoading) && (
-            <TableRow className="h-[300px]">
-              <TableCell
-                className="w-full h-fit text-base"
-                colSpan={_tableHeader.length}
+            columns={_tableHeader}
+            handleSelectAll={(isSelectAll) => {
+              if (isSelectAll) {
+                setSelectedBills(bills?.data.map((bill) => bill.id) || []);
+              } else {
+                setSelectedBills([]);
+              }
+            }}
+          />
+          <TableBody>
+            {(bills?.data.length === 0 || isLoading) && (
+              <TableRow className="h-[300px]">
+                <TableCell
+                  className="w-full h-fit text-base"
+                  colSpan={_tableHeader.length}
+                >
+                  <TableNotFound
+                    message={
+                      isLoading
+                        ? "Đang tải dữ liệu..."
+                        : "Hiện tại không tìm thấy hoá đơn nào"
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+            {bills?.data.map((bill) => (
+              <TableRow
+                key={bill.id}
+                onDoubleClick={() => {
+                  setCurrentBill(bill);
+                  openModal();
+                }}
               >
-                <TableNotFound
-                  message={
-                    isLoading
-                      ? "Đang tải dữ liệu..."
-                      : "Hiện tại không tìm thấy hoá đơn nào"
-                  }
-                />
-              </TableCell>
-            </TableRow>
-          )}
-          {bills?.data.map((bill) => (
-            <TableRow key={bill.id}>
-              <TableCell>
-                <Checkbox
-                  id={bill.id}
-                  checked={selectedBills.includes(bill.id)}
-                  onChange={() => {
-                    setSelectedBills((prev) =>
-                      prev.includes(bill.id)
-                        ? prev.filter((id) => id !== bill.id)
-                        : [...prev, bill.id],
-                    );
-                  }}
-                  label={bill.tracking_code}
-                />
-              </TableCell>
-              <TableCell>{bill.rooms.code}</TableCell>
-              <TableCell className="text-center">
-                {new Date(bill.month_date).getMonth() + 1}
-              </TableCell>
-              <TableCell>{formatCurrency(bill.grand_total)}</TableCell>
-              <TableCell className="w-[10rem]">
-                <Badge
-                  variant="light"
-                  color={
-                    bill?.bill_status === ("paid" as keyof typeof BillStatus)
-                      ? "success"
-                      : bill?.bill_status ===
-                          ("draft" as keyof typeof BillStatus)
-                        ? "light"
+                <TableCell>
+                  <Checkbox
+                    id={bill.id}
+                    checked={selectedBills.includes(bill.id)}
+                    onChange={() => {
+                      setSelectedBills((prev) =>
+                        prev.includes(bill.id)
+                          ? prev.filter((id) => id !== bill.id)
+                          : [...prev, bill.id],
+                      );
+                    }}
+                    label={bill.tracking_code}
+                  />
+                </TableCell>
+                <TableCell>{bill.rooms.code}</TableCell>
+                <TableCell className="text-center">
+                  {new Date(bill.month_date).getMonth() + 1}
+                </TableCell>
+                <TableCell>{formatCurrency(bill.grand_total)}</TableCell>
+                <TableCell className="min-w-[10rem]">
+                  <Badge
+                    variant="light"
+                    color={
+                      bill?.bill_status === ("paid" as keyof typeof BillStatus)
+                        ? "success"
                         : bill?.bill_status ===
-                            ("overdue" as keyof typeof BillStatus)
-                          ? "error"
+                            ("draft" as keyof typeof BillStatus)
+                          ? "light"
                           : bill?.bill_status ===
-                              ("unpaid" as keyof typeof BillStatus)
-                            ? "dark"
+                              ("overdue" as keyof typeof BillStatus)
+                            ? "error"
                             : bill?.bill_status ===
-                                ("confirmed" as keyof typeof BillStatus)
-                              ? "warning"
-                              : "info"
-                  }
-                >
-                  {
-                    BillStatus[
-                      bill.bill_status as unknown as keyof typeof BillStatus
-                    ]
-                  }
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {formatDateTime(bill.updated_at, { withTime: true })}
-              </TableCell>
-              <TableCell>
-                {formatDateTime(bill.created_at, { withTime: true })}
-              </TableCell>
-              <TableCell>{bill.profiles.full_name}</TableCell>
-              <TableCell>
-                <button
-                  onClick={() => {
-                    setCurrentBill(bill);
-                    openModal();
-                  }}
-                >
-                  <Eye />
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
+                                ("unpaid" as keyof typeof BillStatus)
+                              ? "dark"
+                              : bill?.bill_status ===
+                                  ("confirmed" as keyof typeof BillStatus)
+                                ? "warning"
+                                : "info"
+                    }
+                  >
+                    {
+                      BillStatus[
+                        bill.bill_status as unknown as keyof typeof BillStatus
+                      ]
+                    }
+                  </Badge>
+                </TableCell>
+                <TableCell className="min-w-[7.5rem]">
+                  {formatDateTime(bill.updated_at, { withTime: true })}
+                </TableCell>
+                <TableCell className="hidden md:table-cell min-w-[7.5rem]">
+                  {formatDateTime(bill.created_at, { withTime: true })}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {bill.profiles.full_name.split(" ")[0]}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  <button
+                    onClick={() => {
+                      setCurrentBill(bill);
+                      openModal();
+                    }}
+                  >
+                    <Eye />
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
 
-          {selectedBills.length > 0 && (
-            <TableRow>
-              <TableCell colSpan={_tableHeader.length + 1}>
-                <div className="flex items-center justify-between">
-                  <p>Đã chọn {selectedBills.length}</p>
-                  <div>
-                    <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
-                      Xoá {selectedBills.length} hoá đơn
-                    </button>
+            {selectedBills.length > 0 && (
+              <TableRow>
+                <TableCell colSpan={_tableHeader.length + 1}>
+                  <div className="flex items-center justify-between">
+                    <p>Đã chọn {selectedBills.length}</p>
+                    <div>
+                      <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                        Xoá {selectedBills.length} hoá đơn
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {currentBill && isOpen && (
         <ModalViewBill currentBill={currentBill} closeModal={closeModal} />
