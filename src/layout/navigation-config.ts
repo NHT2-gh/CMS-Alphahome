@@ -15,11 +15,11 @@ const NavItems: NavItem[] = [
   },
   {
     icon: "boxCube",
-    name: "Quản lý nhà trọ",
+    name: "Quản lý toà nhà",
     path: APP_ROUTES.ADMIN.BUILDINGS.BASE(),
     subItems: [
-      { name: "Danh sách nhà trọ", path: APP_ROUTES.ADMIN.BUILDINGS.BASE() },
-      { name: "Thêm mới", path: APP_ROUTES.ADMIN.BUILDINGS.ADD() },
+      { name: "Danh sách", path: APP_ROUTES.ADMIN.BUILDINGS.BASE() },
+      { name: "Thêm toà nhà", path: APP_ROUTES.ADMIN.BUILDINGS.CREATE() },
     ],
     role: ["super_admin", "admin"],
   },

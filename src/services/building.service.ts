@@ -49,13 +49,19 @@ class BuildingService {
   }
 
   async getBuilding(code: string): Promise<Building | null> {
-    const query = supabase.from("buildings").select("*").eq("code", code);
+    const query = supabase
+      .from("buildings")
+      .select("*")
+      .eq("code", code)
+      .single();
 
     const { data, error } = await query;
 
-    if (!data || error) return null;
+    if (error) {
+      handlePostgresError(error);
+    }
 
-    return data[0];
+    return data || null;
   }
 
   async getBuildingsByUserId(

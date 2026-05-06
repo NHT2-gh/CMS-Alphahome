@@ -13,7 +13,7 @@ class TransactionService {
     this.viewBuildingRevenueCombinedTable = "building_revenue_combined";
   }
 
-  async getTransaction(
+  async getAllTransactions(
     buildingId: string,
     page?: number,
     limit?: number,
@@ -26,6 +26,9 @@ class TransactionService {
         *,
         categories!inner(
           name
+        ),
+        profiles!inner(
+          full_name
         )
         `,
       )
@@ -98,8 +101,8 @@ class TransactionService {
     return data || [];
   }
 
-  async deleteTransaction(id: string): Promise<MutationResult> {
-    const query = supabase.from(this.tableName).delete().eq("id", id);
+  async deleteTransaction(ids: string[]): Promise<MutationResult> {
+    const query = supabase.from(this.tableName).delete().in("id", ids);
 
     const { error } = await query;
 
@@ -108,7 +111,7 @@ class TransactionService {
     }
     return {
       success: true,
-      message: "Thành công xóa giao dịch",
+      message: `Thành công xóa ${ids.length} giao dịch`,
     };
   }
 }

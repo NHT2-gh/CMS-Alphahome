@@ -6,7 +6,6 @@ import { SearchBar } from "@/components/_cms/components/search-bar";
 import ProgressBar from "@/components/progress-bar/ProgressBar";
 import Badge from "@/components/ui/badge/Badge";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { APP_ROUTES } from "@/config/app-routes";
 import { useBuildings, useUsersBuilding } from "@/hooks/queries/use-building";
 import { formatCurrency } from "@/utils/format-data";
@@ -16,7 +15,6 @@ import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import TableDropdown from "@/components/common/TableDropdown";
 import { NotFound } from "@/components/_cms/common/table/state";
 import { useAuth } from "@/context/AuthContext";
-import useAllRooms from "@/hooks/queries/use-room";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "code", title: "Mã căn hộ" },

@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { RoomOverview, RoomStatus } from "@/types/room";
+import { FurnitureStatus, RoomOverview, RoomStatus } from "@/types/room";
 import { useRouter } from "next/navigation";
 import useAllRooms from "@/hooks/queries/use-room";
-import { Eye, PlusCircle } from "lucide-react";
+import { Eye, FilterIcon, PlusCircle, RefreshCcwIcon } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { APP_ROUTES } from "@/config/app-routes";
 import Button from "@/components/ui/button/Button";
@@ -21,6 +21,7 @@ import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/sin
 import TableNotFound from "@/components/_cms/common/table/state/not_found";
 import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
 import { showToast } from "@/lib/toast";
+import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 
 const _tableHeader: TableHeaderColumn[] = [
   { key: "code", title: "Mã phòng" },
@@ -34,16 +35,18 @@ const _tableHeader: TableHeaderColumn[] = [
 ];
 export default function RoomsTable() {
   const { building } = useBuilding();
-  const { filterValues, updateFilter, applyFilters } = useFilter({
+  const { filterValues, updateFilter, applyFilters, clearFilters } = useFilter({
     filterConfigs: RoomFilterSchema,
   });
   const {
     data: rooms,
     error,
     isLoading,
+    refetch,
   } = useAllRooms(building?.id, {
     filters: filterValues,
   });
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (error) {
@@ -77,6 +80,20 @@ export default function RoomsTable() {
               applyFilters();
             }}
           />
+
+          <Button
+            variant="outline"
+            className="text-sm"
+            disabled={isLoading || !rooms}
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+          >
+            <FilterIcon className="size-4" /> Bộ lọc
+          </Button>
+
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCcwIcon className="size-4" />
+          </Button>
+
           <Link href={APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.CREATE()}>
             <Button className="w-fit ">
               <PlusCircle className="size-5" />
@@ -85,6 +102,15 @@ export default function RoomsTable() {
           </Link>
         </div>
       </div>
+
+      {isFilterOpen && (
+        <FilterBoxRender
+          filterConfigs={RoomFilterSchema}
+          filterValues={filterValues}
+          handleFilterChange={updateFilter}
+          handleClearAllFilters={clearFilters}
+        />
+      )}
       <div className="max-w-full overflow-x-auto">
         <Table>
           <CMSTableHeader columns={_tableHeader} />
@@ -114,13 +140,13 @@ export default function RoomsTable() {
                   );
                 }}
                 className={cn(
-                  "cursor-pointer hover:bg-blue-50",
+                  "cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950",
                   {
-                    "bg-gray-100":
+                    "bg-gray-100 dark:bg-gray-700":
                       room.status === ("available" as keyof typeof RoomStatus),
                   },
                   {
-                    "bg-red-100":
+                    "bg-red-100 dark:bg-red-200":
                       room.end_date &&
                       new Date().getTime() - new Date(room.end_date).getTime() >
                         0 &&
@@ -139,11 +165,11 @@ export default function RoomsTable() {
                   {room.area}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {room.furniture_status === "basic"
-                    ? "Cơ bản"
-                    : room.furniture_status === "unfurnished"
-                      ? "Không có"
-                      : "Đầy đủ"}
+                  {
+                    FurnitureStatus[
+                      room.furniture_status as unknown as keyof typeof FurnitureStatus
+                    ]
+                  }
                 </TableCell>
                 <TableCell className="min-w-[100px] truncate">
                   {room.tenant_name ? room.tenant_name : "--"}

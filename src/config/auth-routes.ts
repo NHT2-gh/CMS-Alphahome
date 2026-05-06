@@ -11,7 +11,7 @@ export const ROUTES = {
    * Private route prefixes
    * Chỉ cần match prefix → không cần khai báo từng route
    */
-  privatePrefixes: ["/"],
+  privatePrefixes: ["/", "/buildings"],
   /**
    * API routes (skip middleware)
    */

@@ -23,12 +23,16 @@ export default function BillPreviewModal({
   const { isOpen, openModal, closeModal } = useModal();
   const { building } = useBuilding();
   const billRef = useRef<HTMLDivElement>(null);
-  const { isMobile, copyImage } = useCopyImage();
+  const { copyImage } = useCopyImage();
   const [loading, setLoading] = useState(false);
   const [resultLog, setResultLog] = useState<string | undefined>(undefined);
   const handleCopy = async () => {
     setLoading(true);
-    const result = await copyImage(billRef.current);
+
+    const result = await copyImage(
+      billRef.current,
+      `bill-${bill.rooms.code}-${bill.month_date}-${bill.tracking_code}.png`,
+    );
 
     if (result.method === "clipboard") {
       setResultLog("Đã copy ảnh vào clipboard");
@@ -136,7 +140,7 @@ export default function BillPreviewModal({
             {/* <!-- Invoice Table --> */}
             <BillDetailTable bill={bill} baseRent={bill.base_rent} />
 
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center">
               {/* <Image
                 width={200}
                 height={179}
@@ -171,9 +175,9 @@ export default function BillPreviewModal({
             </div>
           </div>
         </div>
-        <div className="absolute bottom-5 left-5 flex gap-4 items-center">
+        <div className=" flex gap-4 items-center">
           <button
-            className="bg-blue-100 p-2 rounded-2xl "
+            className="bg-blue-100 p-2 rounded-2xl text-nowrap"
             onClick={handleCopy}
             disabled={loading}
           >

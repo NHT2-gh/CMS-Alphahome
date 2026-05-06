@@ -160,13 +160,6 @@ export default function AddServiceForm({ billId }: AddServiceFormProps) {
           </Button>
         </div>
       </form>
-      {/* <div className="flex items-start gap-2 mt-10">
-        <InfoIcon className="text-gray-500 dark:text-gray-400 size-5" />
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Sau khi điền thông tin dịch vụ, nhấp vào &apos;Thêm dịch vụ&apos; để
-          thêm nó vào danh sách.
-        </p>
-      </div> */}
     </div>
   );
 }

@@ -25,10 +25,10 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
         <ol className="flex items-center gap-1.5">
           <li className="inline-flex items-center gap-1.5 text-sm">
             <CustomLink className="" href="/" variant="colored" color="info">
-              Home
+              Trang chủ
             </CustomLink>
             <svg
-              className="stroke-current"
+              className="stroke-current text-gray-500 dark:text-gray-400"
               width="17"
               height="16"
               viewBox="0 0 17 16"
@@ -63,7 +63,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, links }) => {
               )}
 
               <svg
-                className="stroke-current group-last:hidden"
+                className="stroke-current text-gray-500 dark:text-gray-400 group-last:hidden"
                 width="17"
                 height="16"
                 viewBox="0 0 17 16"

@@ -24,6 +24,7 @@ import { ModalViewBill } from ".";
 import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/config/app-routes";
+import FilterValuesRender from "@/components/_cms/components/filter/box/filter-values-render";
 
 const _tableHeader: TableHeaderColumn[] = [
   {
@@ -65,7 +66,6 @@ const _tableHeader: TableHeaderColumn[] = [
 
 export default function PaymentsListTable() {
   const { building } = useBuilding();
-  const route = useRouter();
   const [limit] = useState<number>(10);
   const { isOpen, openModal, closeModal } = useModal();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -124,7 +124,7 @@ export default function PaymentsListTable() {
             }))}
             onChange={(value) => {
               setCurrentPage(1);
-              updateFilter("bill_status", value as BillStatus);
+              updateFilter("bill_status", [value] as [BillStatus]);
               applyFilters();
             }}
             className="hidden lg:inline-flex"
@@ -140,7 +140,7 @@ export default function PaymentsListTable() {
           <Button
             variant="outline"
             className="text-sm"
-            disabled={isLoading || !bills || bills?.data.length < limit}
+            disabled={isLoading || !bills}
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <FilterIcon className="size-4" /> Bộ lọc
@@ -151,6 +151,13 @@ export default function PaymentsListTable() {
           </Button>
         </div>
       </div>
+
+      {/* <FilterValuesRender
+        filterConfigs={BillFilterSchema}
+        filterValues={filterValues}
+        onDeleteItem={removeFilter}
+      /> */}
+
       {isFilterOpen && (
         <FilterBoxRender
           className="m-4"

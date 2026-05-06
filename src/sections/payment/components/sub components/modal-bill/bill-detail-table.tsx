@@ -44,7 +44,7 @@ export default function BillDetailTable({
     BillServiceDetail[] | undefined
   >(undefined);
   const [openAddServiceForm, setOpenServiceForm] = useState<boolean>(false);
-
+  const [total, setTotal] = useState<number>(baseRent);
   const handleDeleteServiceExtra = (id: string): void => {
     console.log("id", id);
   };
@@ -69,12 +69,16 @@ export default function BillDetailTable({
     ]);
   }, [billServicesDetail, roomServiceExtra]);
 
-  const total: number = billServices
-    ? billServices.reduce(
-        (sum, service) => sum + Number(service.total_amount),
-        baseRent,
-      )
-    : baseRent;
+  useEffect(() => {
+    setTotal(
+      billServices
+        ? billServices.reduce(
+            (sum, service) => sum + Number(service.total_amount),
+            baseRent,
+          )
+        : baseRent,
+    );
+  }, [billServices, baseRent]);
 
   return (
     <div className="space-y-6">
@@ -135,6 +139,7 @@ export default function BillDetailTable({
                       </TableCell>
 
                       {!isPreview &&
+                        bill.bill_status === "draft" &&
                         service.services.service_type === "extra" && (
                           <TableCell className="!w-[50px] !pl-2">
                             <button
@@ -155,7 +160,7 @@ export default function BillDetailTable({
         </div>
       </div>
       {/* Add Service Form */}
-      {!isPreview && (
+      {!isPreview && bill.bill_status === "draft" && (
         <>
           <button
             onClick={() => {

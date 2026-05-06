@@ -1,9 +1,9 @@
 import { Contract } from "./contract";
 
 export enum FurnitureStatus {
-  unfurnished = "unfurnished",
-  basic = "basic",
-  fully_furnished = "fully_furnished",
+  unfurnished = "Không có",
+  basic = "Cơ bản",
+  fully_furnished = "Đầy đủ",
 }
 
 export enum RoomStatus {

@@ -1,7 +1,14 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { FilterIcon, Trash, Upload } from "lucide-react";
+import {
+  FilterIcon,
+  Link2,
+  Link2Off,
+  RefreshCcwIcon,
+  Trash,
+  Upload,
+} from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { formatCurrency } from "@/utils/format-data";
 import { useBuilding } from "@/context/BuildingContext";
@@ -24,6 +31,9 @@ import { useFilter } from "@/hooks/use-filter";
 import { TransactionFilterSchema } from "@/schemas/render-filter-schemas/transtion-filter.schema";
 import { Pagination } from "@/components/_cms/components/pagination";
 import Button from "@/components/ui/button/Button";
+import { Tooltip } from "@/components/_cms/ui/tooltip";
+import useAllRooms from "@/hooks/queries/use-room";
+import { Checkbox } from "@/components/_cms/ui/input";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "id", title: "Mã giao dịch" },
@@ -33,10 +43,12 @@ const _tableHeader: { key: string; title: string }[] = [
   { key: "transaction_date", title: "Ngày giao dịch" },
   { key: "payment_method", title: "Phương thức thanh toán" },
   { key: "type", title: "Loại" },
+  { key: "profiles.full_name", title: "Người thực hiện" },
 ];
 
 export default function RevenueExpenditureTable() {
   const { building } = useBuilding();
+  const { data: rooms } = useAllRooms(building?.id as string);
   const [limit] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const {
@@ -48,7 +60,11 @@ export default function RevenueExpenditureTable() {
   } = useFilter({
     filterConfigs: TransactionFilterSchema,
   });
-  const { data: transcriptions, isLoading } = useAllTransactions({
+  const {
+    data: transcriptions,
+    isLoading,
+    refetch,
+  } = useAllTransactions({
     buildingId: building ? building.id : "",
     pagination: {
       page: currentPage,
@@ -63,18 +79,16 @@ export default function RevenueExpenditureTable() {
   );
 
   const { isOpen, openModal, closeModal } = useModal();
-  const [transactionSelected, setTransactionSelected] = useState<string | null>(
-    null,
-  );
 
-  const handleDeleteTransaction = useCallback(async (id: string) => {
+  const handleDeleteTransaction = useCallback(async (ids: string[]) => {
     try {
       const result = await deleteTransaction.mutateAsync({
-        id,
+        id: ids,
         buildingId: building?.id as string,
       });
       if (result.success) {
         closeModal();
+        setSelectedTransactions([]);
         showToast.success({ title: "Xoá thành công" });
       }
     } catch (error) {
@@ -131,6 +145,9 @@ export default function RevenueExpenditureTable() {
           >
             <FilterIcon className="size-4" /> Bộ lọc
           </Button>
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCcwIcon className="size-4" />
+          </Button>
         </div>
       </div>
 
@@ -146,20 +163,20 @@ export default function RevenueExpenditureTable() {
       <div className="max-w-full overflow-x-auto">
         <Table>
           <CMSTableHeader
-            // selectAll={
-            //   selectedTransactions.length === transcriptions?.data.length &&
-            //   transcriptions?.data.length > 0
-            // }
+            selectAll={
+              selectedTransactions.length === transcriptions?.data.length &&
+              transcriptions?.data.length > 0
+            }
             columns={_tableHeader}
-            // handleSelectAll={(isSelectAll) => {
-            //   if (isSelectAll) {
-            //     setSelectedTransactions(
-            //       transcriptions?.data.map((item) => item.id) || [],
-            //     );
-            //   } else {
-            //     setSelectedTransactions([]);
-            //   }
-            // }}
+            handleSelectAll={(isSelectAll) => {
+              if (isSelectAll) {
+                setSelectedTransactions(
+                  transcriptions?.data.map((item) => item.id) || [],
+                );
+              } else {
+                setSelectedTransactions([]);
+              }
+            }}
           />
           <TableBody>
             {(!transcriptions ||
@@ -179,7 +196,18 @@ export default function RevenueExpenditureTable() {
             )}
             {transcriptions?.data?.map((item) => (
               <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
-                <TableCell className="uppercase">
+                <TableCell className="flex items-center gap-2">
+                  <Checkbox
+                    id={item.id}
+                    checked={selectedTransactions.includes(item.id)}
+                    onChange={() => {
+                      setSelectedTransactions((prev) =>
+                        prev.includes(item.id)
+                          ? prev.filter((id) => id !== item.id)
+                          : [...prev, item.id],
+                      );
+                    }}
+                  />
                   {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
                 </TableCell>
                 <TableCell>{item.categories.name}</TableCell>
@@ -212,11 +240,28 @@ export default function RevenueExpenditureTable() {
                   </Badge>
                 </TableCell>
 
+                <TableCell className="text-nowrap">
+                  {item.profiles.full_name}
+                </TableCell>
+
+                <TableCell className="text-xs text-blue-600">
+                  <Tooltip
+                    content={
+                      item.room_id
+                        ? (rooms?.find((room) => room.room_id === item.room_id)
+                            ?.code as string) || ""
+                        : "Không có dữ liệu"
+                    }
+                  >
+                    {item.room_id ? <Link2 /> : <Link2Off />}
+                  </Tooltip>
+                </TableCell>
+
                 <TableCell className="!min-w-fit">
                   <Trash
                     className="size-4 cursor-pointer text-red-500"
                     onClick={() => {
-                      setTransactionSelected(item.id);
+                      setSelectedTransactions([item.id]);
                       openModal();
                     }}
                   />
@@ -226,11 +271,16 @@ export default function RevenueExpenditureTable() {
 
             {selectedTransactions.length > 0 && (
               <TableRow>
-                <TableCell colSpan={_tableHeader.length + 1}>
+                <TableCell colSpan={_tableHeader.length + 2}>
                   <div className="flex items-center justify-between">
                     <p>Đã chọn {selectedTransactions.length}</p>
                     <div>
-                      <button className="border rounded-xl py-2 px-4 bg-red-400 text-white">
+                      <button
+                        onClick={() => {
+                          openModal();
+                        }}
+                        className="border rounded-xl py-2 px-4 bg-red-400 text-white"
+                      >
                         Xoá {selectedTransactions.length} hoá đơn
                       </button>
                     </div>
@@ -258,13 +308,11 @@ export default function RevenueExpenditureTable() {
         isOpen={isOpen}
         onClose={closeModal}
         onConfirm={() => {
-          handleDeleteTransaction(transactionSelected as string);
+          handleDeleteTransaction(selectedTransactions);
         }}
-        onCancel={() => {
-          closeModal();
-        }}
+        onCancel={closeModal}
         title="Xóa giao dịch"
-        description="Bạn có chắc chắn muốn xóa giao dịch này?"
+        description={`Bạn có chắc chắn muốn xóa ${selectedTransactions.length} giao dịch này?`}
         type="danger"
         confirmText="Xác nhận xóa"
         cancelText="Hủy"

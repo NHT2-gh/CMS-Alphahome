@@ -17,7 +17,7 @@ export default function FilterItemLayout({
   className,
   children,
 }: FilterItemLayoutProps) {
-  const [isExpanded, setIsExpanded] = React.useState(true);
+  // const [isExpanded, setIsExpanded] = React.useState(true);
 
   return (
     <div className={cn("space-y-3 h-full", className)}>
@@ -33,7 +33,7 @@ export default function FilterItemLayout({
           </Label>
         )}
 
-        <button
+        {/* <button
           className="p-1 cursor-pointer group"
           onClick={() => setIsExpanded(!isExpanded)}
         >
@@ -43,10 +43,11 @@ export default function FilterItemLayout({
               isExpanded ? "rotate-180" : ""
             }`}
           />
-        </button>
+        </button> */}
       </div>
 
-      {isExpanded && children}
+      {children}
+      {/* {isExpanded && children} */}
     </div>
   );
 }

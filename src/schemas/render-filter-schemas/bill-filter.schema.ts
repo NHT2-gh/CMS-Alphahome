@@ -12,8 +12,8 @@ export const BillFilterSchema: FilterItemConfig[] = [
     })),
   },
   {
-    key: "month_date",
-    label: "Kì thanh toán",
+    key: "created_at",
+    label: "Thời gian tạo",
     type: "date-range",
     range: ["", ""],
   },

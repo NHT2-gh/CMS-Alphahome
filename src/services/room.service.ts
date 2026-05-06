@@ -26,7 +26,11 @@ class RoomService {
     if (params?.filters) {
       Object.entries(params.filters).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {
-          query.eq(key, value);
+          if (Array.isArray(value)) {
+            query.in(key, value);
+          } else {
+            query.eq(key, value);
+          }
         }
       });
     }

@@ -5,10 +5,10 @@ export const RoomFilterSchema: FilterItemConfig[] = [
   {
     key: "status",
     label: "Trạng thái",
-    type: "button-toggle",
-    options: Object.values(RoomStatus).map((status) => ({
-      label: status,
-      value: status,
+    type: "checkbox",
+    options: Object.entries(RoomStatus).map(([key, value]) => ({
+      label: value,
+      value: key,
     })),
   },
 
@@ -16,9 +16,9 @@ export const RoomFilterSchema: FilterItemConfig[] = [
     key: "furniture_status",
     label: "Nội thất",
     type: "checkbox",
-    options: Object.values(FurnitureStatus).map((status) => ({
-      label: status,
-      value: status,
+    options: Object.entries(FurnitureStatus).map(([key, value]) => ({
+      label: value,
+      value: key,
     })),
   },
 

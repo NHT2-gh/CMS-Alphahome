@@ -36,8 +36,6 @@ export default function ModalViewBill({
         status: status,
       });
 
-      console.log(currentBill.tracking_code, result);
-
       if (result.success) {
         closeModal();
         showToast.success({
@@ -50,7 +48,7 @@ export default function ModalViewBill({
   };
 
   return (
-    <Modal isOpen={true} onClose={closeModal} className="">
+    <Modal isOpen={true} onClose={closeModal} className="p-4 md:p-8">
       <h2 className="text-2xl font-bold mb-5">Phiếu thu</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 mb-3">
         <p>Mã phiếu: #{currentBill?.tracking_code}</p>

@@ -1,3 +1,5 @@
+import { Profile } from "./profile";
+
 export enum TransactionType {
   income = "Thu",
   expense = "Chi",
@@ -20,10 +22,12 @@ export interface Transcription {
   categories: Category;
   amount: number;
   type: TransactionType;
-  description?: string;
   transaction_date: string;
   payment_method: PaymentMethod;
   create_at: string;
+  room_id?: string;
+  description?: string;
+  profiles: Profile;
 }
 
 export interface BuildingRevenueCombined {

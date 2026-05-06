@@ -1,4 +1,6 @@
 import * as htmlToImage from "html-to-image";
+import { useState } from "react";
+import { set } from "zod";
 
 type CopyResult = {
   success: boolean;
@@ -7,6 +9,8 @@ type CopyResult = {
 };
 
 export const useCopyImage = () => {
+  const [fileName, setFileName] = useState<string>("image.png");
+
   const isMobile = () => {
     if (typeof navigator === "undefined") return false;
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -21,7 +25,7 @@ export const useCopyImage = () => {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "image.png";
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -29,7 +33,10 @@ export const useCopyImage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const copyImage = async (node: HTMLElement | null): Promise<CopyResult> => {
+  const copyImage = async (
+    node: HTMLElement | null,
+    fileName: string,
+  ): Promise<CopyResult> => {
     if (!node) {
       return { success: false, method: "none", error: "Node not found" };
     }
@@ -47,6 +54,8 @@ export const useCopyImage = () => {
           error: "Failed to generate image",
         };
       }
+
+      setFileName(fileName); // đảm bảo tên file đã được set trước khi fallback
 
       // 👉 Ưu tiên thử clipboard trước
       if (canUseClipboard()) {

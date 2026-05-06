@@ -13,7 +13,14 @@ export function useCreateTransaction() {
       transactionService.createTransaction(payload),
     onSuccess: (_, payload) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.transactions.allByBuildingId(payload.building_id),
+        queryKey: queryKeys.transactions.allByBuildingId(
+          payload.building_id,
+          {
+            page: 1,
+            limit: 10,
+          },
+          {},
+        ),
       });
     },
   });
@@ -35,7 +42,7 @@ export function useAllTransactions({
       filters,
     ),
     queryFn: () =>
-      transactionService.getTransaction(
+      transactionService.getAllTransactions(
         buildingId,
         pagination.page,
         pagination.limit,
@@ -56,7 +63,7 @@ export function useDeleteTransaction() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: queryKeys.transactions.delete(),
-    mutationFn: (payload: { id: string; buildingId: string }) =>
+    mutationFn: (payload: { id: string[]; buildingId: string }) =>
       transactionService.deleteTransaction(payload.id),
     onSuccess: (_, payload) => {
       queryClient.invalidateQueries({

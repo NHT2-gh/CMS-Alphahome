@@ -1,5 +1,7 @@
+import { APP_ROUTES } from "@/config/app-routes";
 import { BuildingProvider } from "@/context/BuildingContext";
 import { buildingService } from "@/services/building.service";
+import { notFound } from "next/navigation";
 import React from "react";
 
 export default async function BuildingLayout({
@@ -10,15 +12,21 @@ export default async function BuildingLayout({
   params: Promise<{ building_code: string }>;
 }) {
   const { building_code } = await params;
-  const currentBuilding = await buildingService.getBuilding(building_code);
-  if (!currentBuilding) return null;
-  return (
-    <BuildingProvider
-      initialBuilding={{
-        ...currentBuilding,
-      }}
-    >
-      {children}
-    </BuildingProvider>
-  );
+
+  try {
+    const currentBuilding = await buildingService.getBuilding(building_code);
+    if (currentBuilding)
+      return (
+        <BuildingProvider
+          initialBuilding={{
+            ...currentBuilding,
+          }}
+        >
+          {children}
+        </BuildingProvider>
+      );
+  } catch (error) {
+    console.log(error);
+    return notFound();
+  }
 }

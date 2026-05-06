@@ -135,16 +135,16 @@ export default function UpsertBuildingServicesForm() {
                         type: "select",
                         placeholder: "Chọn đơn vị tính",
                         options: [
+                          {
+                            value: fields[index].unit_name!,
+                            label: fields[index].unit_name!,
+                          },
                           ...Object.entries(CalculationMethod).map(
                             ([key, value]) => ({
                               value: String(key),
                               label: value,
                             }),
                           ),
-                          {
-                            value: "other-" + String(fields[index].service_id!),
-                            label: fields[index].unit_name!,
-                          },
                         ],
                       }}
                     />
@@ -206,9 +206,7 @@ export default function UpsertBuildingServicesForm() {
                             handleUpdateAddingRow(
                               key,
                               "calculation_method",
-                              service.unit_name
-                                ? "other-" + service.id
-                                : service.calculation_method,
+                              service.unit_name || service.calculation_method,
                             );
 
                             if (service.unit_name) {
@@ -288,11 +286,11 @@ export default function UpsertBuildingServicesForm() {
               <TableRow key={item.id}>
                 <TableCell>{item.service_name}</TableCell>
                 <TableCell>
-                  {
-                    CalculationMethod[
-                      item.calculation_method as unknown as keyof typeof CalculationMethod
-                    ]
-                  }
+                  {item.unit_name
+                    ? item.unit_name
+                    : CalculationMethod[
+                        item.calculation_method as unknown as keyof typeof CalculationMethod
+                      ]}
                 </TableCell>
                 <TableCell>{formatCurrency(item.unit_price)}</TableCell>
                 <TableCell>

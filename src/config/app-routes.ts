@@ -15,7 +15,7 @@ export const APP_ROUTES = {
     },
     BUILDINGS: {
       BASE: () => `${APP_ROUTES.ADMIN.BASE}/buildings`,
-      ADD: () => `${APP_ROUTES.ADMIN.BUILDINGS.BASE()}/add`,
+      CREATE: () => `${APP_ROUTES.ADMIN.BUILDINGS.BASE()}/create`,
       ID: {
         DETAIL: (buildingId: string) =>
           `${APP_ROUTES.ADMIN.BUILDINGS.BASE()}/${buildingId}/detail`,

@@ -45,7 +45,8 @@ class BillService {
   `,
         { count: "exact" },
       )
-      .eq("rooms.building_id", buildingId);
+      .eq("rooms.building_id", buildingId)
+      .order("created_at", { ascending: false });
 
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -54,8 +55,10 @@ class BillService {
         if (key === "tracking_code") {
           query.ilike(key, `%${value}%`);
         } else if (Array.isArray(value)) {
-          if (key === "month_date") {
-            query.gte(key, value[0]).lte(key, value[1]);
+          if (key === "created_at") {
+            query
+              .gte(key, `${value[0]}T00:00:00Z`)
+              .lte(key, `${value[1]}T23:59:59Z`);
           } else {
             query.in(key, value);
           }
