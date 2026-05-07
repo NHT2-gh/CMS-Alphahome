@@ -1,15 +1,20 @@
 "use client";
 import React from "react";
-// import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import ChartTab from "@/components/common/ChartTab";
+import { CurrentMonthData, ProfitMonth } from "@/types/dashboard";
+import { formatCurrency } from "@/utils/format-data";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export default function AnalyticsBarChart() {
+export default function AnalyticsBarChart({
+  data_current_year,
+}: {
+  data_current_year: ProfitMonth[];
+}) {
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -58,6 +63,11 @@ export default function AnalyticsBarChart() {
         show: false,
       },
     },
+    yaxis: {
+      labels: {
+        formatter: (val: number) => formatCurrency(val),
+      },
+    },
     legend: {
       show: true,
       position: "top",
@@ -80,15 +90,15 @@ export default function AnalyticsBarChart() {
         show: false,
       },
       y: {
-        formatter: (val: number) => `${val}`,
+        formatter: (val: number) => formatCurrency(val),
       },
     },
   };
 
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: "Lợi nhuận",
+      data: data_current_year?.map((item) => item.profit),
     },
   ];
   return (
@@ -96,13 +106,12 @@ export default function AnalyticsBarChart() {
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
           <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">
-            Analytics
+            Thống kê doanh thu
           </h3>
           <span className="block text-gray-500 text-theme-sm dark:text-gray-400">
-            Visitor analytics of last 30 days
+            Biểu đồ doanh thu 12 tháng gần nhất
           </span>
         </div>
-        <ChartTab />
       </div>
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="-ml-5 min-w-[1300px] xl:min-w-full pl-2">

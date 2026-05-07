@@ -1,5 +1,5 @@
 import React from "react";
-import DataTable from "../components/data-table";
+import { BuildingsTable } from "../components/";
 import { MainContainer } from "@/components/_cms/common/page-layout";
 
 export default async function BuildingPageView() {
@@ -12,7 +12,7 @@ export default async function BuildingPageView() {
         },
       ]}
     >
-      <DataTable />
+      <BuildingsTable />
     </MainContainer>
   );
 }

@@ -32,3 +32,12 @@ export interface BuildingSetting {
   services: BuildingService[];
   users: UserBuilding[];
 }
+
+export interface BuildingCreateDTO {
+  code: string;
+  address: string;
+  price_rent: number;
+  price_deposit: number;
+  start_date: string;
+  end_date: string;
+}

@@ -1,8 +1,8 @@
-import { APP_ROUTES } from "@/config/app-routes";
+import React from "react";
+import { notFound } from "next/navigation";
+import { AppError } from "@/lib/error/error-codes";
 import { BuildingProvider } from "@/context/BuildingContext";
 import { buildingService } from "@/services/building.service";
-import { notFound } from "next/navigation";
-import React from "react";
 
 export default async function BuildingLayout({
   children,
@@ -26,7 +26,9 @@ export default async function BuildingLayout({
         </BuildingProvider>
       );
   } catch (error) {
-    console.log(error);
-    return notFound();
+    if (error instanceof AppError && error.code === "NOT_FOUND") {
+      return notFound();
+    }
+    notFound();
   }
 }

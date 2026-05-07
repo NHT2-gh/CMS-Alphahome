@@ -9,16 +9,12 @@ export interface Pagination {
 
 export interface MutationResult {
   success: boolean;
-  message: string;
+  message?: string;
 }
 
-export interface ResponseStandard<T> {
+export interface ResponseStandard<T> extends MutationResult {
   data: T;
-  pagination: Pagination;
-}
-
-export interface ResponseWithStatics<T> extends ResponseStandard<T> {
-  statics: Record<string, number>;
+  pagination?: Pagination;
 }
 
 export interface GetWithFilterParams {

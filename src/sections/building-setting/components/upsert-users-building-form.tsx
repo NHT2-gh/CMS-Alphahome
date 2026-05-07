@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Plus, Trash, X } from "lucide-react";
+import { Pencil, PenIcon, Plus, Trash, X } from "lucide-react";
 import { TenantRole } from "@/types/building";
 import Button from "@/components/ui/button/Button";
 import { Input } from "@/components/_cms/ui/input";
@@ -13,6 +13,7 @@ import {
   UpdateBuildingSettingType,
   UpsertUsersBuildingType,
 } from "@/schemas/validation/admin.validation";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 
 export default function UpsertUsersBuildingForm() {
   const formBuildingSetting = useFormContext<UpdateBuildingSettingType>();
@@ -65,7 +66,7 @@ export default function UpsertUsersBuildingForm() {
         className={"absolute right-2 top-2.5 px-4 py-2.5"}
         onClick={() => setIsEdit(!isEdit)}
       >
-        {isEdit ? <X className="size-4" /> : <Plus className="size-4" />}
+        {isEdit ? <X className="size-4" /> : <Pencil className="size-4" />}
         {isEdit ? "Hủy" : "Chỉnh sửa"}
       </Button>
       <Table>
@@ -78,25 +79,32 @@ export default function UpsertUsersBuildingForm() {
           ]}
         />
         <TableBody>
-          {fields.map((field, index) => (
-            <TableRow key={field.fieldId}>
-              <TableCell>{field.full_name}</TableCell>
-              <TableCell>{field.email}</TableCell>
-              <TableCell>{field.phone}</TableCell>
-              <TableCell>
-                {TenantRole[field.role as unknown as keyof typeof TenantRole]}
-              </TableCell>
+          {fields.length === 0 ? (
+            <DataEmpty
+              message={"Hiện tại chưa có quản lý nào được thêm"}
+              colSpan={5}
+            />
+          ) : (
+            fields.map((field, index) => (
+              <TableRow key={field.fieldId}>
+                <TableCell>{field.full_name}</TableCell>
+                <TableCell>{field.email}</TableCell>
+                <TableCell>{field.phone}</TableCell>
+                <TableCell>
+                  {TenantRole[field.role as unknown as keyof typeof TenantRole]}
+                </TableCell>
 
-              <TableCell>
-                <button
-                  className="text-error-500"
-                  onClick={() => remove(index)}
-                >
-                  <Trash className="size-4" />
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>
+                  <button
+                    className="text-error-500"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash className="size-4" />
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
           {isEdit &&
             Object.entries(userSelected || {}).map(([key, user]) => (
               <TableRow className="w-full border-t" key={key}>

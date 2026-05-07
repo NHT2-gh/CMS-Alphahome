@@ -1,6 +1,7 @@
 import { MainContainer } from "@/components/_cms/common/page-layout";
 import { APP_ROUTES } from "@/config/app-routes";
 import React from "react";
+import { BuildingCreateForm } from "../components";
 
 export default function BuildingCreatePageView() {
   return (
@@ -11,7 +12,7 @@ export default function BuildingCreatePageView() {
         { label: "Thêm toà nhà" },
       ]}
     >
-      BuildingCreatePageView
+      <BuildingCreateForm />
     </MainContainer>
   );
 }

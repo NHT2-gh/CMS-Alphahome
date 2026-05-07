@@ -3,7 +3,6 @@ import React, { useCallback, useState } from "react";
 
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
-import ProgressBar from "@/components/progress-bar/ProgressBar";
 import Badge from "@/components/ui/badge/Badge";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { APP_ROUTES } from "@/config/app-routes";
@@ -13,8 +12,8 @@ import { Eye, Settings, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
 import TableDropdown from "@/components/common/TableDropdown";
-import { NotFound } from "@/components/_cms/common/table/state";
 import { useAuth } from "@/context/AuthContext";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "code", title: "Mã căn hộ" },
@@ -23,20 +22,17 @@ const _tableHeader: { key: string; title: string }[] = [
   { key: "price-deposit", title: "Giá cọc" },
   { key: "start_date", title: "Ngày bắt đầu" },
   { key: "end_date", title: "Ngày kết thúc" },
-  { key: "filling-rate", title: "Tỷ lệ lấp đầy" },
   { key: "is_active", title: "Trạng thái" },
 ];
 
 export default function DataTable() {
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const router = useRouter();
-  const { user } = useAuth();
   const { isLoading, data: buildings } = useBuildings({
     searchText,
   });
 
   const [filterStatus, setFilterStatus] = useState<string>("All");
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const handleSearch = useCallback((value: string) => {
     if (value.trim() === "") {
@@ -58,34 +54,6 @@ export default function DataTable() {
           </p>
         </div>
         <div className="flex gap-3.5">
-          <div className="hidden h-11 items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 lg:inline-flex dark:bg-gray-900">
-            <button
-              onClick={() => {
-                setFilterStatus("All");
-                setCurrentPage(1);
-              }}
-              className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
-                filterStatus === "All"
-                  ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              Tất cả
-            </button>
-            <button
-              onClick={() => {
-                setFilterStatus("Unpaid");
-                setCurrentPage(1);
-              }}
-              className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
-                filterStatus === "Unpaid"
-                  ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              Còn trống
-            </button>
-          </div>
           <div className="hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center">
             <SearchBar
               placeholder="Tìm kiếm"
@@ -94,18 +62,10 @@ export default function DataTable() {
               handleOnChange={handleSearch}
               debounceTime={500}
             />
-            {/* <FilterDropdown
-                    showFilter={showFilter}
-                    setShowFilter={setShowFilter}
-                  /> */}
-            <button className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-[11px] text-sm font-medium text-gray-700 sm:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-              <Upload className="size-4" />
-              Export
-            </button>
           </div>
         </div>
       </div>
-      <div className="max-w-full min-h-[200px] overflow-x-auto">
+      <div className="max-w-full min-h-[18.75rem] overflow-x-auto">
         <Table>
           <CMSTableHeader
             selectAll={false}
@@ -114,17 +74,14 @@ export default function DataTable() {
           />
           <TableBody>
             {isLoading || buildings?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={_tableHeader.length}>
-                  <NotFound
-                    message={
-                      isLoading
-                        ? "Đang tải dữ liệu ..."
-                        : "Không tìm thấy thông tin nào"
-                    }
-                  />
-                </TableCell>
-              </TableRow>
+              <DataEmpty
+                colSpan={_tableHeader.length}
+                message={
+                  isLoading
+                    ? "Đang tải dữ liệu ..."
+                    : "Không tìm thấy thông tin nào"
+                }
+              />
             ) : (
               buildings?.map((item) => (
                 <TableRow key={item.id}>
@@ -147,7 +104,7 @@ export default function DataTable() {
                       size="sm"
                     >
                       <span className="capitalize">
-                        {item.is_active ? "Active" : "Inactive"}
+                        {item.is_active ? "Đang hoạt động" : "Không hoạt động"}
                       </span>
                     </Badge>
                   </TableCell>

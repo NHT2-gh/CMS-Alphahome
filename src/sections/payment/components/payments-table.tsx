@@ -17,7 +17,7 @@ import { _filterConfigs, _filterValues } from "@/_mocks/_filter/_fiter_box";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { BillFilterSchema } from "@/schemas/render-filter-schemas/bill-filter.schema";
-import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import Button from "@/components/ui/button/Button";
 import { ModalViewBill } from ".";
@@ -185,20 +185,14 @@ export default function PaymentsListTable() {
           />
           <TableBody>
             {(bills?.data.length === 0 || isLoading) && (
-              <TableRow className="h-[300px]">
-                <TableCell
-                  className="w-full h-fit text-base"
-                  colSpan={_tableHeader.length}
-                >
-                  <TableNotFound
-                    message={
-                      isLoading
-                        ? "Đang tải dữ liệu..."
-                        : "Hiện tại không tìm thấy hoá đơn nào"
-                    }
-                  />
-                </TableCell>
-              </TableRow>
+              <DataEmpty
+                colSpan={_tableHeader.length}
+                message={
+                  isLoading
+                    ? "Đang tải dữ liệu..."
+                    : "Hiện tại không tìm thấy hoá đơn nào"
+                }
+              />
             )}
             {bills?.data.map((bill) => (
               <TableRow
@@ -305,7 +299,7 @@ export default function PaymentsListTable() {
           pagination={{
             page: currentPage,
             limit: limit,
-            total: bills.pagination.total,
+            total: bills.pagination?.total,
           }}
           handlePageChange={(page) => {
             setCurrentPage(page);

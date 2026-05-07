@@ -10,11 +10,9 @@ import { formatCurrency, formatDateTime } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/data-table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { UpdateBuildingSettingType } from "@/schemas/validation/admin.validation";
-import {
-  BuildingService,
-  BuildingServiceCreateDTO,
-} from "@/types/utility_reading";
-import { randomUUID, UUID } from "crypto";
+import { BuildingServiceCreateDTO } from "@/types/utility_reading";
+import { randomUUID } from "crypto";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 
 export default function UpsertBuildingServicesForm() {
   const formBuildingSetting = useFormContext<UpdateBuildingSettingType>();
@@ -281,6 +279,8 @@ export default function UpsertBuildingServicesForm() {
                 </TableRow>
               ))}
             </>
+          ) : fields.length === 0 ? (
+            <DataEmpty message={"Hiện tại không có dịch vụ nào"} colSpan={5} />
           ) : (
             fields?.map((item) => (
               <TableRow key={item.id}>

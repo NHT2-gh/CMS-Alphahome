@@ -1,5 +1,5 @@
 import React from "react";
-import { CreateRoomForm } from "../components/create-room";
+import { CreateRoomForm } from "../components/room-create";
 import { APP_ROUTES } from "@/config/app-routes";
 import { MainContainer } from "@/components/_cms/common/page-layout";
 

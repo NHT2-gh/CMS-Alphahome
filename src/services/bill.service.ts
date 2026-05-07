@@ -9,11 +9,7 @@ import {
   CreateMonthlyBillsResponse,
   CreateSingleMonthlyBillResponse,
 } from "@/types/bill";
-import {
-  MutationResult,
-  ResponseStandard,
-  ResponseWithStatics,
-} from "@/types/common";
+import { MutationResult, ResponseStandard } from "@/types/common";
 
 class BillService {
   page: number;
@@ -85,6 +81,7 @@ class BillService {
         limit: limit || 20,
         total: count || 0,
       },
+      success: true,
     };
   }
 
@@ -141,14 +138,14 @@ class BillService {
   }
 
   async createMultipleBills(
-    month_date: string,
-    room_id: string[],
+    monthDate: string,
+    roomId: string[],
   ): Promise<{ results: CreateMonthlyBillsResponse[] }> {
     const { data: response, error } = await supabase.rpc(
       "create_multiple_room_monthly_bills_v2",
       {
-        p_month_date: month_date,
-        p_room_ids: room_id,
+        p_month_date: monthDate,
+        p_room_ids: roomId,
       },
     );
 
@@ -160,15 +157,15 @@ class BillService {
 
   async createSignleBill(
     trackingCode: string,
-    month_date: string,
-    room_id: string,
+    monthDate: string,
+    roomId: string,
   ): Promise<CreateSingleMonthlyBillResponse> {
     const { data: response, error } = await supabase.rpc(
       "create_room_monthly_bill",
       {
         p_tracking_code: trackingCode,
-        p_month_date: month_date,
-        p_room_id: room_id,
+        p_month_date: monthDate,
+        p_room_id: roomId,
         p_return_full: true,
       },
     );

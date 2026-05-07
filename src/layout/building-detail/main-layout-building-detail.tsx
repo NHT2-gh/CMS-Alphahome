@@ -1,12 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
 import {
   Blocks,
   BookOpen,
   ChartBar,
   CreditCard,
-  FileText,
   NotepadText,
 } from "lucide-react";
 import { APP_ROUTES } from "@/config/app-routes";

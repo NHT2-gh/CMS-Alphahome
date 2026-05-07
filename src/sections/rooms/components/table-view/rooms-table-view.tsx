@@ -18,7 +18,7 @@ import { useFilter } from "@/hooks/use-filter";
 import { RoomFilterSchema } from "@/schemas/render-filter-schemas/room-filter.schema";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
-import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
 import { showToast } from "@/lib/toast";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
@@ -116,20 +116,14 @@ export default function RoomsTable() {
           <CMSTableHeader columns={_tableHeader} />
           <TableBody>
             {(rooms?.length === 0 || isLoading) && (
-              <TableRow className="">
-                <TableCell
-                  className="w-full h-fit text-base"
-                  colSpan={_tableHeader.length}
-                >
-                  <TableNotFound
-                    message={
-                      isLoading
-                        ? "Đang tải dữ liệu..."
-                        : "Hiện tại không tìm thấy phòng phù hợp"
-                    }
-                  />
-                </TableCell>
-              </TableRow>
+              <DataEmpty
+                colSpan={_tableHeader.length}
+                message={
+                  isLoading
+                    ? "Đang tải dữ liệu..."
+                    : "Hiện tại không tìm thấy phòng phù hợp"
+                }
+              />
             )}
 
             {rooms?.map((room) => (
@@ -140,7 +134,7 @@ export default function RoomsTable() {
                   );
                 }}
                 className={cn(
-                  "cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950",
+                  "cursor-pointer hover:bg-green-50 dark:hover:bg-green-950",
                   {
                     "bg-gray-100 dark:bg-gray-700":
                       room.status === ("available" as keyof typeof RoomStatus),

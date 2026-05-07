@@ -24,7 +24,7 @@ import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/sin
 import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
 import { useModal } from "@/hooks/useModal";
 import { showToast } from "@/lib/toast";
-import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import { useFilter } from "@/hooks/use-filter";
@@ -182,17 +182,14 @@ export default function RevenueExpenditureTable() {
             {(!transcriptions ||
               transcriptions.data.length === 0 ||
               isLoading) && (
-              <TableRow>
-                <TableCell className="w-full" colSpan={_tableHeader.length}>
-                  <TableNotFound
-                    message={
-                      isLoading
-                        ? "Đang tải dữ liệu..."
-                        : "Hiện tại không tìm thấy dữ liệu"
-                    }
-                  />
-                </TableCell>
-              </TableRow>
+              <DataEmpty
+                colSpan={_tableHeader.length}
+                message={
+                  isLoading
+                    ? "Đang tải dữ liệu..."
+                    : "Hiện tại không tìm thấy dữ liệu"
+                }
+              />
             )}
             {transcriptions?.data?.map((item) => (
               <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
@@ -297,7 +294,7 @@ export default function RevenueExpenditureTable() {
           pagination={{
             page: currentPage,
             limit: limit,
-            total: transcriptions.pagination.total,
+            total: transcriptions.pagination?.total,
           }}
           handlePageChange={(page) => {
             setCurrentPage(page);

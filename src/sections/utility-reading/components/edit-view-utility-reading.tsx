@@ -25,7 +25,7 @@ import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
 import { useModal } from "@/hooks/useModal";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { cn } from "@/lib/utils";
-import TableNotFound from "@/components/_cms/common/table/state/not_found";
+import { DataEmpty } from "@/components/_cms/common/table/state";
 
 interface EditViewReadingProp {
   rangeDateSelected?: [string, string];
@@ -323,17 +323,14 @@ export default function EditViewReading({
 
           <TableBody className="max-h-[300px] min-h-[300px] w-full overflow-y-scroll">
             {isLoading || isFetching ? (
-              <TableRow>
-                <TableCell className="w-full h-fit text-base" colSpan={7}>
-                  <TableNotFound
-                    message={
-                      isLoading
-                        ? "Đang tải dữ liệu..."
-                        : "Hiện tại không tìm thấy hoá đơn nào"
-                    }
-                  />
-                </TableCell>
-              </TableRow>
+              <DataEmpty
+                colSpan={7}
+                message={
+                  isLoading
+                    ? "Đang tải dữ liệu..."
+                    : "Hiện tại không tìm thấy hoá đơn nào"
+                }
+              />
             ) : (
               rooms?.map((room) => (
                 <TableRow

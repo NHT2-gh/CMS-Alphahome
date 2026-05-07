@@ -3,7 +3,7 @@ import { GetWithFilterParams, Pagination } from "@/types/common";
 
 export const queryKeys = {
   buildings: {
-    list: (params: GetWithFilterParams) => ["buildings", params],
+    list: (params?: GetWithFilterParams) => ["buildings", params],
     detail: (id: string) => ["buildings", id],
     services: (id: string) => ["buildings", id, "services"],
     buildingRevenueCombined: (id: string) => [
@@ -11,7 +11,6 @@ export const queryKeys = {
       id,
       "building-revenue-combined",
     ],
-
     usersBuilding: (userId: string) => ["buildings", "users-building", userId],
   },
   rooms: {
@@ -82,5 +81,9 @@ export const queryKeys = {
   profile: {
     getAll: () => ["profiles"],
     getProfile: (userId: string) => ["profiles", userId],
+  },
+
+  dashboard: {
+    building: (buildingId: string) => ["dashboard", buildingId],
   },
 };

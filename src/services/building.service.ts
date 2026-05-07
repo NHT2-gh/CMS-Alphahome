@@ -5,8 +5,13 @@ import {
   UpsertUsersBuildingType,
 } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
-import { Building, UserBuilding } from "@/types/building";
-import { GetWithFilterParams, MutationResult } from "@/types/common";
+import { Building, BuildingCreateDTO, UserBuilding } from "@/types/building";
+import {
+  GetWithFilterParams,
+  MutationResult,
+  ResponseStandard,
+} from "@/types/common";
+import { BuildingDashboard } from "@/types/dashboard";
 
 export interface BuildingFilter {
   query?: string;
@@ -202,6 +207,26 @@ class BuildingService {
     return {
       success: true,
       message: "Xóa người dùng khỏi căn hộ thành công",
+    };
+  }
+
+  async createBuilding(data: BuildingCreateDTO): Promise<MutationResult> {
+    const { error } = await supabase.from("buildings").insert({
+      code: data.code,
+      address: data.address,
+      price_rent: Number(data.price_rent),
+      price_deposit: Number(data.price_deposit),
+      start_date: data.start_date as string,
+      end_date: data.end_date as string,
+    });
+
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return {
+      success: true,
+      message: "Tạo tòa nhà thành công",
     };
   }
 }

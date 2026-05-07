@@ -96,6 +96,16 @@ export const updateBuildingSettingSchema = z.object({
   users: z.array(upsertUsersBuildingSchema).optional(),
 });
 
+export const createBuildingFormSchema = z.object({
+  code: z.string().min(1, "Mã tòa nhà là bắt buộc"),
+  address: z.string().min(1, "Địa chỉ là bắt buộc"),
+  price_rent: z.number().min(1, "Giá thuê là bắt buộc"),
+  price_deposit: z.number().min(1, "Giá cọc là bắt buộc"),
+  contract_term: z.string().min(1, "Thời hạn hợp đồng là bắt buộc"),
+});
+
+export type CreateBuildingFormType = z.infer<typeof createBuildingFormSchema>;
+
 export type UpdateBuildingSettingType = z.infer<
   typeof updateBuildingSettingSchema
 >;
