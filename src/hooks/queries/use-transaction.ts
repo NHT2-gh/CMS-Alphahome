@@ -15,12 +15,10 @@ export function useCreateTransaction() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.transactions.allByBuildingId(
           payload.building_id,
-          {
-            page: 1,
-            limit: 10,
-          },
+          { page: 1, limit: 10 },
           {},
         ),
+        refetchType: "active",
       });
     },
   });
@@ -67,7 +65,12 @@ export function useDeleteTransaction() {
       transactionService.deleteTransaction(payload.id),
     onSuccess: (_, payload) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.transactions.allByBuildingId(payload.buildingId),
+        queryKey: queryKeys.transactions.allByBuildingId(
+          payload.buildingId,
+          { page: 1, limit: 10 },
+          {},
+        ),
+        refetchType: "active",
       });
     },
   });

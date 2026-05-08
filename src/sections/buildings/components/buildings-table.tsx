@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import Badge from "@/components/ui/badge/Badge";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";

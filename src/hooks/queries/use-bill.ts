@@ -110,10 +110,10 @@ export function useUpdateStatusBill() {
   return useMutation({
     mutationKey: queryKeys.bills.updateStatusBill(),
     mutationFn: (paylod: {
-      tracking_code: string;
+      tracking_code: string[];
       status: keyof typeof BillStatus;
     }) => billService.updateStatusBill(paylod.tracking_code, paylod.status),
-    onSuccess: (_, payload) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.bills.allByBuildingId(
           building?.id!,

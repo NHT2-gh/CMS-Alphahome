@@ -12,14 +12,14 @@ import { APP_ROUTES } from "@/config/app-routes";
 import Button from "@/components/ui/button/Button";
 import { useBuilding } from "@/context/BuildingContext";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useFilter } from "@/hooks/use-filter";
 import { RoomFilterSchema } from "@/schemas/render-filter-schemas/room-filter.schema";
 import { SearchBar } from "@/components/_cms/components/search-bar";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { DataEmpty } from "@/components/_cms/common/table/state";
-import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
+import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
 import { showToast } from "@/lib/toast";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 

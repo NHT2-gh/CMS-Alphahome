@@ -1,19 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  Bill,
-  BillServiceDetail,
-  CalculationMethod,
-  RoomServiceExtra,
-} from "@/types/bill";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { Bill, BillServiceDetail, CalculationMethod } from "@/types/bill";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useBillServicesDetail } from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
 import { Loader2, Trash } from "lucide-react";
-import { useGetRoomServiceExtra } from "@/hooks/queries/use-service";
 import AddServiceForm from "./add-service-form";
-import { TableHeaderColumn } from "@/components/_cms/components/data-table/table-header";
+import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
 
 const _tableHeader: TableHeaderColumn[] = [
   {
@@ -39,7 +33,6 @@ export default function BillDetailTable({
 }) {
   const { data: billServicesDetail, isLoading: isLoadingBillServicesDetail } =
     useBillServicesDetail(bill.id);
-  const { data: roomServiceExtra } = useGetRoomServiceExtra(bill.room_id);
   const [billServices, setBillServices] = useState<
     BillServiceDetail[] | undefined
   >(undefined);
@@ -65,9 +58,8 @@ export default function BillDetailTable({
         },
       } as BillServiceDetail,
       ...(billServicesDetail || []),
-      ...(roomServiceExtra || []),
     ]);
-  }, [billServicesDetail, roomServiceExtra]);
+  }, [billServicesDetail]);
 
   useEffect(() => {
     setTotal(
@@ -140,7 +132,8 @@ export default function BillDetailTable({
 
                       {!isPreview &&
                         bill.bill_status === "draft" &&
-                        service.services.service_type === "extra" && (
+                        service.services.service_type === "extra" &&
+                        service.services.calculation_method === "by_usage" && (
                           <TableCell className="!w-[50px] !pl-2">
                             <button
                               onClick={() =>
@@ -171,7 +164,7 @@ export default function BillDetailTable({
             {openAddServiceForm ? "Ẩn thêm dịch vụ" : "Thêm dịch vụ"}
           </button>
 
-          {openAddServiceForm && <AddServiceForm billId={bill.id} />}
+          {openAddServiceForm && <AddServiceForm id={bill.id} />}
         </>
       )}
       {/* Total Summary */}

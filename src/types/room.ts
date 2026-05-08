@@ -55,3 +55,12 @@ export interface CreateRoomResponse {
   room_rent_history: RoomRentHistory;
   message: string;
 }
+
+export interface CreateRoomServiceExtraDTO {
+  room_id: string;
+  service_id: string;
+  quantity: number;
+  unit_price: number;
+  start_date: string;
+  end_date: string | null;
+}

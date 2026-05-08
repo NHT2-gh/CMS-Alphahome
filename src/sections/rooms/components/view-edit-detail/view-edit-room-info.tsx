@@ -18,7 +18,7 @@ import { useUpdateRoom } from "@/hooks/queries/use-room";
 import { FormField } from "@/components/_cms/components/form";
 import { uploadImage } from "@/supabase/storage/storageClinets";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { formatCurrency } from "@/utils/format-data";
 import { useCreateRentHistory } from "@/hooks/queries/use-rent-history";
 import { ComponentCard } from "@/components/_cms/common/component-card";
@@ -74,7 +74,11 @@ export default function ViewEditRoomInfo({
       return;
     }
   }, [images]);
-  const { handleSubmit, setValue } = editRoomInfoForm;
+  const {
+    handleSubmit,
+    setValue,
+    formState: { isDirty },
+  } = editRoomInfoForm;
 
   const handleUploadImages = async (images: ImageItem[]) => {
     setIsUploading(true);
@@ -209,12 +213,13 @@ export default function ViewEditRoomInfo({
           onClick={handleSubmit(onSubmit)}
           disabled={
             isUploading ||
-            images?.filter((img) => img.status === "idle").length > 0
+            images?.filter((img) => img.status === "idle").length > 0 ||
+            !isDirty
           }
           type="submit"
           className="block w-fit ml-auto"
         >
-          {isUploading ? "Đang tải lên..." : "Hoàn tất"}
+          {isUploading ? "Đang tải lên..." : "Cập nhật"}
         </Button>
       </ComponentCard>
 

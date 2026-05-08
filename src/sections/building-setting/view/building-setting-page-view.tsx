@@ -23,6 +23,7 @@ import { buildingServicesService } from "@/services/building-services.service";
 import { diffArray } from "@/utils/diff-array";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { Alert } from "@/components/_cms/components/alert";
+import { APP_ROUTES } from "@/config/app-routes";
 
 export default function BuildingSettingView() {
   const { building } = useBuilding();
@@ -92,7 +93,6 @@ export default function BuildingSettingView() {
   }, [building]);
   const {
     handleSubmit,
-    getValues,
     formState: { isValid, isDirty, dirtyFields },
   } = updateBuildingSetting;
 
@@ -245,7 +245,13 @@ export default function BuildingSettingView() {
   };
 
   return (
-    <MainContainer title="Thiết lập thông tin căn hộ">
+    <MainContainer
+      title="Thiết lập thông tin toà nhà"
+      links={[
+        { label: "Danh sách toà nhà", href: APP_ROUTES.ADMIN.BUILDINGS.BASE() },
+        { label: "Thiết lập toà nhà" },
+      ]}
+    >
       <FormProvider {...updateBuildingSetting}>
         <form
           className="space-y-5"

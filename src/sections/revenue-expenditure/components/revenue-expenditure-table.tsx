@@ -18,7 +18,7 @@ import {
   useDeleteTransaction,
 } from "@/hooks/queries/use-transaction";
 import { PaymentMethod, TransactionType } from "@/types/transcription";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";

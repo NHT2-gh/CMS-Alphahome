@@ -27,14 +27,16 @@ export async function getRoomDetailServerAction(
     };
   }
 
-  const [contract, rentHistory] = await Promise.all([
+  const [contract, rentHistory, roomServiceExtras] = await Promise.all([
     contractService.getContract(room.id).catch(() => undefined),
     roomRentHistoryService.getRoomRentHistory(room.id),
+    roomService.getRoomServiceExtras(room.id).catch(() => undefined),
   ]);
 
   return {
     room: room,
     contract: contract,
     rentHistory: rentHistory,
+    roomServiceExtras: roomServiceExtras,
   };
 }

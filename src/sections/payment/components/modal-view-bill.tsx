@@ -32,18 +32,18 @@ export default function ModalViewBill({
   const handleUpdateStatus = async () => {
     try {
       const result = await updateStatusBill.mutateAsync({
-        tracking_code: currentBill.tracking_code,
+        tracking_code: [currentBill.tracking_code],
         status: status,
       });
 
       if (result.success) {
         closeModal();
-        showToast.success({
-          title: result.message,
-        });
       }
     } catch (error) {
-      console.log(error);
+      closeModal();
+      showToast.error({
+        title: "Lỗi! Vui lòng thử lại",
+      });
     }
   };
 

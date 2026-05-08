@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FormField } from "@/components/_cms/components/form";
 import useAllRooms from "@/hooks/queries/use-room";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Checkbox, Input } from "@/components/_cms/ui/input";
 import {

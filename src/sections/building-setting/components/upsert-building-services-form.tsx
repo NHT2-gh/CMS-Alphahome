@@ -7,7 +7,7 @@ import { useGetServices } from "@/hooks/queries/use-service";
 import { FormField } from "@/components/_cms/components/form";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { formatCurrency, formatDateTime } from "@/utils/format-data";
-import { CMSTableHeader } from "@/components/_cms/components/data-table";
+import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { UpdateBuildingSettingType } from "@/schemas/validation/admin.validation";
 import { BuildingServiceCreateDTO } from "@/types/utility_reading";

@@ -11,11 +11,16 @@ export const createUtilityReadingFormSchema = z.object({
   month: z.string(),
 });
 
-export const addBillServiceDetaiFormSchema = z.object({
+export const addServiceFormSchema = z.object({
   service_id: z.string(),
   quantity: z.number(),
   calculation_method: z.string(),
   unit_price: z.number(),
+});
+
+export const addRoomServiceExtraFormSchema = addServiceFormSchema.extend({
+  start_date: z.string(),
+  end_date: z.string().nullable(),
 });
 
 export const createRoomFormSchema = z.object({
@@ -129,6 +134,8 @@ export type CreateUtilityReadingFormType = z.infer<
 >;
 export type CreateInvoiceFormType = z.infer<typeof createInvoiceFormSchema>;
 
-export type AddBillServiceDetaiFormType = z.infer<
-  typeof addBillServiceDetaiFormSchema
+export type AddServiceFormType = z.infer<typeof addServiceFormSchema>;
+
+export type AddRoomServiceExtraFormType = z.infer<
+  typeof addRoomServiceExtraFormSchema
 >;

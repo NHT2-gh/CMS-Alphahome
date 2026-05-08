@@ -6,7 +6,7 @@ import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { ComponentCard } from "@/components/_cms/common/component-card";
 
 interface ViewContractProps {
-  contract?: Contract;
+  contract: Contract;
 }
 
 export default function ViewContract({ contract }: ViewContractProps) {

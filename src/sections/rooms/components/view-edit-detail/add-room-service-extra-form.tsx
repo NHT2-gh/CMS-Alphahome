@@ -2,11 +2,15 @@
 
 import { FormField } from "@/components/_cms/components/form";
 import Button from "@/components/ui/button/Button";
-import { useAddServiceToBill } from "@/hooks/queries/use-bill";
-import { useGetServices } from "@/hooks/queries/use-service";
 import {
-  addServiceFormSchema,
-  AddServiceFormType,
+  useAddRoomServiceExtra,
+  useGetServices,
+} from "@/hooks/queries/use-service";
+import { mapErrorToMessage } from "@/lib/error/app-error";
+import { showToast } from "@/lib/toast";
+import {
+  addRoomServiceExtraFormSchema,
+  AddRoomServiceExtraFormType,
 } from "@/schemas/validation/admin.validation";
 import { CalculationMethod } from "@/types/bill";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,22 +18,26 @@ import { Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-interface AddServiceFormProps {
+interface AddRoomExtraServiceFormProps {
   id: string;
 }
 
-export default function AddServiceForm({ id }: AddServiceFormProps) {
-  const addServiceForm = useForm<AddServiceFormType>({
-    resolver: zodResolver(addServiceFormSchema),
+export default function AddRoomExtraServiceForm({
+  id,
+}: AddRoomExtraServiceFormProps) {
+  const addServiceForm = useForm<AddRoomServiceExtraFormType>({
+    resolver: zodResolver(addRoomServiceExtraFormSchema),
     defaultValues: {
       service_id: "",
-      quantity: 0,
+      quantity: 1,
       calculation_method: "",
       unit_price: 0,
+      start_date: new Date().toISOString().split("T")[0],
+      end_date: null,
     },
   });
   const { data: servicesExtra } = useGetServices("extra");
-  const createBillServiceDetail = useAddServiceToBill();
+  const addRoomServiceExtra = useAddRoomServiceExtra();
   const service_id = useWatch({
     control: addServiceForm.control,
     name: "service_id",
@@ -66,18 +74,27 @@ export default function AddServiceForm({ id }: AddServiceFormProps) {
     formState: { isLoading },
   } = addServiceForm;
 
-  const onSubmit = async (data: AddServiceFormType) => {
+  const onSubmit = async (data: AddRoomServiceExtraFormType) => {
     try {
-      const result = await createBillServiceDetail.mutateAsync({
-        bill_id: id,
-        service_id: data.service_id,
-        quantity: data.quantity,
-        unit_price: data.unit_price,
+      const result = await addRoomServiceExtra.mutateAsync({
+        data: {
+          room_id: id,
+          service_id: data.service_id,
+          quantity: data.quantity,
+          unit_price: data.unit_price,
+          start_date: data.start_date,
+          end_date: data.end_date,
+        },
       });
       if (result.success) {
+        showToast.success({ title: "Thêm dịch vụ thành công" });
         addServiceForm.reset();
       }
     } catch (error) {
+      showToast.error({
+        title: "Lỗi",
+        description: mapErrorToMessage(error) ?? "Lỗi hệ thống",
+      });
       console.log(error);
     }
   };
@@ -95,10 +112,12 @@ export default function AddServiceForm({ id }: AddServiceFormProps) {
               label: "Dịch vụ",
               placeholder: "Chọn dịch vụ",
               options:
-                servicesExtra?.map((item) => ({
-                  label: item.service_name,
-                  value: item.id,
-                })) ?? [],
+                servicesExtra
+                  ?.filter((item) => item.calculation_method !== "by_usage")
+                  .map((item) => ({
+                    label: item.service_name,
+                    value: item.id,
+                  })) ?? [],
             }}
           />
 
@@ -148,6 +167,19 @@ export default function AddServiceForm({ id }: AddServiceFormProps) {
               readOnly: true,
               value: quantity * Number(unit_price),
               formatCurrency: true,
+            }}
+          />
+
+          <FormField
+            className="w-full lg:col-span-2"
+            form={addServiceForm}
+            field={{
+              id: "start_date",
+              name: "start_date",
+              type: "date",
+              defaultDate: "",
+              label: "Ngày áp dụng",
+              className: "w-full lg:col-span-2",
             }}
           />
 

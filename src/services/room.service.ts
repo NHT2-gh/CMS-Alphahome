@@ -4,6 +4,7 @@ import {
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
+import { RoomServiceExtra } from "@/types/bill";
 import { GetWithFilterParams, MutationResult } from "@/types/common";
 import { CreateRoomResponse, Room, RoomOverview } from "@/types/room";
 
@@ -98,6 +99,31 @@ class RoomService {
       success: true,
       message: "Room updated successfully",
     };
+  }
+
+  async getRoomServiceExtras(roomId: string): Promise<RoomServiceExtra[]> {
+    const query = supabase
+      .from("room_service_extras")
+      .select(
+        `
+        *,
+        services!inner(
+          id,
+          service_name,
+          service_type,
+          calculation_method
+        )
+        `,
+      )
+      .eq("room_id", roomId);
+
+    const { data: roomServiceExtra, error } = await query;
+
+    if (error) {
+      handlePostgresError(error);
+    }
+
+    return roomServiceExtra || [];
   }
 }
 

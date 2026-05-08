@@ -52,9 +52,7 @@ class BillService {
           query.ilike(key, `%${value}%`);
         } else if (Array.isArray(value)) {
           if (key === "created_at") {
-            query
-              .gte(key, `${value[0]}T00:00:00Z`)
-              .lte(key, `${value[1]}T23:59:59Z`);
+            query.gte(key, `${value[0]}`).lte(key, `${value[1]}`);
           } else {
             query.in(key, value);
           }
@@ -78,7 +76,7 @@ class BillService {
       data: data || [],
       pagination: {
         page: page || 1,
-        limit: limit || 20,
+        limit: limit || 10,
         total: count || 0,
       },
       success: true,
@@ -177,7 +175,7 @@ class BillService {
   }
 
   async updateStatusBill(
-    tracking_code: string,
+    tracking_code: string[],
     status: keyof typeof BillStatus,
   ): Promise<MutationResult> {
     const query = supabase
@@ -186,17 +184,19 @@ class BillService {
         bill_status: status,
         updated_at: new Date().toISOString(),
       })
-      .eq("tracking_code", String(tracking_code.trim()))
+      .in("tracking_code", tracking_code)
       .select();
+
     const { data, error } = await query;
 
-    if (error || data.length === 0) {
-      if (error) handlePostgresError(error);
-      else
-        return {
-          success: false,
-          message: "Lỗi hệ thống",
-        };
+    if (error) {
+      handlePostgresError(error);
+    }
+    if (!data || data.length === 0) {
+      return {
+        success: false,
+        message: "Không tìm thấy hoá đơn",
+      };
     }
 
     return {

@@ -52,6 +52,9 @@ export interface RoomServiceExtra {
   services: Service;
   quantity: number;
   unit_price: number;
+  start_date: string;
+  end_date: string;
+  created_at: string;
 }
 
 export interface BillServiceDetail {
