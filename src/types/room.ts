@@ -22,6 +22,7 @@ export interface RoomOverview {
   area: number;
   furniture_status: FurnitureStatus;
   tenant_name: string;
+  contract_id: string;
   start_date: string;
   end_date: string;
   updated_at: string;

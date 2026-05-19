@@ -6,14 +6,12 @@ import {
   ViewContract,
   ViewRoomServiceExtra,
 } from "../components/view-edit-detail";
-import { MainContainer } from "@/components/_cms/common/page-layout";
-import { APP_ROUTES } from "@/config/app-routes";
 import { RoomServiceExtra } from "@/types/bill";
 
 interface RoomDetailPageViewProps {
   room: Room;
   rentHistory: RoomRentHistory[];
-  contract?: Contract;
+  contract?: Contract | null;
   roomServiceExtras?: RoomServiceExtra[];
 }
 
@@ -33,7 +31,7 @@ export default function RoomDetailPageView({
         />
       )}
 
-      {contract && <ViewContract contract={contract} />}
+      <ViewContract contract={contract} roomId={room.id} />
     </div>
   );
 }

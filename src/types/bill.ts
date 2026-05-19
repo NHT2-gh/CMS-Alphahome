@@ -9,6 +9,7 @@ export enum CalculationMethod {
   by_usage = "m³/kwh",
   per_person = "Người",
   per_room = "Phòng",
+  per_transport = "Xe",
   other = "Khác",
 }
 export type ServiceType = "water" | "electricity" | "fixed" | "extra";

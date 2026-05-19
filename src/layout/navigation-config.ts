@@ -25,11 +25,11 @@ const NavItems: NavItem[] = [
   },
   {
     icon: "userCircle",
-    name: "Quản lý người dùng",
+    name: "Quản lý Sale Phòng",
     path: APP_ROUTES.ADMIN.USERS.BASE,
     subItems: [
-      { name: "Danh sách", path: APP_ROUTES.ADMIN.USERS.BASE },
-      { name: "Thêm mới", path: APP_ROUTES.ADMIN.USERS.ADD() },
+      { name: "Danh sách phòng đang sale", path: APP_ROUTES.ADMIN.USERS.BASE },
+      // { name: "Thêm mới", path: APP_ROUTES.ADMIN.USERS.ADD() },
     ],
     role: ["super_admin"],
   },

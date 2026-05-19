@@ -31,12 +31,12 @@ export default function CreateRevenueForm() {
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
       type: "",
-      amount: 0,
+      amount: 1000,
       description: "",
       category_id: "",
       room_id: undefined,
-      payment_method: "",
-      transaction_date: "",
+      payment_method: "bank",
+      transaction_date: new Date().toISOString(),
       building_id: building?.id,
     },
   });
@@ -121,12 +121,10 @@ export default function CreateRevenueForm() {
         field={{
           id: "transaction_date",
           required: true,
-
           name: "transaction_date",
           label: "Ngày giao dịch",
           type: "date",
           placeholder: "Chọn ngày",
-          defaultValue: new Date().toISOString().split("T")[0],
         }}
       />
       <FormField
@@ -152,7 +150,7 @@ export default function CreateRevenueForm() {
         field={{
           name: "amount",
           required: true,
-
+          min: 1000,
           label: "Số tiền",
           type: "number",
           placeholder: "Nhập số tiền",

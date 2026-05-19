@@ -20,7 +20,7 @@ export default async function RoomDetailPage({
     <RoomDetailPageView
       room={roomDetailData.room}
       rentHistory={roomDetailData.rentHistory}
-      contract={roomDetailData.contract!}
+      contract={roomDetailData.contract?.data!}
       roomServiceExtras={roomDetailData.roomServiceExtras!}
     />
   );

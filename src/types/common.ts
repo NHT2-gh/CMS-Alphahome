@@ -13,7 +13,7 @@ export interface MutationResult {
 }
 
 export interface ResponseStandard<T> extends MutationResult {
-  data: T;
+  data: T | null;
   pagination?: Pagination;
 }
 

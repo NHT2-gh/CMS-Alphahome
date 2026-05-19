@@ -16,7 +16,6 @@ import { CMSTableHeader } from "@/components/_cms/components/table";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useFilter } from "@/hooks/use-filter";
 import { RoomFilterSchema } from "@/schemas/render-filter-schemas/room-filter.schema";
-import { SearchBar } from "@/components/_cms/components/search-bar";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { DataEmpty } from "@/components/_cms/common/table/state";
 import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
@@ -25,7 +24,6 @@ import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 
 const _tableHeader: TableHeaderColumn[] = [
   { key: "code", title: "Mã phòng" },
-  { key: "occupants_count", title: "Số người", isHiddenOnMobile: true },
   { key: "current_rent", title: "Giá thuê" },
   { key: "area", title: "Diện tích", isHiddenOnMobile: true },
   { key: "furniture_status", title: "Nội thất", isHiddenOnMobile: true },
@@ -150,9 +148,9 @@ export default function RoomsTable() {
                 key={room.room_id}
               >
                 <TableCell>{room.code}</TableCell>
-                <TableCell className="hidden md:table-cell">
+                {/* <TableCell className="hidden md:table-cell">
                   {room.occupants_count || 0}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>{formatCurrency(room.current_rent)}</TableCell>
 
                 <TableCell className="hidden md:table-cell">

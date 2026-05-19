@@ -83,7 +83,7 @@ export default function PaymentsListTable() {
     filterConfigs: BillFilterSchema,
   });
   const {
-    data: bills,
+    data: billsData,
     isLoading,
     refetch,
   } = useAllBills({
@@ -98,12 +98,14 @@ export default function PaymentsListTable() {
     new Map(),
   );
 
+  const { data: bills, pagination } = billsData || {};
+
   const handleConfirmPayment = useCallback(async () => {
     if (selectedBills.size > 0) {
       try {
         const result = await updateStatusBill.mutateAsync({
           tracking_code: Array.from(selectedBills.keys()),
-          status: "confirmed",
+          status: "paid",
         });
         if (result.success) {
           showToast.success({
@@ -202,15 +204,14 @@ export default function PaymentsListTable() {
         <Table>
           <CMSTableHeader
             selectAll={
-              selectedBills.size === bills?.data.length &&
-              bills?.data.length > 0
+              selectedBills.size === bills?.length && bills?.length > 0
             }
             columns={columns}
             handleSelectAll={(isSelectAll) => {
               if (isSelectAll) {
                 setSelectedBills(
                   new Map(
-                    bills?.data.map((bill) => [
+                    bills?.map((bill) => [
                       String(bill.tracking_code).trim(),
                       bill,
                     ]),
@@ -222,7 +223,7 @@ export default function PaymentsListTable() {
             }}
           />
           <TableBody>
-            {(bills?.data.length === 0 || isLoading) && (
+            {(bills?.length === 0 || isLoading) && (
               <DataEmpty
                 colSpan={columns.length}
                 message={
@@ -232,7 +233,7 @@ export default function PaymentsListTable() {
                 }
               />
             )}
-            {bills?.data.map((bill) => (
+            {bills?.map((bill) => (
               <TableRow
                 key={bill.id}
                 onDoubleClick={() => {
@@ -336,7 +337,9 @@ export default function PaymentsListTable() {
                       </button>
 
                       {Array.from(selectedBills.values()).every(
-                        (bill) => bill.bill_status === "draft",
+                        (bill) =>
+                          bill.bill_status === "draft" ||
+                          bill.bill_status === "confirmed",
                       ) && (
                         <button
                           onClick={() => modalConfirmAction.openModal()}
@@ -375,13 +378,13 @@ export default function PaymentsListTable() {
         />
       )}
 
-      {bills && bills?.data.length > 0 && (
+      {bills && bills?.length > 0 && (
         <Pagination
           type="default"
           pagination={{
             page: currentPage,
             limit: limit,
-            total: bills.pagination?.total,
+            total: billsData?.pagination?.total,
           }}
           handlePageChange={(page) => {
             setCurrentPage(page);

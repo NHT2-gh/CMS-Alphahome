@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { formatCurrency, formatDateTime } from "@/utils/format-data";
 import AddRoomServiceExtraForm from "./add-room-service-extra-form";
 import { useGetRoomServiceExtra } from "@/hooks/queries/use-service";
+import Badge from "@/components/ui/badge/Badge";
 
 interface ViewEditRoomServiceExtraProps {
   roomId: string;
@@ -37,6 +38,7 @@ export default function ViewEditRoomServiceExtra({
               { key: "unit_price", title: "Đơn giá" },
               { key: "start_date", title: "Ngày áp dụng" },
               { key: "end_date", title: "Ngày kết thúc" },
+              { key: "status", title: "Trạng thái" },
             ]}
           />
 
@@ -62,7 +64,13 @@ export default function ViewEditRoomServiceExtra({
                   <TableCell>
                     {formatDateTime(item.start_date, { withTime: true })}
                   </TableCell>
-                  <TableCell>{item.end_date || "//"}</TableCell>
+                  <TableCell>{item.end_date || "----"}</TableCell>
+                  <TableCell>
+                    <Badge color={item.end_date ? "error" : "success"}>
+                      {item.end_date ? "Không áp dụng" : "Đang áp dụng"}
+                    </Badge>
+                  </TableCell>
+
                   <TableCell>
                     <button
                     // onClick={() =>

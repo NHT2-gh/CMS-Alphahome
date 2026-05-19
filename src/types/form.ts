@@ -47,6 +47,7 @@ export interface BaseFieldConfig extends Omit<
   validation?: z.ZodType<any, any, any>;
   message?: string;
   label?: string;
+  readOnly?: boolean;
   handleOnChange?: (value: string) => void;
 }
 

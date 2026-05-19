@@ -1,7 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-import { Room, RoomRentHistory } from "@/types/room";
+import {
+  FurnitureStatus,
+  Room,
+  RoomRentHistory,
+  RoomStatus,
+} from "@/types/room";
 import { showToast } from "@/lib/toast";
 import { useForm } from "react-hook-form";
 import {
@@ -60,6 +65,7 @@ export default function ViewEditRoomInfo({
       description: currentRoom.description || "",
       images: currentRoom.images || [],
       current_rent: Number(rentHistory[0].rent_price) || 0,
+      status: RoomStatus[currentRoom.status],
     },
   });
   useEffect(() => {
@@ -177,12 +183,25 @@ export default function ViewEditRoomInfo({
               label: "Nội thất",
               type: "select",
               placeholder: "Chọn nội thất",
-              defaultValue: currentRoom.furniture_status,
-              options: [
-                { value: "basic", label: "Cơ bản" },
-                { value: "unfurnished", label: "Không có" },
-                { value: "furnished", label: "Đầy đủ" },
-              ],
+
+              options: Array.from(Object.entries(FurnitureStatus)).map(
+                ([key, value]) => {
+                  return {
+                    value: key,
+                    label: value,
+                  };
+                },
+              ),
+            }}
+          />
+
+          <FormField
+            form={editRoomInfoForm}
+            field={{
+              name: "status",
+              label: "Trạng thái",
+              type: "text",
+              readOnly: true,
             }}
           />
 

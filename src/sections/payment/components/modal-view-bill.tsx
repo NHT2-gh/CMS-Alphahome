@@ -23,12 +23,12 @@ export default function ModalViewBill({
   currentBill: Bill;
   closeModal: () => void;
 }) {
-  const { data: contract } = useContract(currentBill?.room_id);
+  const { data: contractData } = useContract(currentBill?.room_id);
   const [status, setStatus] = useState<keyof typeof BillStatus>(
     currentBill.bill_status,
   );
   const updateStatusBill = useUpdateStatusBill();
-
+  const { data: contract } = contractData ?? {};
   const handleUpdateStatus = async () => {
     try {
       const result = await updateStatusBill.mutateAsync({

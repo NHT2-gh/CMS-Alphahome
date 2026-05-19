@@ -88,6 +88,8 @@ class RoomService {
         furniture_status: room.furniture_status,
         description: room.description,
         images: room.images,
+        updated_at: new Date().toISOString(),
+        status: room.status,
       })
       .eq("id", room.id);
 

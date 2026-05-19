@@ -1,3 +1,4 @@
+import { RoomStatus } from "@/types/room";
 import z from "zod";
 
 export const createInvoiceFormSchema = z.object({
@@ -35,12 +36,16 @@ export const createRoomFormSchema = z.object({
 
 export const updateRoomInfoSchema = z.object({
   id: z.string().min(1, "Room ID is required"),
-  code_room: z.string().min(1, "Code room is required"),
+  code_room: z.string().min(1, "Code room is required").optional(),
   area: z.number().optional(),
-  furniture_status: z.string().min(1, "Furniture status is required"),
+  furniture_status: z
+    .string()
+    .min(1, "Furniture status is required")
+    .optional(),
   description: z.string().optional(),
-  images: z.array(z.string()),
-  current_rent: z.number().min(1, "Current rent is required"),
+  images: z.array(z.string()).optional(),
+  current_rent: z.number().min(1, "Current rent is required").optional(),
+  status: z.enum(Array.from(Object.entries(RoomStatus)).map(([key, _]) => key)),
 });
 
 export const createTransactionSchema = z
@@ -108,6 +113,19 @@ export const createBuildingFormSchema = z.object({
   price_deposit: z.number().min(1, "Giá cọc là bắt buộc"),
   contract_term: z.string().min(1, "Thời hạn hợp đồng là bắt buộc"),
 });
+
+export const contractFormSchema = z.object({
+  tenant_name: z.string().min(1, "Tên người thuê là bắt buộc"),
+  tenant_phone: z.string().min(1, "Số điện thoại người thuê là bắt buộc"),
+  room_id: z.string().min(1, "Room ID is required"),
+  start_date: z.string().min(1, "Ngày bắt đầu hợp đồng là bắt buộc"),
+  end_date: z.string().min(1, "Ngày kết thúc hợp đồng là bắt buộc"),
+  deposit_amount: z.number().min(1000, "Giá cọc là bắt buộc"),
+  occupants_count: z.number().default(1).optional(),
+  total_transport: z.number().default(0).optional(),
+});
+
+export type ContractFormType = z.infer<typeof contractFormSchema>;
 
 export type CreateBuildingFormType = z.infer<typeof createBuildingFormSchema>;
 
