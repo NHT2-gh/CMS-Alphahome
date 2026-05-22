@@ -1,4 +1,4 @@
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal";
 import { cn } from "@/lib/utils";
 import { iconMap } from "@/utils/iconMap";
 import React from "react";

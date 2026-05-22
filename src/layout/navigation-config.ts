@@ -23,16 +23,16 @@ const NavItems: NavItem[] = [
     ],
     role: ["super_admin", "admin"],
   },
-  {
-    icon: "userCircle",
-    name: "Quản lý Sale Phòng",
-    path: APP_ROUTES.ADMIN.USERS.BASE,
-    subItems: [
-      { name: "Danh sách phòng đang sale", path: APP_ROUTES.ADMIN.USERS.BASE },
-      // { name: "Thêm mới", path: APP_ROUTES.ADMIN.USERS.ADD() },
-    ],
-    role: ["super_admin"],
-  },
+  // {
+  //   icon: "userCircle",
+  //   name: "Quản lý Sale Phòng",
+  //   path: APP_ROUTES.ADMIN.USERS.BASE,
+  //   subItems: [
+  //     { name: "Danh sách phòng đang sale", path: APP_ROUTES.ADMIN.USERS.BASE },
+  //     // { name: "Thêm mới", path: APP_ROUTES.ADMIN.USERS.ADD() },
+  //   ],
+  //   role: ["super_admin"],
+  // },
 ];
 
 // CMS Sidebar Configuration

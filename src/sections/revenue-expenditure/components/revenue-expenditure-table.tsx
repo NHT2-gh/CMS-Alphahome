@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   FilterIcon,
@@ -9,7 +9,6 @@ import {
   Trash,
   Upload,
 } from "lucide-react";
-import Badge from "@/components/ui/badge/Badge";
 import { formatCurrency } from "@/utils/format-data";
 import { useBuilding } from "@/context/BuildingContext";
 import { SearchBar } from "@/components/_cms/components/search-bar";
@@ -19,7 +18,12 @@ import {
 } from "@/hooks/queries/use-transaction";
 import { PaymentMethod, TransactionType } from "@/types/transcription";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
 import { useModal } from "@/hooks/useModal";
@@ -30,10 +34,11 @@ import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import { useFilter } from "@/hooks/use-filter";
 import { TransactionFilterSchema } from "@/schemas/render-filter-schemas/transtion-filter.schema";
 import { Pagination } from "@/components/_cms/components/pagination";
-import Button from "@/components/ui/button/Button";
 import { Tooltip } from "@/components/_cms/ui/tooltip";
 import useAllRooms from "@/hooks/queries/use-room";
 import { Checkbox } from "@/components/_cms/ui/input";
+import { Button } from "@/components/_cms/ui/button";
+import { Badge } from "@/components/_cms/ui/badge";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "id", title: "Mã giao dịch" },
@@ -108,6 +113,12 @@ export default function RevenueExpenditureTable() {
     }
     applyFilters();
   }, []);
+
+  useEffect(() => {
+    if (transcriptions?.data) {
+      setSelectedTransactions([]);
+    }
+  }, [transcriptions]);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-center justify-between border-b border-gray-200 p-3 md:p-5 dark:border-gray-800">
@@ -136,11 +147,7 @@ export default function RevenueExpenditureTable() {
 
           <Button
             variant="outline"
-            disabled={
-              isLoading ||
-              !transcriptions ||
-              transcriptions?.data.length < limit
-            }
+            disabled={isLoading || !transcriptions}
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <FilterIcon className="size-4" /> Bộ lọc
@@ -160,6 +167,7 @@ export default function RevenueExpenditureTable() {
           filterValues={filterValues}
         />
       )}
+
       <div className="max-w-full overflow-x-auto">
         <Table>
           <CMSTableHeader
@@ -179,9 +187,7 @@ export default function RevenueExpenditureTable() {
             }}
           />
           <TableBody>
-            {(!transcriptions ||
-              transcriptions.data.length === 0 ||
-              isLoading) && (
+            {!transcriptions && isLoading && (
               <DataEmpty
                 colSpan={_tableHeader.length}
                 message={

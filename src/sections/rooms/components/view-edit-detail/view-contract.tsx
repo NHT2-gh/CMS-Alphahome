@@ -2,12 +2,12 @@
 import React, { useCallback } from "react";
 import { ReceiptText, UserCircle2 } from "lucide-react";
 import { Contract, ContractStatus } from "@/types/contract";
-import Badge from "@/components/ui/badge/Badge";
+import { Badge } from "@/components/_cms/ui/badge";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { ComponentCard } from "@/components/_cms/common/component-card";
 import { useModal } from "@/hooks/useModal";
 import { AddContractForm } from ".";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import {
   useContract,
   useUpdateStatusContract,
@@ -36,13 +36,14 @@ export default function ViewContract({ contract, roomId }: ViewContractProps) {
         });
         if (result) {
           showToast.success({
-            title: `Thông báo`,
+            title: `Thành công`,
             description: result.message,
           });
         }
       } catch (error) {
         showToast.error({
-          title: mapErrorToMessage(error),
+          title: "Thất bại",
+          description: mapErrorToMessage(error),
         });
       }
     },

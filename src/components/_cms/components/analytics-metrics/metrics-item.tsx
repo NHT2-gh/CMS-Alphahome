@@ -1,5 +1,5 @@
-import Badge from "@/components/ui/badge/Badge";
 import React from "react";
+import { Badge } from "../../ui/badge";
 
 interface MetricsItemProps {
   id: string;

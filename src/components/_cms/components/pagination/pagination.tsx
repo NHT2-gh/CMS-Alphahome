@@ -1,4 +1,4 @@
-import PaginationWithIcon from "@/components/ui/pagination/PaginationWitIcon";
+import PaginationWithIcon from "@/components/_cms/ui/pagination/PaginationWitIcon";
 import { Pagination as PaginationType } from "@/types/common";
 import React from "react";
 import SimplePagination from "./simple-pagination";

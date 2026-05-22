@@ -3,17 +3,21 @@ import React, { useCallback, useState } from "react";
 
 import { CMSTableHeader } from "@/components/_cms/components/table";
 import { SearchBar } from "@/components/_cms/components/search-bar";
-import Badge from "@/components/ui/badge/Badge";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { APP_ROUTES } from "@/config/app-routes";
-import { useBuildings, useUsersBuilding } from "@/hooks/queries/use-building";
+import { useBuildings } from "@/hooks/queries/use-building";
 import { formatCurrency } from "@/utils/format-data";
-import { Eye, Settings, Upload } from "lucide-react";
+import { Eye, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
-import TableDropdown from "@/components/common/TableDropdown";
-import { useAuth } from "@/context/AuthContext";
 import { DataEmpty } from "@/components/_cms/common/table/state";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
+import TableDropdown from "@/components/_cms/common/table-dropdown/table-dropdown";
+import { Badge } from "@/components/_cms/ui/badge";
+import { DropdownItem } from "@/components/_cms/ui/dropdown";
 
 const _tableHeader: { key: string; title: string }[] = [
   { key: "code", title: "Mã căn hộ" },

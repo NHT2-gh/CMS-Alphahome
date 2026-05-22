@@ -11,7 +11,7 @@ import {
   CreateTransactionType,
 } from "@/schemas/validation/admin.validation";
 import useAllRooms from "@/hooks/queries/use-room";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilding } from "@/context/BuildingContext";

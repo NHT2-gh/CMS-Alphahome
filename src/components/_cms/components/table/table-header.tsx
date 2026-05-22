@@ -1,7 +1,7 @@
-import { TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Checkbox } from "../../ui/input";
+import { TableCell, TableHeader, TableRow } from "../../ui/table";
 
 export interface TableHeaderColumn {
   key: string;

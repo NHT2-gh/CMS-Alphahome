@@ -4,7 +4,7 @@ import FolderCard from "../components/FolderCard";
 import { useBuilding } from "@/context/BuildingContext";
 import ModalCreatReading from "../components/modal-creat-reading";
 import { useUtilityReadingOverview } from "@/hooks/queries/use-utility-reading";
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal";
 import { useModal } from "@/hooks/useModal";
 import EditViewReading from "../components/edit-view-utility-reading";
 

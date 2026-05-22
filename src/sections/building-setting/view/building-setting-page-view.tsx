@@ -17,7 +17,7 @@ import {
   UpsertBuildingServicesForm,
   UpsertUsersBuildingForm,
 } from "../components";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { buildingService } from "@/services/building.service";
 import { buildingServicesService } from "@/services/building-services.service";
 import { diffArray } from "@/utils/diff-array";

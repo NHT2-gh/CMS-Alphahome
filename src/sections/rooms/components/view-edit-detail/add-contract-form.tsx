@@ -1,7 +1,7 @@
 "use client";
 import { FormField } from "@/components/_cms/components/form";
 import { useForm } from "react-hook-form";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import {
   contractFormSchema,
   ContractFormType,

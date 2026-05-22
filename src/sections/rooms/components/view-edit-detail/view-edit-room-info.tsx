@@ -13,20 +13,26 @@ import {
   updateRoomInfoSchema,
   UpdateRoomInfoType,
 } from "@/schemas/validation/admin.validation";
-import ImagesDropzone, {
-  ImageItem,
-} from "@/components/form/form-elements/DropZone";
-import Button from "@/components/ui/button/Button";
+
+import { Button } from "@/components/_cms/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilding } from "@/context/BuildingContext";
-import { useUpdateRoom } from "@/hooks/queries/use-room";
+import { useGetRoomDetail, useUpdateRoom } from "@/hooks/queries/use-room";
 import { FormField } from "@/components/_cms/components/form";
 import { uploadImage } from "@/supabase/storage/storageClinets";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { CMSTableHeader } from "@/components/_cms/components/table";
 import { formatCurrency } from "@/utils/format-data";
 import { useCreateRentHistory } from "@/hooks/queries/use-rent-history";
 import { ComponentCard } from "@/components/_cms/common/component-card";
+import ImagesDropzone, {
+  ImageItem,
+} from "@/components/_cms/components/dropzone/images-dropzone";
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
@@ -39,6 +45,7 @@ export default function ViewEditRoomInfo({
 }: ViewEditRoomInfoProps) {
   const { building } = useBuilding();
   const updateRoom = useUpdateRoom();
+  const { data: roomInfo } = useGetRoomDetail(building?.code, currentRoom);
   const createRentHistory = useCreateRentHistory();
   const [isUploading, setIsUploading] = useState(false);
   const [isViewDetailHistory, setIsViewDetailHistory] = useState(false);
@@ -58,17 +65,20 @@ export default function ViewEditRoomInfo({
   const editRoomInfoForm = useForm<UpdateRoomInfoType>({
     resolver: zodResolver(updateRoomInfoSchema),
     defaultValues: {
-      id: currentRoom.id,
-      code_room: currentRoom.code,
-      area: Number(currentRoom.area) || 0,
-      furniture_status: currentRoom.furniture_status,
-      description: currentRoom.description || "",
-      images: currentRoom.images || [],
+      id: roomInfo!.id,
+      code_room: roomInfo!.code,
+      area: Number(roomInfo!.area) || 0,
+      furniture_status: roomInfo!.furniture_status,
+      description: roomInfo!.description || "",
+      images: roomInfo!.images || [],
       current_rent: Number(rentHistory[0].rent_price) || 0,
       status: RoomStatus[currentRoom.status],
     },
   });
   useEffect(() => {
+    if (!building || !roomInfo) {
+      return;
+    }
     if (images && images.length > 0) {
       setValue(
         "images",

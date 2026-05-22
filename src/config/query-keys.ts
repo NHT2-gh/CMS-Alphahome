@@ -14,6 +14,7 @@ export const queryKeys = {
     usersBuilding: (userId: string) => ["buildings", "users-building", userId],
   },
   rooms: {
+    detail: (id: string) => ["rooms", id],
     list: (buildingId: string, params?: GetWithFilterParams) => [
       "rooms",
       buildingId,

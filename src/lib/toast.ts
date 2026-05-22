@@ -1,6 +1,6 @@
 import { toast } from "react-hot-toast";
 import { createElement } from "react";
-import CustomToast from "@/components/ui/toast/CustomToast";
+import { CustomToast } from "@/components/_cms/ui/toast";
 
 interface ToastOptions {
   title: string;

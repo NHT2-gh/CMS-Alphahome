@@ -7,6 +7,7 @@ import {
 } from "@/schemas/validation/admin.validation";
 import { roomService } from "@/services/room.service";
 import { GetWithFilterParams } from "@/types/common";
+import { Room } from "@/types/room";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function useAllRooms(
@@ -65,5 +66,16 @@ export function useUpdateRoom() {
         message: mapErrorToMessage(error),
       };
     },
+  });
+}
+
+export function useGetRoomDetail(buildingCode?: string, initData?: Room) {
+  return useQuery({
+    queryKey: queryKeys.rooms.detail(initData!.id),
+    queryFn: () => {
+      return roomService.getRoomDetail(buildingCode!, initData!.code);
+    },
+
+    initialData: initData,
   });
 }

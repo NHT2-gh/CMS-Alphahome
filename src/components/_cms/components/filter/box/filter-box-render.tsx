@@ -1,10 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { FilterItemRender } from "./filter-items";
 import { FilterItemConfig, FilterValue } from "./type";
-import Button from "@/components/ui/button/Button";
 import { cn } from "@/lib/utils";
-import FilterValuesRender from "./filter-values-render";
 
 interface FilterBoxRenderProps {
   filterConfigs: FilterItemConfig[];

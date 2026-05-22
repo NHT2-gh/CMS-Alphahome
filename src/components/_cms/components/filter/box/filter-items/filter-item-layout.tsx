@@ -1,8 +1,8 @@
-import Label from "@/components/form/Label";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
 
 import React from "react";
+import Label from "../../../form/Label";
 
 interface FilterItemLayoutProps {
   label?: string;

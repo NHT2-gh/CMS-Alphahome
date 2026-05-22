@@ -5,7 +5,6 @@ import { Eye, FilterIcon, RefreshCcwIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import { useFilter } from "@/hooks/use-filter";
 import { Bill, BillStatus } from "@/types/bill";
-import Badge from "@/components/ui/badge/Badge";
 import { Checkbox } from "@/components/_cms/ui/input";
 import { useAllBills, useUpdateStatusBill } from "@/hooks/queries/use-bill";
 import { useBuilding } from "@/context/BuildingContext";
@@ -14,17 +13,23 @@ import { SearchBar } from "@/components/_cms/components/search-bar";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/table";
 import { _filterConfigs, _filterValues } from "@/_mocks/_filter/_fiter_box";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";
 import { BillFilterSchema } from "@/schemas/render-filter-schemas/bill-filter.schema";
 import { DataEmpty } from "@/components/_cms/common/table/state";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
-import Button from "@/components/ui/button/Button";
 import { ModalViewBill } from ".";
 import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
 import { showToast } from "@/lib/toast";
 import ModalAlert from "@/components/_cms/components/modal/alerts/modal-alert";
 import { mapErrorToMessage } from "@/lib/error/app-error";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
+import { Badge } from "@/components/_cms/ui/badge";
+import { Button } from "@/components/_cms/ui/button";
 
 const columns: TableHeaderColumn[] = [
   {

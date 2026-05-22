@@ -2,18 +2,23 @@
 import React, { useEffect, useState } from "react";
 import { Pencil, PenIcon, Plus, Trash, X } from "lucide-react";
 import { TenantRole } from "@/types/building";
-import Button from "@/components/ui/button/Button";
 import { Input } from "@/components/_cms/ui/input";
 import { Select } from "@/components/_cms/ui/select";
 import { useAllProfile } from "@/hooks/queries/use-profile";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   UpdateBuildingSettingType,
   UpsertUsersBuildingType,
 } from "@/schemas/validation/admin.validation";
 import { DataEmpty } from "@/components/_cms/common/table/state";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
+import { Button } from "@/components/_cms/ui/button";
 
 export default function UpsertUsersBuildingForm() {
   const formBuildingSetting = useFormContext<UpdateBuildingSettingType>();

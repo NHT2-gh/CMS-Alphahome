@@ -1,7 +1,6 @@
-import AvatarText from "@/components/ui/avatar/AvatarText";
-import Badge from "@/components/ui/badge/Badge";
-import { TableCell } from "@/components/ui/table";
 import React from "react";
+import { TableCell } from "../../ui/table";
+import AvatarText from "../../ui/avatar/AvatarText";
 
 interface CMSTableCellProps {
   data: dataType;

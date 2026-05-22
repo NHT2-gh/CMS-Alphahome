@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import { FormField } from "@/components/_cms/components/form";
 import useAllRooms from "@/hooks/queries/use-room";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { Checkbox, Input } from "@/components/_cms/ui/input";
 import {
   UtilityReadingDetail,
@@ -15,7 +20,7 @@ import {
   useUtilityReadingByDate,
 } from "@/hooks/queries/use-utility-reading";
 import { useBuilding } from "@/context/BuildingContext";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { createUtilityReading } from "@/lib/server-action/utility-action.action";
 import { showToast } from "@/lib/toast";
 import { formatDateTime } from "@/utils/format-data";

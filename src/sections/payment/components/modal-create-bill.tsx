@@ -1,8 +1,7 @@
 "use client";
 import { FormField } from "@/components/_cms/components/form";
 import { Switch } from "@/components/_cms/ui/switch";
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+
 import { useBuilding } from "@/context/BuildingContext";
 import {
   useCreateMultipleRoomMonthlyBills,
@@ -35,6 +34,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { BillPreviewModal, ModalShowRes } from "./sub components/modal-bill";
 import { showToast } from "@/lib/toast";
 import { mapErrorToMessage } from "@/lib/error/app-error";
+import { Button } from "@/components/_cms/ui/button";
+import { Modal } from "@/components/_cms/ui/modal";
 
 export default function ModalCreateBill() {
   const createModal = useModal();
@@ -42,9 +43,6 @@ export default function ModalCreateBill() {
   const { building } = useBuilding();
   const { data: rooms, isFetched: isFetchedRooms } = useAllRooms(building?.id);
   const [isMutiRoom, setIsMutiRoom] = useState(false);
-  const [currentContract, setCurrentContract] = useState<Contract | undefined>(
-    undefined,
-  );
   const [log, setLog] = useState<
     CreateSingleMonthlyBillResponse | CreateMonthlyBillsResponse[] | null
   >(null);
@@ -57,23 +55,17 @@ export default function ModalCreateBill() {
     name: "room_selected",
   });
 
-  const { data: contract, isFetching: isFetchingContract } = useContract(
+  const { data: contractData, isFetching: isFetchingContract } = useContract(
     roomCode as string,
-    {
-      enabled: !isMutiRoom && !!roomCode,
-    },
   );
+
   const createMultipleBills = useCreateMultipleRoomMonthlyBills();
   const createSingleBill = useCreateSingleRoomMonthlyBill();
   useEffect(() => {
     if (!building) {
       return;
     }
-
-    if (contract) {
-      setCurrentContract(contract);
-    }
-  }, [contract]);
+  }, []);
 
   const {
     handleSubmit,
@@ -107,6 +99,7 @@ export default function ModalCreateBill() {
       });
     }
   };
+  const contract = contractData?.data as Contract;
 
   return (
     <>
@@ -235,7 +228,7 @@ export default function ModalCreateBill() {
                 "bill" in log ? (
                   <BillPreviewModal
                     bill={log.bill}
-                    infoCustomer={currentContract as Contract}
+                    infoCustomer={contract as Contract}
                   />
                 ) : (
                   <ModalShowRes

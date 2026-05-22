@@ -16,11 +16,13 @@ export function useContract(
       return contractService.getContract(roomId!);
     },
     enabled: options?.enabled ?? !!roomId,
-    initialData: {
-      data: initData || null,
-      success: initData ? true : false,
-      message: initData ? "" : "Không tìm thấy hợp đồng",
-    },
+    initialData: initData
+      ? {
+          data: initData,
+          success: true,
+          message: "",
+        }
+      : undefined,
   });
 }
 
@@ -51,6 +53,10 @@ export function useUpdateStatusContract() {
     onSuccess: (_, payload) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contract.byRoomId(payload.roomId),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.rooms.detail(payload.roomId),
       });
     },
   });

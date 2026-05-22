@@ -1,5 +1,5 @@
 import React from "react";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/_cms/ui/table";
 
 export default function DataEmpty({
   message,

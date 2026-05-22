@@ -1,7 +1,7 @@
 "use client";
 
 import { FormField } from "@/components/_cms/components/form";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { useAddServiceToBill } from "@/hooks/queries/use-bill";
 import { useGetServices } from "@/hooks/queries/use-service";
 import {

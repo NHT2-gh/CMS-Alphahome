@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 
 import { MoreDotIcon } from "@/icons";
-import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
-import { Dropdown } from "@/components/ui/dropdown/Dropdown";
+import { Dropdown, DropdownItem } from "@/components/_cms/ui/dropdown";
 interface FolderCardProps {
   id: string;
   title: string;

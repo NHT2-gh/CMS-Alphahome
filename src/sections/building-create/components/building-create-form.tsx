@@ -1,6 +1,6 @@
 "use client";
 import { FormField } from "@/components/_cms/components/form";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { useCreateBuilding } from "@/hooks/queries/use-building";
 import { showToast } from "@/lib/toast";
 import {

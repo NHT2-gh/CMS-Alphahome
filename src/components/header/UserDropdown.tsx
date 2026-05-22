@@ -2,14 +2,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { APP_ROUTES } from "@/config/app-routes";
 import { useAuth } from "@/context/AuthContext";
 import { SystemRole } from "@/types/profile";
 import { signOut } from "@/lib/server-action/auth.action";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
+import { DropdownItem, Dropdown } from "../_cms/ui/dropdown";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);

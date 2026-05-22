@@ -1,6 +1,6 @@
 import React from "react";
-import TableDropdown from "@/components/common/TableDropdown";
-import { TableCell } from "@/components/ui/table";
+import { TableCell } from "@/components/_cms/ui/table";
+import { TableDropdown } from "@/components/_cms/common/table-dropdown";
 
 interface TableActionCellProps {
   handleViewDetail: () => void;

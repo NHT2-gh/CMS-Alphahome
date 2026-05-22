@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { StepperLayoutConfig, FieldConfig } from "@/types/form";
 import { UseFormReturn } from "react-hook-form";
-import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from "lucide-react";
 import FormField from "../FormField";
+import { Button } from "@/components/_cms/ui/button";
 
 interface StepperLayoutProps {
   layout: StepperLayoutConfig;

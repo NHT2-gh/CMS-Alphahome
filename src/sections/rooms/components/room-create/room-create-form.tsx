@@ -4,10 +4,8 @@ import {
   createRoomFormSchema,
   CreateRoomFormType,
 } from "@/schemas/validation/admin.validation";
-import ImagesDropzone, {
-  ImageItem,
-} from "@/components/form/form-elements/DropZone";
-import Button from "@/components/ui/button/Button";
+
+import { Button } from "@/components/_cms/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useBuilding } from "@/context/BuildingContext";
@@ -16,6 +14,9 @@ import { uploadImage } from "@/supabase/storage/storageClinets";
 import { useCreateRoom } from "@/hooks/queries/use-room";
 import { showToast } from "@/lib/toast";
 import { ComponentCard } from "@/components/_cms/common/component-card";
+import ImagesDropzone, {
+  ImageItem,
+} from "@/components/_cms/components/dropzone/images-dropzone";
 
 export default function CreateRoomForm() {
   const { building } = useBuilding();

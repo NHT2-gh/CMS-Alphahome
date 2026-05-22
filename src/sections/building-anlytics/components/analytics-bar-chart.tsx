@@ -2,8 +2,7 @@
 import React from "react";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-import ChartTab from "@/components/common/ChartTab";
-import { CurrentMonthData, ProfitMonth } from "@/types/dashboard";
+import { ProfitMonth } from "@/types/dashboard";
 import { formatCurrency } from "@/utils/format-data";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {

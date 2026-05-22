@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import { Bill, BillServiceDetail, CalculationMethod } from "@/types/bill";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { useBillServicesDetail } from "@/hooks/queries/use-bill";
 import { formatCurrency } from "@/utils/format-data";
 import { Loader2, Trash } from "lucide-react";

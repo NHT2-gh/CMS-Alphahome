@@ -59,6 +59,8 @@ class TransactionService {
     }
 
     return {
+      success: true,
+      message: "Thành công lấy danh sách giao dịch",
       data: data || [],
       pagination: {
         page: page || 1,

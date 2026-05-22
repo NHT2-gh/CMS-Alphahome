@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { Modal } from "@/components/ui/modal";
-import Button from "@/components/ui/button/Button";
+import { Modal } from "@/components/_cms/ui/modal";
+import { Button } from "@/components/_cms/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import EditViewReading from "./edit-view-utility-reading";

@@ -5,11 +5,16 @@ import { DataEmpty } from "@/components/_cms/common/table/state";
 import { CalculationMethod, RoomServiceExtra } from "@/types/bill";
 import { ComponentCard } from "@/components/_cms/common/component-card";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { formatCurrency, formatDateTime } from "@/utils/format-data";
 import AddRoomServiceExtraForm from "./add-room-service-extra-form";
 import { useGetRoomServiceExtra } from "@/hooks/queries/use-service";
-import Badge from "@/components/ui/badge/Badge";
+import { Badge } from "@/components/_cms/ui/badge";
 
 interface ViewEditRoomServiceExtraProps {
   roomId: string;

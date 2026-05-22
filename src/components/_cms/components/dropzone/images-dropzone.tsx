@@ -2,7 +2,7 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { Check, ClosedCaption, Loader2, UploadCloud, X } from "lucide-react";
 import { ComponentCard } from "../../common/component-card";
 

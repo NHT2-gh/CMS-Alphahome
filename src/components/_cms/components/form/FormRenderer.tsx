@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import GridLayout from "./layouts/GridLayout";
 import TabsLayout from "./layouts/TabsLayout";
-import Button from "@/components/ui/button/Button";
 import StepperLayout from "./layouts/StepperLayout";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AccordionLayout from "./layouts/AccordionLayout";
@@ -10,6 +9,7 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { XIcon } from "lucide-react";
 import { FormSchema, FormRendererProps } from "@/types/form";
 import FormField from "./FormField";
+import { Button } from "../../ui/button";
 
 export default function FormRenderer({
   schema,

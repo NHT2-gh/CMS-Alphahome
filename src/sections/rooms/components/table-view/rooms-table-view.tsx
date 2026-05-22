@@ -3,17 +3,22 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { FurnitureStatus, RoomOverview, RoomStatus } from "@/types/room";
+import { FurnitureStatus, RoomStatus } from "@/types/room";
 import { useRouter } from "next/navigation";
 import useAllRooms from "@/hooks/queries/use-room";
 import { Eye, FilterIcon, PlusCircle, RefreshCcwIcon } from "lucide-react";
-import Badge from "@/components/ui/badge/Badge";
+import { Badge } from "@/components/_cms/ui/badge";
 import { APP_ROUTES } from "@/config/app-routes";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/_cms/ui/button";
 import { useBuilding } from "@/context/BuildingContext";
 import { formatDateTime, formatCurrency } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/table";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/_cms/ui/table";
 import { useFilter } from "@/hooks/use-filter";
 import { RoomFilterSchema } from "@/schemas/render-filter-schemas/room-filter.schema";
 import { SingleFilterButtonGroup } from "@/components/_cms/components/filter/single";

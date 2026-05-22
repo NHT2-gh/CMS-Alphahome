@@ -1,6 +1,5 @@
 "use client";
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+
 import { useBuilding } from "@/context/BuildingContext";
 import { useModal } from "@/hooks/useModal";
 import { Bill, BillServiceDetail } from "@/types/bill";
@@ -10,6 +9,8 @@ import React, { useRef, useState } from "react";
 import { BillDetailTable } from ".";
 import { useCopyImage } from "@/hooks/us-copy-image";
 import Image from "next/image";
+import { Button } from "@/components/_cms/ui/button";
+import { Modal } from "@/components/_cms/ui/modal";
 
 interface BillPreviewModalProps {
   bill: Bill;

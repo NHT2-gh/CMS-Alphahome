@@ -2,8 +2,6 @@
 
 import { FormField } from "@/components/_cms/components/form";
 
-import Badge from "@/components/ui/badge/Badge";
-import Button from "@/components/ui/button/Button";
 import { useUpdateStatusBill } from "@/hooks/queries/use-bill";
 import { useContract } from "@/hooks/queries/use-contract";
 import { Bill, BillStatus } from "@/types/bill";
@@ -14,7 +12,9 @@ import { BillDetailTable } from "./sub components/modal-bill";
 import { BillPreviewModal } from "./sub components/modal-bill";
 import { Contract } from "@/types/contract";
 import { showToast } from "@/lib/toast";
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal";
+import { Badge } from "@/components/_cms/ui/badge";
+import { Button } from "@/components/_cms/ui/button";
 
 export default function ModalViewBill({
   currentBill,

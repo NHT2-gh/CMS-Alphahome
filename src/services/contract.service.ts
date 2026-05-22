@@ -12,7 +12,9 @@ class ContractService {
     this.tableName = "contracts";
   }
 
-  async getContract(roomId: string): Promise<ResponseStandard<Contract>> {
+  async getContract(
+    roomId: string,
+  ): Promise<ResponseStandard<Contract | null>> {
     const query = supabase
       .from(this.tableName)
       .select("*")
@@ -106,7 +108,7 @@ class ContractService {
       try {
         await roomService.updateRoom({
           id: room_id,
-          status: "inactive" as RoomStatus,
+          status: "available" as RoomStatus,
         });
       } catch (error) {
         query.rollback();

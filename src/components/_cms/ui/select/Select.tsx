@@ -11,7 +11,7 @@ interface SelectProps {
   defaultValue?: string;
   disabled?: boolean;
   value?: string;
-  readOnly: boolean;
+  readOnly?: boolean;
   handleOnChange?: (value: string) => void;
 }
 
