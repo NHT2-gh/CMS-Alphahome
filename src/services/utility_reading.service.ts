@@ -50,7 +50,7 @@ class UtilityReadingService {
       .eq("rooms.building_id", buildingId)
       .gte("month_date", startDate)
       .lt("month_date", endDate)
-      .order("updated_at", { ascending: true });
+      .order("updated_at", { ascending: false });
 
     const { data: UtilityReadingResponse, error } = await query;
 
@@ -76,7 +76,7 @@ class UtilityReadingService {
   }
 
   async updateUtilityReading(
-    payload: UtilityReadingDetail[],
+    payload: Partial<UtilityReadingDetail>[],
   ): Promise<MutationResult> {
     const query = supabase.from("room_utility_readings").upsert(payload);
 

@@ -3,6 +3,7 @@ export enum BillStatus {
   confirmed = "Đã xác nhận",
   paid = "Đã thanh toán",
   unpaid = "Không thanh toán",
+  deleted = "Đã xoá",
 }
 
 export enum CalculationMethod {
@@ -12,7 +13,12 @@ export enum CalculationMethod {
   per_transport = "Xe",
   other = "Khác",
 }
-export type ServiceType = "water" | "electricity" | "fixed" | "extra";
+export type ServiceType =
+  | "water"
+  | "electricity"
+  | "fixed"
+  | "extra"
+  | "to_discount";
 
 export interface Bill {
   id: string;
@@ -26,6 +32,7 @@ export interface Bill {
     code: string;
   };
   base_rent: number;
+  room_extras_total: number;
   updated_at: string;
   created_at: string;
   profiles: {

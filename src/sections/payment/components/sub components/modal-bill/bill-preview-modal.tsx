@@ -10,7 +10,7 @@ import { BillDetailTable } from ".";
 import { useCopyImage } from "@/hooks/us-copy-image";
 import Image from "next/image";
 import { Button } from "@/components/_cms/ui/button";
-import { Modal } from "@/components/_cms/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal/modal";
 
 interface BillPreviewModalProps {
   bill: Bill;
@@ -77,7 +77,11 @@ export default function BillPreviewModal({
         </svg>
         Xem phiếu
       </Button>
-      <Modal isOpen={isOpen} onClose={closeModal} className="relative p-0 ">
+      <Modal
+        isOpen={isOpen}
+        onClose={closeModal}
+        className="relative p-0 md:max-w-[800px]"
+      >
         <div ref={billRef} className="p-4 md:p-8 ">
           <h3 className="text-lg text-gray-700 dark:text-gray-500">
             Phiếu: #{bill.tracking_code}
@@ -120,7 +124,9 @@ export default function BillPreviewModal({
                 </h5>
 
                 <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                  {infoCustomer.tenant_phone}
+                  {infoCustomer.tenant_phone === "0"
+                    ? null
+                    : infoCustomer.tenant_phone}
                 </p>
 
                 <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -130,7 +136,7 @@ export default function BillPreviewModal({
                 <span className="block text-sm text-gray-500 dark:text-gray-400">
                   {bill.month_date.split("-")[2]}/{" "}
                   {bill.month_date.split("-")[1]}/{" "}
-                  {bill.month_date.split("-")[0]} - 0
+                  {bill.month_date.split("-")[0]} -{" "}
                   {String(new Date(bill.month_date)?.getDay() + 5)}/
                   {bill.month_date.split("-")[1]}/{" "}
                   {bill.month_date.split("-")[0]}

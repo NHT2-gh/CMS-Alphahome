@@ -212,11 +212,16 @@ export default function EditViewReading({
   };
 
   const onSubmit = async (data: Record<string, UtilityReadingDetail>) => {
-    const result = await updateUtilityReading.mutateAsync(Object.values(data));
-    // const result = {
-    //   success: false,
-    //   message: "Lỗi",
-    // };
+    const result = await updateUtilityReading.mutateAsync(
+      Object.values(data)
+        .filter((item) => item.id)
+        .map((item) => {
+          return {
+            ...item,
+            updated_at: new Date().toISOString(),
+          };
+        }),
+    );
 
     if (result.success) {
       modalAlert.openModal();
@@ -302,10 +307,10 @@ export default function EditViewReading({
         Danh sách chỉ số
       </h4>
 
-      <div className="w-full grow space-y-2 border border-neutral-200 rounded-xl max-h-[55vh] md:max-h-[40vh] overflow-y-scroll">
-        <Table className="w-full text-left  text-sm text-gray-700">
+      <div className="w-full grow space-y-2 rounded-xl max-h-[55vh] md:max-h-[40vh] overflow-y-scroll">
+        <Table className="w-full text-left">
           <CMSTableHeader
-            className="bg-neutral-100  sticky top-0 z-10"
+            className="sticky top-0 z-10"
             columns={[
               { key: "room_code", title: "Số phòng" },
               {
@@ -338,10 +343,7 @@ export default function EditViewReading({
               />
             ) : (
               rooms?.map((room) => (
-                <TableRow
-                  key={room.room_id}
-                  className="!min-w-full border-b border-neutral-300 last:border-0"
-                >
+                <TableRow key={room.room_id}>
                   <TableCell key={room.room_id}>{room.code}</TableCell>
                   <TableCell key="previous_reading_electricity">
                     <Input

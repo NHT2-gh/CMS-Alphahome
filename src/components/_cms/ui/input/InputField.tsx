@@ -55,7 +55,11 @@ export default function Input({
       <input
         type={type}
         placeholder={placeholder}
-        value={type === "number" && isNaN(value as number) ? 0 : value}
+        value={
+          type === "number" && (isNaN(value as number) || value === "")
+            ? 0
+            : value
+        }
         onChange={onChange}
         min={min}
         max={max}
@@ -85,7 +89,7 @@ export default function Input({
 
       {formatCurrency && type === "number" && (
         <p
-          className={`mt-1.5 ml-2 text-xs absolute -top-7 right-0 ${
+          className={`mt-1.5 ml-2 text-xs absolute -top-6 right-1 ${
             error
               ? "text-error-500"
               : success

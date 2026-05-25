@@ -69,6 +69,17 @@ export default function UpdateBuildingInfoForm() {
       />
       <FormField
         form={formBuildingSetting}
+        className="col-span-2 w-full"
+        field={{
+          name: "info.description",
+          type: "textarea",
+          rows: 5,
+          label: "Mô tả",
+          placeholder: "Nhập mô tả",
+        }}
+      />
+      <FormField
+        form={formBuildingSetting}
         field={{
           name: "info.is_active",
           type: "switch",

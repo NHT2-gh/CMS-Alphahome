@@ -74,6 +74,7 @@ export default function PaymentsListTable() {
   const [limit] = useState<number>(10);
   const modalViewBill = useModal();
   const modalConfirmAction = useModal();
+  const modalDeleteBill = useModal();
   const updateStatusBill = useUpdateStatusBill();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentBill, setCurrentBill] = useState<Bill | null>(null);
@@ -103,41 +104,44 @@ export default function PaymentsListTable() {
     new Map(),
   );
 
-  const { data: bills, pagination } = billsData || {};
+  const { data: bills } = billsData || {};
 
-  const handleConfirmPayment = useCallback(async () => {
-    if (selectedBills.size > 0) {
-      try {
-        const result = await updateStatusBill.mutateAsync({
-          tracking_code: Array.from(selectedBills.keys()),
-          status: "paid",
-        });
-        if (result.success) {
-          showToast.success({
-            title: `Đã xác nhận thanh toán thành công ${selectedBills.size} hoá đơn`,
+  const handleChangeStatusPayment = useCallback(
+    async (status: keyof typeof BillStatus) => {
+      if (selectedBills.size > 0) {
+        try {
+          const result = await updateStatusBill.mutateAsync({
+            tracking_code: Array.from(selectedBills.keys()),
+            status,
           });
-          setSelectedBills(new Map());
-        } else {
+          if (result.success) {
+            showToast.success({
+              title: `Đã xác nhận thanh toán thành công ${selectedBills.size} hoá đơn`,
+            });
+            setSelectedBills(new Map());
+          } else {
+            showToast.error({
+              title: result.message ?? "Lỗi hệ thống",
+            });
+          }
+        } catch (error) {
           showToast.error({
-            title: result.message ?? "Lỗi hệ thống",
+            title: mapErrorToMessage(error),
           });
+        } finally {
+          modalConfirmAction.closeModal();
         }
-      } catch (error) {
-        showToast.error({
-          title: mapErrorToMessage(error),
-        });
-      } finally {
-        modalConfirmAction.closeModal();
       }
-    }
-  }, [selectedBills]);
+    },
+    [selectedBills],
+  );
 
   const handleSearch = useCallback((value: string) => {
     if (value.trim()) {
       setCurrentPage(1);
-      updateFilter("tracking_code", value);
+      updateFilter("room_code", value);
     } else {
-      removeFilter("tracking_code");
+      removeFilter("room_code");
     }
     applyFilters();
   }, []);
@@ -337,7 +341,10 @@ export default function PaymentsListTable() {
                     <p className="">Đã chọn {selectedBills.size}</p>
 
                     <div className="flex items-center justify-end gap-4">
-                      <button className="rounded-xl py-2 px-4 bg-rose-500 hover:bg-rose-600 text-white transition-colors cursor-pointer">
+                      <button
+                        onClick={() => modalDeleteBill.openModal()}
+                        className="rounded-xl py-2 px-4 bg-rose-500 hover:bg-rose-600 text-white transition-colors cursor-pointer"
+                      >
                         Xoá {selectedBills.size} hoá đơn
                       </button>
 
@@ -367,12 +374,32 @@ export default function PaymentsListTable() {
           isOpen={modalConfirmAction.isOpen}
           onClose={modalConfirmAction.closeModal}
           onCancel={modalConfirmAction.closeModal}
-          onConfirm={handleConfirmPayment}
+          onConfirm={async () => {
+            await handleChangeStatusPayment("paid");
+            modalConfirmAction.closeModal();
+          }}
           description={`Bạn có chắc chắn muốn xác nhận thanh toán ${selectedBills.size} hoá đơn?`}
           title="Xác nhận thanh toán"
           cancelText="Huỷ"
           confirmText="Xác nhận"
           type="warning"
+        />
+      )}
+
+      {modalDeleteBill.isOpen && (
+        <ModalAlert
+          isOpen={modalDeleteBill.isOpen}
+          onClose={modalDeleteBill.closeModal}
+          onCancel={modalDeleteBill.closeModal}
+          onConfirm={async () => {
+            await handleChangeStatusPayment("deleted");
+            modalDeleteBill.closeModal();
+          }}
+          description={`Bạn có chắc chắn muốn xoá ${selectedBills.size} hoá đơn?`}
+          title="Xoá hoá đơn"
+          cancelText="Huỷ"
+          confirmText="Xoá"
+          type="danger"
         />
       )}
 

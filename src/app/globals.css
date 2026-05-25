@@ -1019,3 +1019,14 @@ pre[class*="language-"].line-numbers {
     padding: 10px 5px !important;
   }
 }
+
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none !important;
+  }
+}

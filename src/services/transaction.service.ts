@@ -42,6 +42,10 @@ class TransactionService {
           query.ilike(key, `%${value}%`);
         } else if (Array.isArray(value) && key === "transaction_date") {
           query.gte(key, value[0]).lte(key, value[1]);
+        } else if (key === "is_linked_to_room" && value) {
+          query.not("room_id", "is", null);
+        } else if (key === "is_linked_to_room" && !value) {
+          query.is("room_id", null);
         } else {
           query.eq(key, value);
         }
@@ -51,6 +55,8 @@ class TransactionService {
     if (page && limit) {
       query.range((page - 1) * limit, page * limit - 1);
     }
+
+    console.log(query);
 
     const { data, error, count } = await query;
 

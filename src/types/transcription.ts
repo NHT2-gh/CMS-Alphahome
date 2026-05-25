@@ -1,4 +1,5 @@
 import { Profile } from "./profile";
+import { Room } from "./room";
 
 export enum TransactionType {
   income = "Thu",
@@ -28,6 +29,7 @@ export interface Transcription {
   room_id?: string;
   description?: string;
   profiles: Profile;
+  rooms: Room;
 }
 
 export interface BuildingRevenueCombined {

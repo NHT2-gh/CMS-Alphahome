@@ -10,7 +10,6 @@ interface ButtonsToggleProp {
   onChange?: (value: string[]) => void;
   className?: string;
   value?: string[];
-  isMultiSelect?: boolean;
 }
 
 export default function ButtonsToggleFilterItem({
@@ -18,12 +17,11 @@ export default function ButtonsToggleFilterItem({
   onChange,
   value,
   className,
-  isMultiSelect = true,
 }: ButtonsToggleProp) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const handleOptionToggle = (option: string) => {
-    const newSelection = isMultiSelect
+    const newSelection = config.isMultiple
       ? selectedOptions.includes(option)
         ? selectedOptions.filter((item) => item !== option)
         : [...selectedOptions, option]

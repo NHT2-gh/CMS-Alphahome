@@ -26,7 +26,7 @@ export default function CMSTableHeader({
   return (
     <TableHeader
       className={cn(
-        "w-full border-b border-gray-100 dark:border-white/5",
+        "w-full border-b bg-gray-50 dark:bg-black border-gray-100 dark:border-white/5",
         className,
       )}
     >

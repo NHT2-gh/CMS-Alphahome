@@ -38,6 +38,7 @@ export default function BuildingSettingView() {
         start_date: building?.start_date! || "",
         end_date: building?.end_date! || "",
         is_active: building?.is_active || false,
+        description: building?.description! || "",
       },
       services: [],
       users: [],

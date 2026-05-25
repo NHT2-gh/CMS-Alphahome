@@ -11,7 +11,7 @@ interface SwitchProps {
   value?: boolean;
 }
 
-const Switch: React.FC<SwitchProps> = ({
+export default function Switch({
   name,
   label,
   defaultValue = false,
@@ -19,7 +19,7 @@ const Switch: React.FC<SwitchProps> = ({
   onChange,
   value,
   color = "blue",
-}) => {
+}: SwitchProps) {
   const [isChecked, setIsChecked] = useState(defaultValue || value);
 
   const handleToggle = () => {
@@ -73,6 +73,4 @@ const Switch: React.FC<SwitchProps> = ({
       {label}
     </label>
   );
-};
-
-export default Switch;
+}

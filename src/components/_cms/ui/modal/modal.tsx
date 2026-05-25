@@ -63,7 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
       {showCloseButton && (
         <button
           onClick={onClose}
-          className="fixed right-3 top-20  md:absolute md:top-[12vh] md:right-[5vw] z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11"
+          className="fixed right-3 top-20  md:absolute md:top-[13vh] md:right-[4vw] z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11"
         >
           <svg
             width="24"
@@ -85,12 +85,12 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          "w-screen relative max-h-screen pt-[5rem] md:pt-0 md:w-[90vw] md:h-fit md:max-h-[80vh] overflow-y-auto md:rounded-3xl md:bg-white md:dark:bg-gray-900 md:p-8",
+          "w-screen relative max-h-screen pt-[5rem] scrollbar-hidden md:pt-0 md:w-[90vw] md:h-fit md:max-h-[80vh] overflow-y-auto md:rounded-3xl md:bg-white md:dark:bg-gray-900 md:p-8",
           className,
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div ref={ref} className="max-h-full overflow-scroll">
+        <div ref={ref} className="max-h-full overflow-y-auto scrollbar-hidden">
           {children}
         </div>
       </div>

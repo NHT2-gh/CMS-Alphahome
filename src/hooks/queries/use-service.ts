@@ -5,11 +5,11 @@ import { RoomServiceExtra, ServiceType } from "@/types/bill";
 import { AddRoomServiceExtraFormType } from "@/schemas/validation/admin.validation";
 import { CreateRoomServiceExtraDTO } from "@/types/room";
 
-export const useGetServices = (type?: ServiceType) => {
+export const useGetServices = (types?: ServiceType[]) => {
   return useQuery({
     queryKey: queryKeys.services.allTypeExtra(),
     queryFn: () => {
-      return buildingServicesService.getServices(type);
+      return buildingServicesService.getServices(types);
     },
   });
 };

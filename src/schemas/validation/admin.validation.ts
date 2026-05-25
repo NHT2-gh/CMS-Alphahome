@@ -52,7 +52,7 @@ export const createTransactionSchema = z
   .object({
     category_id: z.string().min(1, "Hạng mục là bắt buộc"),
     description: z.string().optional(),
-    amount: z.number().min(1, "Số tiền là bắt buộc"),
+    amount: z.number().min(1000, "Số tiền bắt buộc trên 1.000 đ"),
     type: z.string().min(1, "Loại là bắt buộc"),
     transaction_date: z.string().min(1, "Ngày là bắt buộc"),
     payment_method: z.string().min(1, "Phương thức thanh toán là bắt buộc"),
@@ -89,6 +89,7 @@ export const updatetBuildingInfoSchema = z.object({
   price_deposit: z.number().min(1, "Price deposit is required"),
   start_date: z.string().min(1, "Start date is required"),
   end_date: z.string().min(1, "End date is required"),
+  description: z.string().optional(),
 });
 
 export const upsertUsersBuildingSchema = z.object({

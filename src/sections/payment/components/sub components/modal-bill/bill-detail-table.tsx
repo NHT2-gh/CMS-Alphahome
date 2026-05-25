@@ -66,17 +66,6 @@ export default function BillDetailTable({
     ]);
   }, [billServicesDetail]);
 
-  useEffect(() => {
-    setTotal(
-      billServices
-        ? billServices.reduce(
-            (sum, service) => sum + Number(service.total_amount),
-            baseRent,
-          )
-        : baseRent,
-    );
-  }, [billServices, baseRent]);
-
   return (
     <div className="space-y-6">
       {/* Products Table */}
@@ -181,7 +170,7 @@ export default function BillDetailTable({
                 Thành tiền
               </span>
               <span className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                {formatCurrency(total)}
+                {formatCurrency(bill.grand_total)}
               </span>
             </li>
           </ul>

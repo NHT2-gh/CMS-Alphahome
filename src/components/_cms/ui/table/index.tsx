@@ -37,7 +37,9 @@ interface TableCellProps {
 
 // Table Component
 const Table: React.FC<TableProps> = ({ children, className }) => {
-  return <table className={`${className} w-full`}>{children}</table>;
+  return (
+    <table className={`${className} w-full scrollbar-hidden`}>{children}</table>
+  );
 };
 
 // TableHeader Component
@@ -58,7 +60,14 @@ const TableRow: React.FC<TableRowProps> = ({
   onDoubleClick,
 }) => {
   return (
-    <tr className={className} onClick={onClick} onDoubleClick={onDoubleClick}>
+    <tr
+      className={cn(
+        "w-full border-b border-gray-100 dark:border-white/5",
+        className,
+      )}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+    >
       {children}
     </tr>
   );

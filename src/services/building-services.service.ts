@@ -78,10 +78,10 @@ class BuildingServicesService {
     return { success: true, message: "Thêm dịch vụ thành công" };
   }
 
-  async getServices(type?: ServiceType): Promise<Service[]> {
+  async getServices(types?: ServiceType[]): Promise<Service[]> {
     const query = supabase.from(this.tableName).select("*");
-    if (type) {
-      query.eq("service_type", type);
+    if (types) {
+      query.in("service_type", types);
     }
 
     const { data, error } = await query;

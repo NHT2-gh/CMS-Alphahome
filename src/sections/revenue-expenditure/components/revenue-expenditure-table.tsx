@@ -1,14 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 
-import {
-  FilterIcon,
-  Link2,
-  Link2Off,
-  RefreshCcwIcon,
-  Trash,
-  Upload,
-} from "lucide-react";
+import { FilterIcon, RefreshCcwIcon, Trash } from "lucide-react";
 import { formatCurrency } from "@/utils/format-data";
 import { useBuilding } from "@/context/BuildingContext";
 import { SearchBar } from "@/components/_cms/components/search-bar";
@@ -34,26 +27,24 @@ import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import { useFilter } from "@/hooks/use-filter";
 import { TransactionFilterSchema } from "@/schemas/render-filter-schemas/transtion-filter.schema";
 import { Pagination } from "@/components/_cms/components/pagination";
-import { Tooltip } from "@/components/_cms/ui/tooltip";
-import useAllRooms from "@/hooks/queries/use-room";
-import { Checkbox } from "@/components/_cms/ui/input";
+import FilterValuesRender from "@/components/_cms/components/filter/box/filter-values-render";
 import { Button } from "@/components/_cms/ui/button";
 import { Badge } from "@/components/_cms/ui/badge";
 
 const _tableHeader: { key: string; title: string }[] = [
-  { key: "id", title: "Mã giao dịch" },
+  // { key: "id", title: "Mã giao dịch" },
   { key: "categories.name", title: "Tên hạng mục" },
-  { key: "description", title: "Mô tả" },
   { key: "amount", title: "Số tiền" },
   { key: "transaction_date", title: "Ngày giao dịch" },
   { key: "payment_method", title: "Phương thức thanh toán" },
   { key: "type", title: "Loại" },
+  { key: "description", title: "Mô tả" },
+
   { key: "profiles.full_name", title: "Người thực hiện" },
 ];
 
 export default function RevenueExpenditureTable() {
   const { building } = useBuilding();
-  const { data: rooms } = useAllRooms(building?.id as string);
   const [limit] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const {
@@ -119,6 +110,9 @@ export default function RevenueExpenditureTable() {
       setSelectedTransactions([]);
     }
   }, [transcriptions]);
+
+  console.log(filterValues);
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-center justify-between border-b border-gray-200 p-3 md:p-5 dark:border-gray-800">
@@ -168,23 +162,29 @@ export default function RevenueExpenditureTable() {
         />
       )}
 
+      {/* <FilterValuesRender
+        filterValues={filterValues}
+        filterConfigs={TransactionFilterSchema}
+        onDeleteItem={removeFilter}
+      /> */}
+
       <div className="max-w-full overflow-x-auto">
         <Table>
           <CMSTableHeader
-            selectAll={
-              selectedTransactions.length === transcriptions?.data.length &&
-              transcriptions?.data.length > 0
-            }
+            // selectAll={
+            //   selectedTransactions.length === transcriptions?.data.length &&
+            //   transcriptions?.data.length > 0
+            // }
             columns={_tableHeader}
-            handleSelectAll={(isSelectAll) => {
-              if (isSelectAll) {
-                setSelectedTransactions(
-                  transcriptions?.data.map((item) => item.id) || [],
-                );
-              } else {
-                setSelectedTransactions([]);
-              }
-            }}
+            // handleSelectAll={(isSelectAll) => {
+            //   if (isSelectAll) {
+            //     setSelectedTransactions(
+            //       transcriptions?.data.map((item) => item.id) || [],
+            //     );
+            //   } else {
+            //     setSelectedTransactions([]);
+            //   }
+            // }}
           />
           <TableBody>
             {!transcriptions && isLoading && (
@@ -199,7 +199,7 @@ export default function RevenueExpenditureTable() {
             )}
             {transcriptions?.data?.map((item) => (
               <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
-                <TableCell className="flex items-center gap-2">
+                {/* <TableCell className="flex items-center gap-2">
                   <Checkbox
                     id={item.id}
                     checked={selectedTransactions.includes(item.id)}
@@ -212,9 +212,8 @@ export default function RevenueExpenditureTable() {
                     }}
                   />
                   {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>{item.categories.name}</TableCell>
-                <TableCell>{item.description}</TableCell>
                 <TableCell>{formatCurrency(item.amount)}</TableCell>
                 <TableCell>{item.transaction_date}</TableCell>
                 <TableCell>
@@ -242,22 +241,10 @@ export default function RevenueExpenditureTable() {
                     }
                   </Badge>
                 </TableCell>
+                <TableCell>{item.description || "----"}</TableCell>
 
                 <TableCell className="text-nowrap">
                   {item.profiles.full_name}
-                </TableCell>
-
-                <TableCell className="text-xs text-blue-600">
-                  <Tooltip
-                    content={
-                      item.room_id
-                        ? (rooms?.find((room) => room.room_id === item.room_id)
-                            ?.code as string) || ""
-                        : "Không có dữ liệu"
-                    }
-                  >
-                    {item.room_id ? <Link2 /> : <Link2Off />}
-                  </Tooltip>
                 </TableCell>
 
                 <TableCell className="!min-w-fit">

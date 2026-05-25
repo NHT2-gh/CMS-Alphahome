@@ -1,4 +1,9 @@
-type FilterType = "checkbox" | "button-toggle" | "input-range" | "date-range";
+type FilterType =
+  | "checkbox"
+  | "button-toggle"
+  | "input-range"
+  | "date-range"
+  | "switch-filter";
 
 export interface BaseFilterItemConfig {
   key: string;
@@ -34,10 +39,28 @@ export interface InputRange extends BaseFilterItemConfig {
   options?: { label: string; value: string }[];
 }
 
+export interface SwitchFilter extends BaseFilterItemConfig {
+  type: "switch-filter";
+}
+
+export interface FilterItemProp<T, V> {
+  config: T;
+  onChange?: (value: FilterValue) => void;
+  className?: string;
+  value?: V;
+}
+
 export type FilterItemConfig =
   | Checkboxs
   | ButtonsToggle
   | InputRange
-  | DateRange;
+  | DateRange
+  | SwitchFilter;
 
-export type FilterValue = [number, number] | number | string[] | string | null;
+export type FilterValue =
+  | [number, number]
+  | number
+  | string[]
+  | string
+  | null
+  | boolean;

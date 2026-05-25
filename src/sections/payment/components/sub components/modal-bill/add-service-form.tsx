@@ -28,7 +28,7 @@ export default function AddServiceForm({ id }: AddServiceFormProps) {
       unit_price: 0,
     },
   });
-  const { data: servicesExtra } = useGetServices("extra");
+  const { data: servicesExtra } = useGetServices(["extra"]);
   const createBillServiceDetail = useAddServiceToBill();
   const service_id = useWatch({
     control: addServiceForm.control,

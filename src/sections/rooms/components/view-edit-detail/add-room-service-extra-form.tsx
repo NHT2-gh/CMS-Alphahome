@@ -36,7 +36,7 @@ export default function AddRoomExtraServiceForm({
       end_date: null,
     },
   });
-  const { data: servicesExtra } = useGetServices("extra");
+  const { data: servicesExtra } = useGetServices(["extra", "to_discount"]);
   const addRoomServiceExtra = useAddRoomServiceExtra();
   const service_id = useWatch({
     control: addServiceForm.control,

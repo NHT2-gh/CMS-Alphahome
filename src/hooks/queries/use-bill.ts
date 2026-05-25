@@ -1,4 +1,5 @@
 import { FilterValue } from "@/components/_cms/components/filter/box/type";
+import { mutationKeys } from "@/config/mutation-keys";
 import { queryKeys } from "@/config/query-keys";
 import { useBuilding } from "@/context/BuildingContext";
 import { billService } from "@/services/bill.service";
@@ -147,6 +148,25 @@ export function useAddServiceToBill() {
     onSuccess: (_, payload) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.bills.servicesDetail(payload.bill_id),
+      });
+    },
+  });
+}
+
+export function useDeleteBill() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: mutationKeys.bills.delete(),
+    mutationFn: (payload: { bill_id: string; building_id?: string }) => {
+      return billService.deleteBill(payload.bill_id);
+    },
+    onSuccess: (_, payload) => {
+      if (!payload.building_id) {
+        return;
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.bills.allByBuildingId(payload.building_id!),
       });
     },
   });

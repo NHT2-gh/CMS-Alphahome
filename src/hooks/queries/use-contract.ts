@@ -1,21 +1,17 @@
-import { matationKey } from "@/config/mutation-keys";
+import { mutationKeys } from "@/config/mutation-keys";
 import { queryKeys } from "@/config/query-keys";
 import { ContractFormType } from "@/schemas/validation/admin.validation";
 import { contractService } from "@/services/contract.service";
 import { Contract, ContractStatus } from "@/types/contract";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useContract(
-  roomId?: string,
-  initData?: Contract | null,
-  options?: { enabled?: boolean },
-) {
+export function useContract(roomId?: string, initData?: Contract | null) {
   return useQuery({
     queryKey: queryKeys.contract.byRoomId(roomId!),
     queryFn: () => {
       return contractService.getContract(roomId!);
     },
-    enabled: options?.enabled ?? !!roomId,
+
     initialData: initData
       ? {
           data: initData,
@@ -30,7 +26,7 @@ export function useAddContract() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: matationKey.contract.add(),
+    mutationKey: mutationKeys.contract.add(),
     mutationFn: (contract: ContractFormType) =>
       contractService.createContract(contract),
     onSuccess: (_, payload) => {
@@ -45,7 +41,7 @@ export function useUpdateStatusContract() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: matationKey.contract.updateStatus(),
+    mutationKey: mutationKeys.contract.updateStatus(),
     mutationFn: (payload: {
       roomId: string;
       status: keyof typeof ContractStatus;

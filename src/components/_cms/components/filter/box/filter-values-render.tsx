@@ -27,6 +27,8 @@ export default function FilterValuesRender({
       return null;
     }
 
+    console.log("value", value);
+
     return (
       <div
         key={key}

@@ -10,6 +10,7 @@ import {
   CreateSingleMonthlyBillResponse,
 } from "@/types/bill";
 import { MutationResult, ResponseStandard } from "@/types/common";
+import { table } from "console";
 
 class BillService {
   page: number;
@@ -42,6 +43,7 @@ class BillService {
         { count: "exact" },
       )
       .eq("rooms.building_id", buildingId)
+      .neq("bill_status", "deleted" as keyof typeof BillStatus)
       .order("created_at", { ascending: false });
 
     if (filters) {
@@ -50,6 +52,8 @@ class BillService {
 
         if (key === "tracking_code") {
           query.ilike(key, `%${value}%`);
+        } else if (key === "room_code") {
+          query.ilike("rooms.code", `%${value}%`);
         } else if (Array.isArray(value)) {
           if (key === "created_at") {
             query.gte(key, `${value[0]}`).lte(key, `${value[1]}`);
@@ -226,6 +230,29 @@ class BillService {
     return {
       success: true,
       message: "Thêm dịch vụ vào hoá đơn thành công",
+    };
+  }
+
+  async deleteBill(bill_id: string): Promise<MutationResult> {
+    const { data, error } = await supabase
+      .from("room_monthly_bills")
+      .delete()
+      .eq("id", bill_id)
+      .select();
+
+    if (error) {
+      handlePostgresError(error);
+    }
+    if (!data || data.length === 0) {
+      return {
+        success: false,
+        message: "Không tìm thấy hoá đơn",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Xoá hoá đơn thành công",
     };
   }
 }

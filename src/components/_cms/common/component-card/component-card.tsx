@@ -31,7 +31,7 @@ export default function ComponentCard({
       {/* Card Body */}
       <div
         className={cn(
-          "p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6",
+          "p-4 border-t border-gray-100 text-base text-gray-700 dark:text-gray-400 dark:border-gray-800 sm:p-6",
           className,
         )}
       >

@@ -9,6 +9,7 @@ import { signOut } from "@/lib/server-action/auth.action";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
 import { DropdownItem, Dropdown } from "../_cms/ui/dropdown";
+import AvatarText from "../_cms/ui/avatar/AvatarText";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,11 +45,9 @@ export default function UserDropdown() {
         className="flex items-center dropdown-toggle text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <Image
-            width={44}
-            height={44}
-            src="/images/user/owner.png"
-            alt="User"
+          <AvatarText
+            name={profile?.full_name || ""}
+            className="w-full h-full"
           />
         </span>
 

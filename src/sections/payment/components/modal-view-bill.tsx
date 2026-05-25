@@ -12,7 +12,7 @@ import { BillDetailTable } from "./sub components/modal-bill";
 import { BillPreviewModal } from "./sub components/modal-bill";
 import { Contract } from "@/types/contract";
 import { showToast } from "@/lib/toast";
-import { Modal } from "@/components/_cms/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal/modal";
 import { Badge } from "@/components/_cms/ui/badge";
 import { Button } from "@/components/_cms/ui/button";
 
@@ -48,9 +48,13 @@ export default function ModalViewBill({
   };
 
   return (
-    <Modal isOpen={true} onClose={closeModal} className="p-4 md:p-8">
+    <Modal
+      isOpen={true}
+      onClose={closeModal}
+      className="p-4 md:p-8 text-black dark:text-white"
+    >
       <h2 className="text-2xl font-bold mb-5">Phiếu thu</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 mb-3 ">
         <p>Mã phiếu: #{currentBill?.tracking_code}</p>
         <p>
           Ngày tạo phiếu:{" "}

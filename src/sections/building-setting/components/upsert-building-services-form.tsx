@@ -136,7 +136,7 @@ export default function UpsertBuildingServicesForm() {
                       field={{
                         name: `services.${index}.calculation_method`,
                         type: "select",
-                        placeholder: "Chọn đơn vị tính",
+                        readOnly: true,
                         options: [
                           {
                             value: fields[index].unit_name!,

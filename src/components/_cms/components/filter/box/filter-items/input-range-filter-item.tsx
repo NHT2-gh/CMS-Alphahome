@@ -1,22 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import FilterItemRender from "./filter-item-render";
-import { FilterItemConfig, FilterValue } from "../type";
+import { FilterItemProp, FilterValue, InputRange } from "../type";
 import { Input } from "@/components/_cms/ui/input";
-
-interface InputRangeFilterItemProps {
-  config: FilterItemConfig;
-  onChange?: (value: FilterValue) => void;
-  className?: string;
-  value?: FilterValue;
-}
 
 export default function InputRangeFilterItem({
   config,
   onChange,
   className,
   value,
-}: InputRangeFilterItemProps) {
+}: FilterItemProp<InputRange, number[]>) {
   const [minValue, setMinValue] = useState<number>(0);
   const [maxValue, setMaxValue] = useState<number>(0);
 
@@ -92,7 +85,7 @@ export default function InputRangeFilterItem({
             key: config.key,
           }}
           onChange={handleSelectChange}
-          value={value as string[]}
+          value={value as FilterValue}
           className={className}
         />
       )}

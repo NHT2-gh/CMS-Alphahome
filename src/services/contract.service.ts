@@ -120,6 +120,22 @@ class ContractService {
       }
     }
 
+    if (status === "active") {
+      try {
+        await roomService.updateRoom({
+          id: room_id,
+          status: "rented" as RoomStatus,
+        });
+      } catch (error) {
+        query.rollback();
+
+        return {
+          success: false,
+          message: "Cập nhật hợp đồng thất bại",
+        };
+      }
+    }
+
     return {
       success: true,
       message: "Cập nhật hợp đồng thành công",

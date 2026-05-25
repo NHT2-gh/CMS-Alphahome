@@ -1,4 +1,4 @@
-import { Modal } from "@/components/_cms/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal/modal";
 import React from "react";
 
 export default function ModalShowRes({

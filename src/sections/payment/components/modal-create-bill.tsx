@@ -35,7 +35,7 @@ import { BillPreviewModal, ModalShowRes } from "./sub components/modal-bill";
 import { showToast } from "@/lib/toast";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import { Button } from "@/components/_cms/ui/button";
-import { Modal } from "@/components/_cms/ui/modal";
+import { Modal } from "@/components/_cms/ui/modal/modal";
 
 export default function ModalCreateBill() {
   const createModal = useModal();

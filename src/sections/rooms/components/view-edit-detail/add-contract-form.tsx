@@ -7,7 +7,7 @@ import {
   ContractFormType,
 } from "@/schemas/validation/admin.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAddContract } from "@/hooks/queries/use-contract";
 import { showToast } from "@/lib/toast";
 import { mapErrorToMessage } from "@/lib/error/app-error";
@@ -17,6 +17,7 @@ interface AddContractForm {
 }
 export default function AddContractForm({ roomId }: AddContractForm) {
   const addContract = useAddContract();
+  const [closeForm, setCloseForm] = React.useState(false);
   const contractForm = useForm<ContractFormType>({
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
@@ -53,6 +54,16 @@ export default function AddContractForm({ roomId }: AddContractForm) {
       showToast.error({ title: "Lỗi", description: mapErrorToMessage(error) });
     }
   };
+
+  useEffect(() => {
+    if (addContract.isSuccess) {
+      setCloseForm(true);
+    }
+  }, [addContract.isSuccess]);
+
+  if (closeForm) {
+    return null;
+  }
 
   return (
     <form

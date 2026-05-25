@@ -1,7 +1,11 @@
-export const matationKey = {
+export const mutationKeys = {
   contract: {
     base: "contract",
-    add: () => [`${matationKey.contract.base}`, "add"],
-    updateStatus: () => [`${matationKey.contract.base}`, "update-status"],
+    add: () => [`${mutationKeys.contract.base}`, "add"],
+    updateStatus: () => [`${mutationKeys.contract.base}`, "update-status"],
+  },
+  bills: {
+    base: "bills",
+    delete: () => [`${mutationKeys.bills.base}`, "delete"],
   },
 };

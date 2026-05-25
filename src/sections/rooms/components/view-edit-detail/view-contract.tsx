@@ -14,6 +14,7 @@ import {
 } from "@/hooks/queries/use-contract";
 import { showToast } from "@/lib/toast";
 import { mapErrorToMessage } from "@/lib/error/app-error";
+import { Alert } from "@/components/_cms/ui/alert";
 
 interface ViewContractProps {
   contract?: Contract | null;
@@ -22,11 +23,8 @@ interface ViewContractProps {
 
 export default function ViewContract({ contract, roomId }: ViewContractProps) {
   const modalAddContract = useModal();
-  const { data: contractData } = useContract(roomId, contract, {
-    enabled: !!roomId && !!contract,
-  });
+  const { data: contractData } = useContract(roomId, contract);
   const updateStatusContract = useUpdateStatusContract();
-
   const handleUpdateStatusContract = useCallback(
     async (status: keyof typeof ContractStatus) => {
       try {
@@ -51,11 +49,11 @@ export default function ViewContract({ contract, roomId }: ViewContractProps) {
   );
 
   return (
-    <ComponentCard title="Hợp đồng">
+    <ComponentCard title="Hợp đồng" className="space-y-5">
       {contractData?.data && contractData?.data !== null ? (
         <>
           <section className="space-y-3">
-            <h3 className="text-lg font-semibold inline-flex gap-2 text-neutral-800">
+            <h3 className="text-lg font-semibold inline-flex gap-2 ">
               <ReceiptText /> Thông tin hợp đồng
             </h3>
             <ul className="grid md:grid-cols-2 gap-3">
@@ -107,7 +105,7 @@ export default function ViewContract({ contract, roomId }: ViewContractProps) {
             </ul>
 
             <div className="space-y-2 pt-3 border-t border-dashed">
-              <h3 className="text-lg font-semibold inline-flex gap-2 text-neutral-800">
+              <h3 className="text-lg font-semibold inline-flex gap-2">
                 <UserCircle2 /> Thông tin người đại diện thuê phòng
               </h3>
               <ul className="grid grid-cols-2 gap-3">
@@ -130,9 +128,11 @@ export default function ViewContract({ contract, roomId }: ViewContractProps) {
                 Duyệt hợp đồng thuê
               </Button>
             ) : (
-              contract?.status !== "active" && (
+              contract?.status == "active" &&
+              new Date().getTime() - new Date(contract.end_date).getTime() >
+                0 && (
                 <Button onClick={() => handleUpdateStatusContract("extended")}>
-                  Gia hạn
+                  Gia hạn hợp đồng
                 </Button>
               )
             )}
@@ -148,24 +148,30 @@ export default function ViewContract({ contract, roomId }: ViewContractProps) {
           </div>
         </>
       ) : (
-        !modalAddContract.isOpen && (
-          <div className="flex flex-col gap-5">
-            <i className="">
-              Hiện tại chưa có hợp đồng nào còn hiệu lực, bạn có thể thêm hợp
-              đồng mới.
-            </i>
+        <div className="flex flex-col gap-5">
+          <i className="">
+            Hiện tại chưa có hợp đồng nào còn hiệu lực, bạn có thể thêm hợp đồng
+            mới.
+          </i>
 
-            <button
-              onClick={() => modalAddContract.openModal()}
-              className="w-fit text-blue-500 text-sm underline cursor-pointer"
-            >
-              Thêm hợp đồng
-            </button>
-          </div>
-        )
+          <button
+            onClick={() => modalAddContract.openModal()}
+            className="w-fit text-blue-500 text-sm underline cursor-pointer"
+          >
+            Thêm hợp đồng
+          </button>
+        </div>
       )}
 
       {modalAddContract.isOpen && <AddContractForm roomId={roomId} />}
+      {contract?.status == "active" &&
+        new Date().getTime() - new Date(contract.end_date).getTime() > 0 && (
+          <Alert
+            variant={"info"}
+            title={"Lưu ý"}
+            message="Khi chọn gia hạn hợp động thì hợp động sẽ tự động gia hạn thêm 6 tháng kể từ ngày hiện tại"
+          />
+        )}
 
       {/* <AddContractForm roomId={roomId} /> */}
     </ComponentCard>

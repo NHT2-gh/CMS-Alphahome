@@ -6,16 +6,11 @@ import {
   ButtonsToggleFilter,
   CheckboxsFilter,
   DateRangeFilter,
+  SwitchFilter,
 } from ".";
-import { FilterItemConfig, FilterValue } from "../type";
+import { FilterItemConfig, FilterItemProp, FilterValue } from "../type";
+import { DateOption } from "flatpickr/dist/types/options";
 // ----------------------------------------------------------------------
-
-interface FilterItemProps {
-  config: FilterItemConfig;
-  onChange?: (value: FilterValue) => void;
-  className?: string;
-  value?: FilterValue;
-}
 
 // Main Dynamic Filter Item Component
 export default function FilterItemRender({
@@ -23,7 +18,7 @@ export default function FilterItemRender({
   onChange,
   className,
   value,
-}: FilterItemProps) {
+}: FilterItemProp<FilterItemConfig, FilterValue>) {
   const renderFilterItem = () => {
     switch (config.type) {
       case "button-toggle":
@@ -48,7 +43,7 @@ export default function FilterItemRender({
           <InputRangeFilter
             config={config}
             onChange={onChange}
-            value={value as string[]}
+            value={value as number[]}
           />
         );
       case "date-range":
@@ -56,7 +51,15 @@ export default function FilterItemRender({
           <DateRangeFilter
             config={config}
             onChange={onChange}
-            value={value as string[]}
+            value={value as DateOption}
+          />
+        );
+      case "switch-filter":
+        return (
+          <SwitchFilter
+            config={config}
+            onChange={onChange}
+            value={value as boolean}
           />
         );
       default:

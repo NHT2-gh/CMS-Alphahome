@@ -1,21 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FilterItemConfig } from "../type";
+import { ButtonsToggle, Checkboxs, FilterItemProp } from "../type";
 import { Checkbox } from "@/components/_cms/ui/input";
-
-interface CheckboxsProp {
-  config: Extract<FilterItemConfig, { type: "checkbox" }>;
-  onChange?: (value: string[]) => void;
-  className?: string;
-  value?: string[];
-}
 
 export default function CheckboxsFilterItem({
   config,
   onChange,
   className,
   value,
-}: CheckboxsProp) {
+}: FilterItemProp<Checkboxs, string[]>) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const handleCheckedOption = (option: string | "all") => {

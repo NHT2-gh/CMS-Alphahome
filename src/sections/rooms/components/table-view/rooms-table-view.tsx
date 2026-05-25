@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { FurnitureStatus, RoomStatus } from "@/types/room";
+import { FurnitureStatus, Room, RoomOverview, RoomStatus } from "@/types/room";
 import { useRouter } from "next/navigation";
 import useAllRooms from "@/hooks/queries/use-room";
 import { Eye, FilterIcon, PlusCircle, RefreshCcwIcon } from "lucide-react";
@@ -26,15 +26,16 @@ import { DataEmpty } from "@/components/_cms/common/table/state";
 import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
 import { showToast } from "@/lib/toast";
 import { FilterBoxRender } from "@/components/_cms/components/filter/box";
+import { Checkbox } from "@/components/_cms/ui/input";
 
 const _tableHeader: TableHeaderColumn[] = [
   { key: "code", title: "Mã phòng" },
   { key: "current_rent", title: "Giá thuê" },
-  { key: "area", title: "Diện tích", isHiddenOnMobile: true },
   { key: "furniture_status", title: "Nội thất", isHiddenOnMobile: true },
   { key: "tenant_name", title: "Tên người thuê" },
   { key: "end_date", title: "Hạn hợp đồng" },
   { key: "status", title: "Trạng thái" },
+  { key: "actions", title: "", isHiddenOnMobile: true },
 ];
 export default function RoomsTable() {
   const { building } = useBuilding();
@@ -50,7 +51,9 @@ export default function RoomsTable() {
     filters: filterValues,
   });
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
-
+  const [selectedRooms, setSelectedRooms] = useState<
+    Record<string, RoomOverview>
+  >({});
   useEffect(() => {
     if (error) {
       showToast.error({
@@ -115,8 +118,36 @@ export default function RoomsTable() {
         />
       )}
       <div className="max-w-full overflow-x-auto">
+        <div className="">
+          {Object.keys(selectedRooms).length > 0 && (
+            <div className="flex items-center justify-between p-3">
+              <span className="text-xs">
+                Đã chọn {Object.keys(selectedRooms).length} phòng
+              </span>
+            </div>
+          )}
+        </div>
         <Table>
-          <CMSTableHeader columns={_tableHeader} />
+          <CMSTableHeader
+            selectAll={
+              Object.keys(selectedRooms).length === (rooms?.length || 0)
+            }
+            handleSelectAll={() => {
+              if (!rooms) return;
+              if (Object.keys(selectedRooms).length === (rooms?.length || 0)) {
+                setSelectedRooms({});
+                return;
+              }
+              setSelectedRooms((prev) => {
+                const newPrev = { ...prev };
+                rooms.forEach((room) => {
+                  newPrev[room.room_id] = room;
+                });
+                return newPrev;
+              });
+            }}
+            columns={_tableHeader}
+          />
           <TableBody>
             {(rooms?.length === 0 || isLoading) && (
               <DataEmpty
@@ -142,25 +173,30 @@ export default function RoomsTable() {
                     "bg-gray-100 dark:bg-gray-700":
                       room.status === ("available" as keyof typeof RoomStatus),
                   },
-                  {
-                    "bg-red-100 dark:bg-red-200":
-                      room.end_date &&
-                      new Date().getTime() - new Date(room.end_date).getTime() >
-                        0 &&
-                      room.status === ("rented" as keyof typeof RoomStatus),
-                  },
                 )}
                 key={room.room_id}
               >
-                <TableCell>{room.code}</TableCell>
-                {/* <TableCell className="hidden md:table-cell">
-                  {room.occupants_count || 0}
-                </TableCell> */}
+                <TableCell>
+                  <Checkbox
+                    id={room.room_id}
+                    label={room.code}
+                    checked={selectedRooms[room.room_id] !== undefined}
+                    onChange={() => {
+                      setSelectedRooms((prev) => {
+                        const newPrev = { ...prev };
+                        if (newPrev[room.room_id]) {
+                          delete newPrev[room.room_id];
+                        } else {
+                          newPrev[room.room_id] = room;
+                        }
+                        return newPrev;
+                      });
+                    }}
+                  />
+                </TableCell>
+
                 <TableCell>{formatCurrency(room.current_rent)}</TableCell>
 
-                <TableCell className="hidden md:table-cell">
-                  {room.area}
-                </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {
                     FurnitureStatus[
@@ -178,7 +214,7 @@ export default function RoomsTable() {
                     new Date().getTime() - new Date(room.end_date).getTime() >
                       0 &&
                     room.status === "rented"
-                      ? "font-bold"
+                      ? "text-red-600 text-sm"
                       : ""
                   }
                 >
