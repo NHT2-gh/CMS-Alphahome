@@ -1030,3 +1030,9 @@ pre[class*="language-"].line-numbers {
     display: none !important;
   }
 }
+
+@layer components {
+  .rows-actions {
+    @apply px-3 py-2 flex items-center gap-4;
+  }
+}

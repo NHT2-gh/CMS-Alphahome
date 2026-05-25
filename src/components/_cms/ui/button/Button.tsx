@@ -4,7 +4,7 @@ import React, { ReactNode } from "react";
 interface ButtonProps {
   children: ReactNode; // Button text or content
   size?: "sm" | "md"; // Button size
-  variant?: "primary" | "outline"; // Button variant
+  variant?: "primary" | "outline" | "neutral"; // Button variant
   startIcon?: ReactNode; // Icon before the text
   endIcon?: ReactNode; // Icon after the text
   onClick?: () => void; // Click handler
@@ -32,14 +32,22 @@ const Button: React.FC<ButtonProps> = ({
       "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
     outline:
       "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/3 dark:hover:text-gray-300",
+    neutral:
+      "bg-neutral-400 hover:bg-neutral-500 dark:bg-neutral-600 dark:hover:bg-neutral-700 text-white",
+  };
+
+  const sizeClasses = {
+    sm: "px-1.5 py-1 text-sm md:px-2 md:py-1.5 text-sm",
+    md: "px-3 py-2 md:px-5 md:py-3 text-base",
   };
 
   return (
     <button
       type={type}
       className={cn(
-        `inline-flex text-theme-sm shrink-0 p-2 h-fit md:px-5 md:py-3 items-center justify-center font-medium gap-2 rounded-lg transition`,
+        `inline-flex text-theme-sm shrink-0 h-fit items-center justify-center font-medium gap-2 rounded-lg transition`,
         variantClasses[variant],
+        sizeClasses[size],
         { "cursor-not-allowed opacity-50": disabled || loading },
         className,
       )}

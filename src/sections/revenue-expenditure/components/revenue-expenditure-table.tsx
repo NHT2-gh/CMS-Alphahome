@@ -30,17 +30,17 @@ import { Pagination } from "@/components/_cms/components/pagination";
 import FilterValuesRender from "@/components/_cms/components/filter/box/filter-values-render";
 import { Button } from "@/components/_cms/ui/button";
 import { Badge } from "@/components/_cms/ui/badge";
+import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
 
-const _tableHeader: { key: string; title: string }[] = [
-  // { key: "id", title: "Mã giao dịch" },
+const _tableHeader: TableHeaderColumn[] = [
   { key: "categories.name", title: "Tên hạng mục" },
   { key: "amount", title: "Số tiền" },
   { key: "transaction_date", title: "Ngày giao dịch" },
   { key: "payment_method", title: "Phương thức thanh toán" },
   { key: "type", title: "Loại" },
   { key: "description", title: "Mô tả" },
-
   { key: "profiles.full_name", title: "Người thực hiện" },
+  { key: "actions", title: "", isHiddenOnMobile: true },
 ];
 
 export default function RevenueExpenditureTable() {
@@ -197,6 +197,27 @@ export default function RevenueExpenditureTable() {
                 }
               />
             )}
+
+            {selectedTransactions.length > 0 && (
+              <TableRow>
+                <TableCell colSpan={_tableHeader.length + 2}>
+                  <div className="flex items-center justify-between">
+                    <p>Đã chọn {selectedTransactions.length}</p>
+                    <div>
+                      <button
+                        onClick={() => {
+                          openModal();
+                        }}
+                        className="border rounded-xl py-2 px-4 bg-red-400 text-white"
+                      >
+                        Xoá {selectedTransactions.length} hoá đơn
+                      </button>
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+
             {transcriptions?.data?.map((item) => (
               <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
                 {/* <TableCell className="flex items-center gap-2">
@@ -258,26 +279,6 @@ export default function RevenueExpenditureTable() {
                 </TableCell>
               </TableRow>
             ))}
-
-            {selectedTransactions.length > 0 && (
-              <TableRow>
-                <TableCell colSpan={_tableHeader.length + 2}>
-                  <div className="flex items-center justify-between">
-                    <p>Đã chọn {selectedTransactions.length}</p>
-                    <div>
-                      <button
-                        onClick={() => {
-                          openModal();
-                        }}
-                        className="border rounded-xl py-2 px-4 bg-red-400 text-white"
-                      >
-                        Xoá {selectedTransactions.length} hoá đơn
-                      </button>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>

@@ -109,6 +109,14 @@ export default function RoomsTable() {
         </div>
       </div>
 
+      {Object.keys(selectedRooms).length > 0 && (
+        <div className="rows-actions">
+          <span className="text-xs">
+            Đã chọn {Object.keys(selectedRooms).length} phòng
+          </span>
+        </div>
+      )}
+
       {isFilterOpen && (
         <FilterBoxRender
           filterConfigs={RoomFilterSchema}
@@ -118,15 +126,6 @@ export default function RoomsTable() {
         />
       )}
       <div className="max-w-full overflow-x-auto">
-        <div className="">
-          {Object.keys(selectedRooms).length > 0 && (
-            <div className="flex items-center justify-between p-3">
-              <span className="text-xs">
-                Đã chọn {Object.keys(selectedRooms).length} phòng
-              </span>
-            </div>
-          )}
-        </div>
         <Table>
           <CMSTableHeader
             selectAll={
@@ -235,13 +234,19 @@ export default function RoomsTable() {
 
                 {building?.id && (
                   <TableCell className="hidden md:table-cell">
-                    <Link
-                      href={APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.code)}
+                    <button
+                      className="disabled:opacity-30"
+                      onClick={() =>
+                        router.push(
+                          APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(
+                            room.code,
+                            building.code,
+                          ),
+                        )
+                      }
                     >
-                      <button className="disabled:opacity-30">
-                        <Eye className="size-6 " />
-                      </button>
-                    </Link>
+                      <Eye className="size-6 " />
+                    </button>
                   </TableCell>
                 )}
               </TableRow>

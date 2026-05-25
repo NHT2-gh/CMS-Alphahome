@@ -67,6 +67,7 @@ const columns: TableHeaderColumn[] = [
     title: "Người tạo",
     isHiddenOnMobile: true,
   },
+  { key: "actions", title: "", isHiddenOnMobile: true },
 ];
 
 export default function PaymentsListTable() {
@@ -193,6 +194,30 @@ export default function PaymentsListTable() {
           </Button>
         </div>
       </div>
+      {selectedBills.size > 0 && (
+        <div className="rows-actions">
+          <Button
+            size="sm"
+            variant="neutral"
+            onClick={() => modalDeleteBill.openModal()}
+          >
+            Xoá {selectedBills.size} hoá đơn
+          </Button>
+
+          {Array.from(selectedBills.values()).every(
+            (bill) =>
+              bill.bill_status === "draft" || bill.bill_status === "confirmed",
+          ) && (
+            <Button
+              variant="neutral"
+              size="sm"
+              onClick={() => modalConfirmAction.openModal()}
+            >
+              Xác nhận thanh toán {selectedBills.size} hoá đơn
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* <FilterValuesRender
         filterConfigs={BillFilterSchema}
@@ -242,6 +267,7 @@ export default function PaymentsListTable() {
                 }
               />
             )}
+
             {bills?.map((bill) => (
               <TableRow
                 key={bill.id}
@@ -333,38 +359,6 @@ export default function PaymentsListTable() {
                 </TableCell>
               </TableRow>
             ))}
-
-            {selectedBills.size > 0 && (
-              <TableRow>
-                <TableCell colSpan={columns.length + 1}>
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="">Đã chọn {selectedBills.size}</p>
-
-                    <div className="flex items-center justify-end gap-4">
-                      <button
-                        onClick={() => modalDeleteBill.openModal()}
-                        className="rounded-xl py-2 px-4 bg-rose-500 hover:bg-rose-600 text-white transition-colors cursor-pointer"
-                      >
-                        Xoá {selectedBills.size} hoá đơn
-                      </button>
-
-                      {Array.from(selectedBills.values()).every(
-                        (bill) =>
-                          bill.bill_status === "draft" ||
-                          bill.bill_status === "confirmed",
-                      ) && (
-                        <button
-                          onClick={() => modalConfirmAction.openModal()}
-                          className="rounded-xl py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors cursor-pointer"
-                        >
-                          Xác nhận thanh toán {selectedBills.size} hoá đơn
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>
