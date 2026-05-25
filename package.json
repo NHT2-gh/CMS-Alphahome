@@ -33,7 +33,7 @@
     "flatpickr": "^4.6.13",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.541.0",
-    "next": "^15.4.3",
+    "next": "15.4.10",
     "prismjs": "^1.30.0",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
