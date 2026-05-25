@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 import { InputHTMLAttributes, ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";

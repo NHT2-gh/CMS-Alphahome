@@ -8,7 +8,6 @@ import FormField from "../FormField";
 interface AccordionLayoutProps {
   layout: AccordionLayoutConfig;
   fields: FieldConfig[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>;
   disabled?: boolean;
 }

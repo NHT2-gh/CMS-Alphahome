@@ -7,7 +7,6 @@ import FormField from "../FormField";
 interface TabsLayoutProps {
   layout: TabLayoutConfig;
   fields: FieldConfig[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>;
   disabled?: boolean;
 }
