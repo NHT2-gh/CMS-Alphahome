@@ -208,14 +208,13 @@ export default function RoomsTable() {
                 </TableCell>
 
                 <TableCell
-                  className={
-                    room.end_date &&
-                    new Date().getTime() - new Date(room.end_date).getTime() >
-                      0 &&
-                    room.status === "rented"
-                      ? "text-red-600 text-sm"
-                      : ""
-                  }
+                  className={cn("min-w-[6.25rem]", {
+                    "text-red-600 text-sm":
+                      room.end_date &&
+                      new Date().getTime() - new Date(room.end_date).getTime() >
+                        0 &&
+                      room.status === "rented",
+                  })}
                 >
                   {room.end_date ? formatDateTime(room.end_date) : "Chưa có"}
                 </TableCell>

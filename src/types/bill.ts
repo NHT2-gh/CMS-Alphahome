@@ -52,6 +52,7 @@ export interface Service {
   service_type: ServiceType;
   calculation_method: keyof typeof CalculationMethod;
   unit_name?: string;
+  note?: string;
 }
 
 export interface RoomServiceExtra {

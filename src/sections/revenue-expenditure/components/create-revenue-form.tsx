@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { showToast } from "@/lib/toast";
 import {
@@ -64,7 +64,7 @@ export default function CreateRevenueForm() {
         setValue("amount", categoryData.total_amount);
       } else {
         setValue("type", "");
-        setValue("amount", 0);
+        setValue("amount", 1000);
       }
     }
   }, [buildingRevenueCombined, category, transaction_date]);
@@ -100,6 +100,7 @@ export default function CreateRevenueForm() {
           name: "category_id",
           required: true,
           label: "Hạng mục",
+          description: "hello",
           type: "select",
           placeholder: "Chọn hạng mục",
           options: [
@@ -132,7 +133,6 @@ export default function CreateRevenueForm() {
         field={{
           name: "type",
           required: true,
-
           label: "Loại",
           type: "select",
           placeholder: "Chọn loại",

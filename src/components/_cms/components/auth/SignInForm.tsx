@@ -14,11 +14,9 @@ import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
 import { DEFAULT_LOGIN_REDIRECT } from "@/config/auth-routes";
 import { signInWithEmail } from "@/lib/server-action/auth.action";
-import { Checkbox } from "../../ui/input";
 import { FormField } from "../form";
 
 export default function SignInForm() {
-  const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
 
   const form = useForm<SignInDataType>({
@@ -30,7 +28,10 @@ export default function SignInForm() {
     mode: "onTouched",
   });
 
-  const { handleSubmit } = form;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form;
 
   const onSubmit = async (data: SignInDataType) => {
     try {
@@ -162,7 +163,12 @@ export default function SignInForm() {
                   </Link>
                 </div>
 
-                <Button type="submit" className="w-full" size="sm">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  className="w-full"
+                  size="md"
+                >
                   Đăng nhập
                 </Button>
 

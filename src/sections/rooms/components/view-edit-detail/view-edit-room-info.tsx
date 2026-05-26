@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   FurnitureStatus,
@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilding } from "@/context/BuildingContext";
 import { useGetRoomDetail, useUpdateRoom } from "@/hooks/queries/use-room";
 import { FormField } from "@/components/_cms/components/form";
-import { uploadImage } from "@/supabase/storage/storageClinets";
+import { deleteImage, uploadImage } from "@/supabase/storage/storageClinets";
 import {
   Table,
   TableBody,
@@ -72,7 +72,7 @@ export default function ViewEditRoomInfo({
       description: roomInfo!.description || "",
       images: roomInfo!.images || [],
       current_rent: Number(rentHistory[0].rent_price) || 0,
-      status: RoomStatus[currentRoom.status],
+      status: currentRoom.status,
     },
   });
   useEffect(() => {
@@ -86,6 +86,8 @@ export default function ViewEditRoomInfo({
           .filter((img) => img.status === "success")
           .map((img) => img.uploadedUrl!),
       );
+
+      console.log(images);
     } else {
       return;
     }
@@ -210,8 +212,16 @@ export default function ViewEditRoomInfo({
             field={{
               name: "status",
               label: "Trạng thái",
-              type: "text",
+              type: "select",
               readOnly: true,
+              options: Array.from(Object.entries(RoomStatus)).map(
+                ([key, value]) => {
+                  return {
+                    value: key,
+                    label: value,
+                  };
+                },
+              ),
             }}
           />
 
@@ -240,11 +250,7 @@ export default function ViewEditRoomInfo({
 
         <Button
           onClick={handleSubmit(onSubmit)}
-          disabled={
-            isUploading ||
-            images?.filter((img) => img.status === "idle").length > 0 ||
-            !isDirty
-          }
+          disabled={isUploading}
           type="submit"
           className="block w-fit ml-auto"
         >

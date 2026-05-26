@@ -54,7 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-white md:bg-[unset] flex items-center justify-center  modal z-99999 md:pl-[4rem]">
+    <div className="fixed left-0 right-0 top-[3.75rem] bottom-0 md:inset-0 bg-white md:bg-[unset] flex items-center justify-center  modal z-99999 md:pl-[4rem] dark:bg-gray-900">
       <div
         className="hidden md:block absolute inset-0 bg-gray-400/50 backdrop-blur-[32px]"
         onClick={onClose}
@@ -85,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          "w-screen relative max-h-screen pt-[5rem] scrollbar-hidden md:pt-0 md:w-[90vw] md:h-fit md:max-h-[80vh] overflow-y-auto md:rounded-3xl md:bg-white md:dark:bg-gray-900 md:p-8",
+          "w-screen relative max-h-[90vh] pt-[5rem] scrollbar-hidden md:pt-0 md:w-[90vw] md:h-fit md:max-h-[80vh] overflow-y-auto md:rounded-3xl md:bg-white md:dark:bg-gray-900 md:p-8",
           className,
         )}
         onClick={(e) => e.stopPropagation()}

@@ -5,6 +5,9 @@ import Image from "next/image";
 import { Button } from "@/components/_cms/ui/button";
 import { Check, ClosedCaption, Loader2, UploadCloud, X } from "lucide-react";
 import { ComponentCard } from "../../common/component-card";
+import { deleteImage } from "@/supabase/storage/storageClinets";
+import { cn } from "@/lib/utils";
+import { showToast } from "@/lib/toast";
 
 interface DropzoneComponentProps {
   images: ImageItem[] | [];
@@ -43,15 +46,25 @@ export default function ImagesDropzone({
     onChange([...(images || []), ...newImages]);
   };
 
-  const handleRemoveImage = (id: string) => {
+  const handleRemoveImage = async (id: string) => {
     const imageToRemove = images.find((img) => img.id === id);
-
     if (imageToRemove) {
-      URL.revokeObjectURL(imageToRemove.previewUrl);
+      if (imageToRemove.status === "idle")
+        URL.revokeObjectURL(imageToRemove.previewUrl);
+      else if (
+        imageToRemove.status === "success" &&
+        imageToRemove.uploadedUrl
+      ) {
+        const result = await deleteImage(imageToRemove.uploadedUrl);
+        if (result.error) {
+          showToast.error({
+            title: "Lỗi",
+            description: "Lỗi xoá ảnh. Vui lòng thử lại",
+          });
+        }
+      }
     }
-
     const updatedImages = images.filter((img) => img.id !== id);
-
     onChange(updatedImages);
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -67,17 +80,18 @@ export default function ImagesDropzone({
   return (
     <ComponentCard title="Hình ảnh" className={className}>
       {images && images.length > 0 && (
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-4">
           {images.map((image, index) => (
-            <div key={index} className="relative">
-              {image.status === "idle" && (
-                <button
-                  onClick={() => handleRemoveImage(image.id)}
-                  className="absolute top-1 right-1 bg-white rounded-full p-1"
-                >
-                  <X />
-                </button>
-              )}
+            <div key={index} className="relative group">
+              {image.status === "idle" ||
+                (image.status === "success" && (
+                  <button
+                    onClick={() => handleRemoveImage(image.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-all cursor-pointer absolute inset-0 bg-black/30 flex items-center justify-center"
+                  >
+                    <X className="size-10 stroke-2 text-white/80" />
+                  </button>
+                ))}
 
               {image.status === "uploading" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/50">
@@ -99,7 +113,7 @@ export default function ImagesDropzone({
                 alt="Uploaded"
                 width={150}
                 height={150}
-                className="rounded-sm aspect-square object-cover"
+                className={cn("rounded-sm aspect-square object-cover")}
               />
             </div>
           ))}

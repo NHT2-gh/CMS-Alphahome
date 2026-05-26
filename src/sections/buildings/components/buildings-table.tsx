@@ -27,6 +27,7 @@ const _tableHeader: { key: string; title: string }[] = [
   { key: "start_date", title: "Ngày bắt đầu" },
   { key: "end_date", title: "Ngày kết thúc" },
   { key: "is_active", title: "Trạng thái" },
+  { key: "actions", title: "" },
 ];
 
 export default function DataTable() {
@@ -101,7 +102,7 @@ export default function DataTable() {
 
                   <TableCell>{item.end_date || "NULL"}</TableCell>
 
-                  <TableCell>
+                  <TableCell className="min-w-[9.375rem]">
                     <Badge
                       variant="light"
                       color={item.is_active ? "success" : "error"}

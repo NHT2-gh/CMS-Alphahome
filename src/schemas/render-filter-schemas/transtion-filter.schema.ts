@@ -7,10 +7,12 @@ export const TransactionFilterSchema: FilterItemConfig[] = [
     label: "Loại giao dịch",
     type: "button-toggle",
     isMultiple: false,
-    options: Object.entries(TransactionType).map(([key, value]) => ({
-      value: key,
-      label: value,
-    })),
+    options: [
+      ...Object.entries(TransactionType).map(([key, value]) => ({
+        value: key,
+        label: value,
+      })),
+    ],
   },
   {
     key: "transaction_date",

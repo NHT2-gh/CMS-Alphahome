@@ -7,11 +7,14 @@ const nextConfig: NextConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+
     return config;
   },
   images: {
     domains: ["jioeyqgkaazhqeanehtt.supabase.co"],
   },
+
+  allowedDevOrigins: ["http://[IP_ADDRESS]", "http://localhost:3000"],
 };
 
 export default nextConfig;

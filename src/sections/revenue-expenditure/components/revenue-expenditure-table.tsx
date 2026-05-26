@@ -27,7 +27,6 @@ import { FilterBoxRender } from "@/components/_cms/components/filter/box";
 import { useFilter } from "@/hooks/use-filter";
 import { TransactionFilterSchema } from "@/schemas/render-filter-schemas/transtion-filter.schema";
 import { Pagination } from "@/components/_cms/components/pagination";
-import FilterValuesRender from "@/components/_cms/components/filter/box/filter-values-render";
 import { Button } from "@/components/_cms/ui/button";
 import { Badge } from "@/components/_cms/ui/badge";
 import { TableHeaderColumn } from "@/components/_cms/components/table/table-header";
@@ -40,7 +39,7 @@ const _tableHeader: TableHeaderColumn[] = [
   { key: "type", title: "Loại" },
   { key: "description", title: "Mô tả" },
   { key: "profiles.full_name", title: "Người thực hiện" },
-  { key: "actions", title: "", isHiddenOnMobile: true },
+  { key: "actions", title: "" },
 ];
 
 export default function RevenueExpenditureTable() {
@@ -111,8 +110,6 @@ export default function RevenueExpenditureTable() {
     }
   }, [transcriptions]);
 
-  console.log(filterValues);
-
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-center justify-between border-b border-gray-200 p-3 md:p-5 dark:border-gray-800">
@@ -121,7 +118,7 @@ export default function RevenueExpenditureTable() {
             Danh sách thu chi
           </h3>
         </div>
-        <div className="flex gap-3.5 items-center">
+        <div className="w-full flex flex-col md:flex-row gap-3.5 md:items-center">
           <SingleFilterButtonGroup
             items={Object.entries(TransactionType).map(([value, label]) => ({
               label,
@@ -139,16 +136,24 @@ export default function RevenueExpenditureTable() {
             debounceTime={500}
           />
 
-          <Button
-            variant="outline"
-            disabled={isLoading || !transcriptions}
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-          >
-            <FilterIcon className="size-4" /> Bộ lọc
-          </Button>
-          <Button variant="outline" onClick={() => refetch()}>
-            <RefreshCcwIcon className="size-4" />
-          </Button>
+          <div className="w-full flex items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              disabled={isLoading || !transcriptions}
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+            >
+              <FilterIcon className="size-4" /> Bộ lọc
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                clearFilters();
+                refetch();
+              }}
+            >
+              <RefreshCcwIcon className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -187,16 +192,17 @@ export default function RevenueExpenditureTable() {
             // }}
           />
           <TableBody>
-            {!transcriptions && isLoading && (
-              <DataEmpty
-                colSpan={_tableHeader.length}
-                message={
-                  isLoading
-                    ? "Đang tải dữ liệu..."
-                    : "Hiện tại không tìm thấy dữ liệu"
-                }
-              />
-            )}
+            {(transcriptions && transcriptions?.data.length === 0) ||
+              (isLoading && (
+                <DataEmpty
+                  colSpan={_tableHeader.length}
+                  message={
+                    isLoading
+                      ? "Đang tải dữ liệu..."
+                      : "Hiện tại không tìm thấy dữ liệu phù hợp"
+                  }
+                />
+              ))}
 
             {selectedTransactions.length > 0 && (
               <TableRow>
@@ -220,20 +226,6 @@ export default function RevenueExpenditureTable() {
 
             {transcriptions?.data?.map((item) => (
               <TableRow key={item.id} className="[&>td]:min-w-[6.25rem]">
-                {/* <TableCell className="flex items-center gap-2">
-                  <Checkbox
-                    id={item.id}
-                    checked={selectedTransactions.includes(item.id)}
-                    onChange={() => {
-                      setSelectedTransactions((prev) =>
-                        prev.includes(item.id)
-                          ? prev.filter((id) => id !== item.id)
-                          : [...prev, item.id],
-                      );
-                    }}
-                  />
-                  {item.id.split("-")[0] + "-" + item.id.split("-")[3]}
-                </TableCell> */}
                 <TableCell>{item.categories.name}</TableCell>
                 <TableCell>{formatCurrency(item.amount)}</TableCell>
                 <TableCell>{item.transaction_date}</TableCell>

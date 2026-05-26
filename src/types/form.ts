@@ -123,7 +123,6 @@ export type FieldConfig =
   | DateFieldConfig
   | SwitchFieldConfig
   | FileFieldConfig
-  // | ArrayFieldConfig
   | CustomFieldConfig;
 
 // Grid layout configuration
