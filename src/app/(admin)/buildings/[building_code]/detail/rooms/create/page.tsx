@@ -1,5 +1,11 @@
 import React from "react";
 import { CreateRoomPageView } from "@/sections/rooms/view";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tạo mới phòng | AlphaHome",
+  description: "Tạo mới phòng AlphaHome",
+};
 
 export default async function CreateRoomPage({
   params,

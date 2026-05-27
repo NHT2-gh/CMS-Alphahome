@@ -1,7 +1,13 @@
 import NotFoundPage from "@/app/not-found";
 import { getRoomDetailServerAction } from "@/lib/server-action/room.action";
 import { RoomDetailPageView } from "@/sections/rooms/view";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Chi tiết phòng | AlphaHome",
+  description: "Chi tiết phòng AlphaHome",
+};
 
 export default async function RoomDetailPage({
   params,

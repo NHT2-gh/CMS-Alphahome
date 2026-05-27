@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "AlphaHome CMS Dashboard",
+  title: "Dashboard | AlphaHome",
+  description: "Dashboard quản lý AlphaHome",
 };
 
 export default function Dashboard() {
