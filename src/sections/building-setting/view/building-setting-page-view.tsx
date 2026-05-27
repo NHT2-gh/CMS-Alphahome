@@ -127,7 +127,6 @@ export default function BuildingSettingView() {
       dirtyFields.services &&
       dirtyFields.services.length > 0 &&
       initialData.services &&
-      initialData.services.length > 0 &&
       data.services &&
       data.services.length > 0
     ) {
@@ -250,6 +249,10 @@ export default function BuildingSettingView() {
       title="Thiết lập thông tin toà nhà"
       links={[
         { label: "Danh sách toà nhà", href: APP_ROUTES.ADMIN.BUILDINGS.BASE() },
+        {
+          label: `Chi tiết toà nhà`,
+          href: APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(building?.code!),
+        },
         { label: "Thiết lập toà nhà" },
       ]}
     >

@@ -9,7 +9,6 @@ import { formatCurrency, formatDateTime } from "@/utils/format-data";
 import { CMSTableHeader } from "@/components/_cms/components/table";
 import { UpdateBuildingSettingType } from "@/schemas/validation/admin.validation";
 import { BuildingServiceCreateDTO } from "@/types/utility_reading";
-import { randomUUID } from "crypto";
 import { DataEmpty } from "@/components/_cms/common/table/state";
 import { Button } from "@/components/_cms/ui/button";
 import {
@@ -33,8 +32,8 @@ export default function UpsertBuildingServicesForm() {
       id: "",
       service_id: "",
       service_type: "extra",
-      unit_price: 0,
-      calculation_method: "per_room",
+      unit_price: 1000,
+      calculation_method: "other",
     },
   });
 
@@ -56,8 +55,8 @@ export default function UpsertBuildingServicesForm() {
       const serviceAddingInfo = prev[id] ?? {
         id: crypto.randomUUID(),
         service_id: "",
-        unit_price: 0,
-        calculation_method: "per_room",
+        unit_price: 1000,
+        calculation_method: "other",
       };
 
       const updateValue = { ...serviceAddingInfo, [field]: value };
@@ -96,85 +95,83 @@ export default function UpsertBuildingServicesForm() {
           />
           <TableBody>
             {isEdit ? (
-              <>
-                {fields?.map((item, index) => (
-                  <TableRow key={item.id}>
+              fields?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <FormField
+                      form={formBuildingSetting}
+                      field={{
+                        name: `services.${index}.service_id`,
+                        type: "select",
+                        placeholder: "Chọn dịch vụ",
+                        options:
+                          allServices
+                            ?.filter(
+                              (service) =>
+                                service.service_type ===
+                                fields[index].service_type,
+                            )
+                            ?.map((service) => ({
+                              value: String(service.id),
+                              label:
+                                service.service_name +
+                                " (" +
+                                (service.unit_name ||
+                                  CalculationMethod[
+                                    service.calculation_method as unknown as keyof typeof CalculationMethod
+                                  ]) +
+                                ")",
+                            })) || [],
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FormField
+                      form={formBuildingSetting}
+                      disabled={true}
+                      field={{
+                        name: `services.${index}.calculation_method`,
+                        type: "select",
+                        readOnly: true,
+                        options: [
+                          {
+                            value: fields[index].unit_name!,
+                            label: fields[index].unit_name!,
+                          },
+                          ...Object.entries(CalculationMethod).map(
+                            ([key, value]) => ({
+                              value: String(key),
+                              label: value,
+                            }),
+                          ),
+                        ],
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FormField
+                      form={formBuildingSetting}
+                      field={{
+                        name: `services.${index}.unit_price`,
+                        type: "number",
+                        placeholder: "Nhập đơn giá",
+                        min: 0,
+                        formatCurrency: true,
+                      }}
+                    />
+                  </TableCell>
+                  {fields[index].service_type === "extra" && (
                     <TableCell>
-                      <FormField
-                        form={formBuildingSetting}
-                        field={{
-                          name: `services.${index}.service_id`,
-                          type: "select",
-                          placeholder: "Chọn dịch vụ",
-                          options:
-                            allServices
-                              ?.filter(
-                                (service) =>
-                                  service.service_type ===
-                                  fields[index].service_type,
-                              )
-                              ?.map((service) => ({
-                                value: String(service.id),
-                                label:
-                                  service.service_name +
-                                  " (" +
-                                  (service.unit_name ||
-                                    CalculationMethod[
-                                      service.calculation_method as unknown as keyof typeof CalculationMethod
-                                    ]) +
-                                  ")",
-                              })) || [],
-                        }}
-                      />
+                      <button
+                        className="text-error-500"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash className="size-4" />
+                      </button>
                     </TableCell>
-                    <TableCell>
-                      <FormField
-                        form={formBuildingSetting}
-                        disabled={true}
-                        field={{
-                          name: `services.${index}.calculation_method`,
-                          type: "select",
-                          readOnly: true,
-                          options: [
-                            {
-                              value: fields[index].unit_name!,
-                              label: fields[index].unit_name!,
-                            },
-                            ...Object.entries(CalculationMethod).map(
-                              ([key, value]) => ({
-                                value: String(key),
-                                label: value,
-                              }),
-                            ),
-                          ],
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        form={formBuildingSetting}
-                        field={{
-                          name: `services.${index}.unit_price`,
-                          type: "number",
-                          placeholder: "Nhập đơn giá",
-                          min: 0,
-                          formatCurrency: true,
-                        }}
-                      />
-                    </TableCell>
-                    {fields[index].service_type === "extra" && (
-                      <TableCell>
-                        <button
-                          className="text-error-500"
-                          onClick={() => remove(index)}
-                        >
-                          <Trash className="size-4" />
-                        </button>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </>
+                  )}
+                </TableRow>
+              ))
             ) : fields.length === 0 ? (
               <DataEmpty
                 message={"Hiện tại không có dịch vụ nào"}
@@ -205,22 +202,28 @@ export default function UpsertBuildingServicesForm() {
 
       {isEdit &&
         Object.entries(rowsAdding).map(([key, addingItem]) => (
-          <>
-            <div
-              key={key}
-              className="w-full border-t pt-5 grid grid-cols-2 gap-5 md:grid-cols-[repeat(3,minmax(150px,1fr))]"
-            >
+          <div
+            key={key}
+            className="mt-10 mb-5 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:p-6 dark:border-gray-800 dark:bg-gray-900"
+          >
+            <div className="w-full grid grid-cols-2 gap-5 md:grid-cols-[repeat(3,minmax(150px,1fr))]">
               <FormField
                 field={{
                   type: "select",
+                  label: "Dịch vụ",
                   placeholder: "Chọn dịch vụ",
                   options:
-                    allServices
-                      ?.filter((service) => service.service_type === "extra")
-                      .map((service) => ({
-                        value: String(service.id),
-                        label: service.service_name,
-                      })) || [],
+                    allServices?.map((service) => ({
+                      value: String(service.id),
+                      label:
+                        service.service_name +
+                        " (" +
+                        (service.unit_name ||
+                          CalculationMethod[
+                            service.calculation_method as unknown as keyof typeof CalculationMethod
+                          ]) +
+                        ")",
+                    })) || [],
                   handleOnChange(value) {
                     const service = allServices?.find(
                       (service) => String(service.id) === value,
@@ -236,6 +239,12 @@ export default function UpsertBuildingServicesForm() {
                         key,
                         "calculation_method",
                         service.unit_name || service.calculation_method,
+                      );
+
+                      handleUpdateAddingRow(
+                        key,
+                        "service_type",
+                        service.service_type,
                       );
 
                       if (service.unit_name) {
@@ -254,24 +263,30 @@ export default function UpsertBuildingServicesForm() {
                 field={{
                   readOnly: true,
                   type: "text",
+                  label: "Đơn vị tính",
                   placeholder: "Đơn vị tính",
-                  value: addingItem.calculation_method.startsWith("other-")
-                    ? addingItem.unit_name
-                    : CalculationMethod[
-                        addingItem.calculation_method as unknown as keyof typeof CalculationMethod
-                      ],
+                  value:
+                    addingItem.unit_name ||
+                    CalculationMethod[
+                      addingItem.calculation_method as unknown as keyof typeof CalculationMethod
+                    ],
                 }}
               />
 
               <FormField
                 field={{
                   type: "number",
+                  label: "Đơn giá",
                   placeholder: "Nhập đơn giá",
-                  min: 0,
+                  min: 1000,
+                  value: addingItem.unit_price || 0,
                   formatCurrency: true,
-                  value: rowsAdding[key].unit_price,
-                  handleOnChange(value) {
-                    handleUpdateAddingRow(key, "unit_price", Number(value));
+                  onChange(e: React.ChangeEvent<HTMLInputElement>) {
+                    handleUpdateAddingRow(
+                      key,
+                      "unit_price",
+                      Number(e.target.value),
+                    );
                   },
                 }}
               />
@@ -289,7 +304,7 @@ export default function UpsertBuildingServicesForm() {
                     id: "",
                     service_type: "extra",
                     service_id: "",
-                    unit_price: 0,
+                    unit_price: 1000,
                     calculation_method: "per_room",
                   },
                 }));
@@ -297,7 +312,7 @@ export default function UpsertBuildingServicesForm() {
             >
               <Plus className="size-4 text-white" /> Thêm dịch vụ
             </Button>
-          </>
+          </div>
         ))}
     </>
   );

@@ -17,12 +17,13 @@ import { ComponentCard } from "@/components/_cms/common/component-card";
 import ImagesDropzone, {
   ImageItem,
 } from "@/components/_cms/components/dropzone/images-dropzone";
+import { FurnitureStatus } from "@/types/room";
 
 export default function CreateRoomForm() {
   const { building } = useBuilding();
   const [images, setImages] = useState<ImageItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const createRoomMutation = useCreateRoom();
+  const createRoom = useCreateRoom();
   const createRoomForm = useForm<CreateRoomFormType>({
     resolver: zodResolver(createRoomFormSchema),
     defaultValues: {
@@ -91,11 +92,12 @@ export default function CreateRoomForm() {
 
   const onSubmit = async (data: CreateRoomFormType) => {
     try {
-      const res = await createRoomMutation.mutateAsync(data);
+      const res = await createRoom.mutateAsync(data);
       if (res.room) {
         showToast.success({
           title: "Thành công tạo phòng",
         });
+        createRoomForm.reset();
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -137,6 +139,7 @@ export default function CreateRoomForm() {
               name: "current_rent",
               label: "Giá thuê (VND)",
               type: "number",
+              formatCurrency: true,
               placeholder: "Nhập giá thuê",
               min: 0,
             }}
@@ -148,11 +151,10 @@ export default function CreateRoomForm() {
               label: "Nội thất",
               type: "select",
               placeholder: "Chọn nội thất",
-              options: [
-                { value: "basic", label: "Cơ bản" },
-                { value: "unfurnished", label: "Không có" },
-                { value: "furnished", label: "Đầy đủ" },
-              ],
+              options: Object.entries(FurnitureStatus).map(([key, value]) => ({
+                value: key,
+                label: value,
+              })),
             }}
           />
           <FormField

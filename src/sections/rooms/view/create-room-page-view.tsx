@@ -10,7 +10,7 @@ interface Props {
 export default function CreateRoomPageView({ buildingCode }: Props) {
   return (
     <MainContainer
-      title="Form thêm phòng"
+      title="Tạo mới phòng"
       links={[
         {
           label: "Danh sách phòng",

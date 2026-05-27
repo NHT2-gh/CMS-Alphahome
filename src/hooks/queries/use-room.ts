@@ -27,21 +27,18 @@ export default function useAllRooms(
 
 export function useCreateRoom() {
   const queryClient = useQueryClient();
-  const { building } = useBuilding();
 
   return useMutation({
     mutationKey: queryKeys.rooms.create(),
     mutationFn: (payload: CreateRoomFormType) =>
       roomService.createRoom(payload),
-    onSuccess: (data) => {
-      if (!building?.id) {
-        return;
-      } else if (data) {
+    onSuccess: (data, payload) => {
+      if (payload) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.rooms.list(building?.id),
+          queryKey: queryKeys.rooms.list(payload?.building_id!),
         });
-        return data;
       }
+      return data;
     },
     onError: (error) => {
       return {
