@@ -36,7 +36,7 @@ import ImagesDropzone, {
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
-  rentHistory: RoomRentHistory[];
+  rentHistory: RoomRentHistory[] | null;
 }
 
 export default function ViewEditRoomInfo({
@@ -49,7 +49,9 @@ export default function ViewEditRoomInfo({
   const createRentHistory = useCreateRentHistory();
   const [isUploading, setIsUploading] = useState(false);
   const [isViewDetailHistory, setIsViewDetailHistory] = useState(false);
-  const [rentPrice, setRentPrice] = useState<number>(rentHistory[0].rent_price);
+  const [rentPrice, setRentPrice] = useState<number>(
+    rentHistory?.[0]?.rent_price || 0,
+  );
   const [images, setImages] =
     useState<ImageItem[]>(
       currentRoom.images?.map((item) => {
@@ -71,7 +73,7 @@ export default function ViewEditRoomInfo({
       furniture_status: roomInfo!.furniture_status,
       description: roomInfo!.description || "",
       images: roomInfo!.images || [],
-      current_rent: Number(rentHistory[0].rent_price) || 0,
+      current_rent: Number(rentHistory?.[0]?.rent_price) || 0,
       status: currentRoom.status,
     },
   });
@@ -284,7 +286,7 @@ export default function ViewEditRoomInfo({
 
           <Button
             disabled={
-              rentPrice === rentHistory[0].rent_price ||
+              rentPrice === rentHistory?.[0]?.rent_price ||
               currentRoom.status === "rented"
             }
             type="submit"
@@ -320,7 +322,7 @@ export default function ViewEditRoomInfo({
                   ]}
                 />
                 <TableBody>
-                  {rentHistory.map((item) => (
+                  {rentHistory!.map((item) => (
                     <TableRow
                       className="border border-neutral-300 text-xs rounded-lg"
                       key={item.id}

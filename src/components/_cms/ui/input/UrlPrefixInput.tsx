@@ -1,5 +1,5 @@
 import React from "react";
-import Input, { InputProps } from "../input/InputField";
+import Input, { InputProps } from "./Input";
 
 export default function UrlPrefixInput({
   prefix = "http://",

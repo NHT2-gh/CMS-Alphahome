@@ -10,9 +10,9 @@ import { RoomServiceExtra } from "@/types/bill";
 
 interface RoomDetailPageViewProps {
   room: Room;
-  rentHistory: RoomRentHistory[];
-  contract?: Contract | null;
-  roomServiceExtras?: RoomServiceExtra[];
+  rentHistory: RoomRentHistory[] | null;
+  contract: Contract | null;
+  roomServiceExtras: RoomServiceExtra[] | null;
 }
 
 export default function RoomDetailPageView({

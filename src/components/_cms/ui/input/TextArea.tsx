@@ -11,7 +11,7 @@ interface TextareaProps {
   id?: string;
 }
 
-const TextArea: React.FC<TextareaProps> = ({
+export default function Textarea({
   id,
   placeholder = "Enter your message", // Default placeholder
   rows = 3, // Default number of rows
@@ -20,7 +20,7 @@ const TextArea: React.FC<TextareaProps> = ({
   className = "", // Additional custom styles
   disabled = false, // Disabled state
   error = false, // Error state
-}) => {
+}: TextareaProps) {
   let textareaClasses = `w-full rounded-lg border px-4 py-2.5 text-sm shadow-theme-xs focus:outline-hidden ${className} `;
 
   if (disabled) {
@@ -42,6 +42,4 @@ const TextArea: React.FC<TextareaProps> = ({
       className={textareaClasses}
     />
   );
-};
-
-export default TextArea;
+}

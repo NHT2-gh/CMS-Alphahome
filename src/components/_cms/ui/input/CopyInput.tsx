@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 
-const CopyInput: React.FC = () => {
+export default function CopyInput() {
   const [website, setWebsite] = useState("www.tailadmin.com");
   const [copyText, setCopyText] = useState("Copy");
 
@@ -46,6 +46,4 @@ const CopyInput: React.FC = () => {
       />
     </div>
   );
-};
-
-export default CopyInput;
+}

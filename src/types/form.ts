@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { InputHTMLAttributes, ReactNode } from "react";
-import { UseFormReturn } from "react-hook-form";
+import {
+  Control,
+  FieldError,
+  RefCallBack,
+  UseFormReturn,
+} from "react-hook-form";
 import { DateOption, Hook } from "flatpickr/dist/types/options";
 
 // Base field types
@@ -38,30 +43,34 @@ export interface BaseFieldConfig extends Omit<
   >,
   "type"
 > {
-  name?: string;
   type: FieldType;
+  ref?: RefCallBack;
+  variant?: "default" | "error" | "success";
   description?: string;
   required?: boolean;
-  hidden?: boolean;
   validation?: z.ZodType<any, any, any>;
   message?: string;
   label?: string;
+  hint?: string;
   readOnly?: boolean;
-  handleOnChange?: (value: string) => void;
 }
 
 // Specific field configurations
 export interface TextFieldConfig extends BaseFieldConfig {
   type: "text" | "email" | "password" | "url" | "tel";
+  handleOnChange?: (value: string) => void;
+  debounceTime?: number;
   maxLength?: number;
   minLength?: number;
 }
 
 export interface NumberFieldConfig extends BaseFieldConfig {
   type: "number";
+  handleOnChange?: (value: number) => void;
   min?: number;
   max?: number;
   step?: number;
+  debounceTime?: number;
   formatCurrency?: boolean;
 }
 
@@ -76,6 +85,7 @@ export interface SelectFieldConfig extends BaseFieldConfig {
   options: FieldOption[];
   defaultValue?: string;
   multiple?: boolean;
+  handleOnChange?: (value: string) => void;
 }
 
 export interface DateFieldConfig extends Omit<BaseFieldConfig, "onChange"> {
@@ -259,4 +269,10 @@ export interface FormContextValue {
   getFieldComponent: (
     type: string,
   ) => React.ComponentType<CustomFieldProps> | null;
+}
+
+export interface FieldItemProps<T> {
+  control: Control<any>;
+  fieldConfig: T;
+  error?: FieldError;
 }

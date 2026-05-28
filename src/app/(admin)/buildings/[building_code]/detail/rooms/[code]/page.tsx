@@ -26,8 +26,8 @@ export default async function RoomDetailPage({
     <RoomDetailPageView
       room={roomDetailData.room}
       rentHistory={roomDetailData.rentHistory}
-      contract={roomDetailData.contract?.data!}
-      roomServiceExtras={roomDetailData.roomServiceExtras!}
+      contract={roomDetailData.contract?.data || null}
+      roomServiceExtras={roomDetailData.roomServiceExtras || null}
     />
   );
 }

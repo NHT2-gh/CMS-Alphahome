@@ -27,16 +27,17 @@ export async function getRoomDetailServerAction(
     };
   }
 
-  const [contract, rentHistory, roomServiceExtras] = await Promise.all([
-    contractService.getContract(room.id).catch(() => undefined),
+  const [contract, rentHistory, roomServiceExtras] = await Promise.allSettled([
+    contractService.getContract(room.id),
     roomRentHistoryService.getRoomRentHistory(room.id),
-    roomService.getRoomServiceExtras(room.id).catch(() => undefined),
+    roomService.getRoomServiceExtras(room.id),
   ]);
 
   return {
     room: room,
-    contract: contract,
-    rentHistory: rentHistory,
-    roomServiceExtras: roomServiceExtras,
+    contract: contract.status === "fulfilled" ? contract.value : null,
+    rentHistory: rentHistory.status === "fulfilled" ? rentHistory.value : null,
+    roomServiceExtras:
+      roomServiceExtras.status === "fulfilled" ? roomServiceExtras.value : null,
   };
 }

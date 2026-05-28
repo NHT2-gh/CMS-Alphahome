@@ -1,5 +1,5 @@
 import React from "react";
-import Input, { InputProps } from "./InputField";
+import Input, { InputProps } from "./Input";
 import { EyeIcon } from "lucide-react";
 import { EyeCloseIcon } from "@/icons";
 

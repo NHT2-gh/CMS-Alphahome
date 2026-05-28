@@ -1,9 +1,12 @@
-export { default as Input } from "./InputField";
-export { default as PhoneInput } from "./PhoneInput";
-export { default as CopyInput } from "./CopyInput";
-export { default as Checkbox } from "./Checkbox";
 export { default as Radio } from "./Radio";
-export { default as PasswordInput } from "./PasswordInput";
-export { default as Textarea } from "./TextArea";
+export { default as Input } from "./Input";
+export { default as Checkbox } from "./Checkbox";
+export { default as Textarea } from "./Textarea";
 export { default as FileInput } from "./FileInput";
+export { default as CopyInput } from "./CopyInput";
+export { default as PhoneInput } from "./PhoneInput";
+export { default as PasswordInput } from "./PasswordInput";
 export { default as UrlPrefixInput } from "./UrlPrefixInput";
+
+export { default as TextInput } from "./input-text";
+export { default as NumberInput } from "./input-number";
