@@ -44,6 +44,7 @@ export default function ViewEditRoomServiceExtra({
               { key: "start_date", title: "Ngày áp dụng" },
               { key: "end_date", title: "Ngày kết thúc" },
               { key: "status", title: "Trạng thái" },
+              { key: "actions", title: "" },
             ]}
           />
 

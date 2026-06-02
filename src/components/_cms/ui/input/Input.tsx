@@ -20,7 +20,7 @@ export default function Input({
   variant = "default",
   value,
   onChange,
-  className = "",
+  className,
   min,
   max,
   step,
@@ -55,15 +55,20 @@ export default function Input({
         max={max}
         step={step}
         disabled={disabled}
-        className={cn(baseClasses, variantClasses[variant], {
-          [variantClasses.disabled]: disabled,
-        })}
+        className={cn(
+          baseClasses,
+          variantClasses[variant],
+          {
+            [variantClasses.disabled]: disabled,
+          },
+          children && "pl-8",
+        )}
         name={name}
         id={id}
         {...props}
       />
 
-      <div className="absolute right-2 bottom-[-2]">{children}</div>
+      {children}
 
       {hint && (
         <p

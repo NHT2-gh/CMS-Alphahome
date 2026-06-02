@@ -2,7 +2,7 @@
 
 import { FormField } from "@/components/_cms/components/form";
 
-import { useUpdateStatusBill } from "@/hooks/queries/use-bill";
+import { useBill, useUpdateStatusBill } from "@/hooks/queries/use-bill";
 import { useContract } from "@/hooks/queries/use-contract";
 import { Bill, BillStatus } from "@/types/bill";
 import { formatDateTime } from "@/utils/format-data";
@@ -17,22 +17,29 @@ import { Badge } from "@/components/_cms/ui/badge";
 import { Button } from "@/components/_cms/ui/button";
 
 export default function ModalViewBill({
-  currentBill,
+  currentBillCode,
   closeModal,
 }: {
-  currentBill: Bill;
+  currentBillCode: string;
   closeModal: () => void;
 }) {
-  const { data: contractData } = useContract(currentBill?.room_id);
-  const [status, setStatus] = useState<keyof typeof BillStatus>(
-    currentBill.bill_status,
+  const { data: billData } = useBill(currentBillCode);
+  const { data: contractData } = useContract(billData?.room_id!);
+  const [status, setStatus] = useState<keyof typeof BillStatus | null>(
+    billData?.bill_status as keyof typeof BillStatus,
   );
   const updateStatusBill = useUpdateStatusBill();
   const { data: contract } = contractData ?? {};
   const handleUpdateStatus = async () => {
+    if (!status) {
+      showToast.error({
+        title: "Vui lòng chọn trạng thái thanh toán",
+      });
+      return;
+    }
     try {
       const result = await updateStatusBill.mutateAsync({
-        tracking_code: [currentBill.tracking_code],
+        tracking_code: [currentBillCode],
         status: status,
       });
 
@@ -48,39 +55,34 @@ export default function ModalViewBill({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      onClose={closeModal}
-      className="p-4 md:p-8 text-black dark:text-white"
-    >
+    <Modal isOpen={true} onClose={closeModal} className="px-4">
       <h2 className="text-2xl font-bold mb-5">Phiếu thu</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 mb-3 ">
-        <p>Mã phiếu: #{currentBill?.tracking_code}</p>
+        <p>Mã phiếu: #{billData?.tracking_code}</p>
         <p>
           Ngày tạo phiếu:{" "}
-          {formatDateTime(currentBill?.created_at, { withTime: true })}
+          {formatDateTime(billData?.created_at, { withTime: true })}
         </p>
         <p>
           Ngày cập nhật gần nhất:{" "}
-          {formatDateTime(currentBill?.updated_at, { withTime: true })}
+          {formatDateTime(billData?.updated_at, { withTime: true })}
         </p>
         <div className="flex gap-2">
           <span>Trạng thái:</span>
           <Badge
             variant="light"
             color={
-              currentBill?.bill_status === ("paid" as keyof typeof BillStatus)
+              billData?.bill_status === ("paid" as keyof typeof BillStatus)
                 ? "success"
-                : currentBill?.bill_status ===
-                    ("draft" as keyof typeof BillStatus)
+                : billData?.bill_status === ("draft" as keyof typeof BillStatus)
                   ? "light"
-                  : currentBill?.bill_status ===
+                  : billData?.bill_status ===
                       ("overdue" as keyof typeof BillStatus)
                     ? "error"
-                    : currentBill?.bill_status ===
+                    : billData?.bill_status ===
                         ("unpaid" as keyof typeof BillStatus)
                       ? "dark"
-                      : currentBill?.bill_status ===
+                      : billData?.bill_status ===
                           ("confirmed" as keyof typeof BillStatus)
                         ? "warning"
                         : "info"
@@ -88,7 +90,7 @@ export default function ModalViewBill({
           >
             {
               BillStatus[
-                currentBill.bill_status as unknown as keyof typeof BillStatus
+                billData?.bill_status as unknown as keyof typeof BillStatus
               ]
             }
           </Badge>
@@ -107,7 +109,7 @@ export default function ModalViewBill({
                   label: "Số hóa đơn",
                   type: "text",
                   readOnly: true,
-                  value: currentBill?.tracking_code ?? "",
+                  value: billData?.tracking_code ?? "",
                 }}
               />
 
@@ -116,7 +118,7 @@ export default function ModalViewBill({
                   label: "Mã phòng",
                   type: "text",
                   readOnly: true,
-                  value: currentBill?.rooms.code ?? "",
+                  value: billData?.rooms.code ?? "",
                 }}
               />
 
@@ -124,7 +126,7 @@ export default function ModalViewBill({
                 field={{
                   label: "Kì thanh toán",
                   type: "text",
-                  value: currentBill?.month_date ?? "",
+                  value: billData?.month_date ?? "",
                   readOnly: true,
                 }}
               />
@@ -137,7 +139,7 @@ export default function ModalViewBill({
                     label: BillStatus[key as keyof typeof BillStatus],
                     value: key,
                   })),
-                  defaultValue: status,
+                  defaultValue: status || "draft",
                   handleOnChange(value) {
                     setStatus(value as keyof typeof BillStatus);
                   },
@@ -184,19 +186,19 @@ export default function ModalViewBill({
               </div>
             </div>
           )}
-          {currentBill && (
+          {billData && (
             <BillDetailTable
-              bill={currentBill}
-              baseRent={currentBill.base_rent}
+              bill={billData}
+              baseRent={billData.base_rent}
               isPreview={false}
             />
           )}
         </div>
         <div className="p-4 sm:p-8">
           <div className="flex gap-3 justify-between md:justify-end">
-            {currentBill && contract && (
+            {billData && contract && (
               <BillPreviewModal
-                bill={currentBill}
+                bill={billData}
                 infoCustomer={contract as Contract}
               />
             )}

@@ -22,7 +22,7 @@ export function AppProviders({ children }: AppProvidersProps) {
               if (error instanceof Error && error.message.includes("401")) {
                 return false; // Don't retry auth errors
               }
-              return failureCount < 3;
+              return failureCount < 2;
             },
           },
           mutations: {

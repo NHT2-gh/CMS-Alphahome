@@ -32,7 +32,7 @@ export default function BillPreviewModal({
 
     const result = await copyImage(
       billRef.current,
-      `bill-${bill.rooms.code}-${bill.month_date}-${bill.tracking_code}.png`,
+      `${bill.rooms.code}-${bill.month_date}-${bill.tracking_code}.png`,
     );
 
     if (result.method === "clipboard") {
@@ -80,7 +80,7 @@ export default function BillPreviewModal({
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
-        className="relative p-0 md:max-w-[800px]"
+        className="relative p-0 md:max-w-[900px]"
       >
         <div ref={billRef} className="p-4 md:p-8 ">
           <h3 className="text-lg text-gray-700 dark:text-gray-500">
@@ -147,21 +147,15 @@ export default function BillPreviewModal({
             {/* <!-- Invoice Table --> */}
             <BillDetailTable bill={bill} baseRent={bill.base_rent} />
 
-            <div className="flex items-center justify-center">
-              {/* <Image
-                width={200}
-                height={179}
-                src={`/images/payment-qr/${building?.id}.webp`}
-                alt={`Payment QR of builiding ${building?.code}`}
-              /> */}
-
+            <div className="flex items-center justify-center text-sm gap-4 font-medium text-gray-700 dark:text-gray-400">
               <div
+                className="rounded-xl"
                 style={{
                   minWidth: "200px",
                   minHeight: "179px",
                   backgroundImage: `url(/images/payment-qr/${building?.id}.webp)`,
                 }}
-              ></div>
+              />
               <div className="space-y-3">
                 <h4>
                   Chủ tài khoản: <br />
@@ -184,14 +178,18 @@ export default function BillPreviewModal({
         </div>
         <div className=" flex gap-4 items-center">
           <button
-            className="bg-blue-100 p-2 rounded-2xl text-nowrap"
+            className="bg-blue-100 text-sm p-2 rounded-2xl text-nowrap dark:bg-blue-900 dark:text-white/90"
             onClick={handleCopy}
             disabled={loading}
           >
             {loading ? "Đang xử lý..." : "📋 Copy phiếu"}
           </button>
 
-          {resultLog && <span>{resultLog}</span>}
+          {resultLog && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {resultLog}
+            </span>
+          )}
         </div>
       </Modal>
     </>

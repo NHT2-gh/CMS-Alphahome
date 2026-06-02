@@ -15,6 +15,14 @@ class ContractService {
   async getContract(
     roomId: string,
   ): Promise<ResponseStandard<Contract | null>> {
+    if (!roomId) {
+      return {
+        data: null,
+        success: false,
+        message: "Yêu cầu không hợp lệ",
+      };
+    }
+
     const query = supabase
       .from(this.tableName)
       .select("*")
@@ -82,10 +90,10 @@ class ContractService {
     room_id: string,
     status: keyof typeof ContractStatus,
   ): Promise<MutationResult> {
-    if (!status) {
+    if (!status || !room_id) {
       return {
         success: false,
-        message: "Thiếu thông tin trạng thái",
+        message: "Yêu cầu không hợp lệ",
       };
     }
 

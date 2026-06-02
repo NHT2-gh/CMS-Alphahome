@@ -19,16 +19,8 @@ import {
   CreateSingleMonthlyBillResponse,
 } from "@/types/bill";
 import { Contract } from "@/types/contract";
-import { generateBillCode } from "@/utils/random-bill-code";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CheckCheck,
-  Loader2,
-  PlusIcon,
-  Receipt,
-  Save,
-  UserCircle,
-} from "lucide-react";
+import { Loader2, PlusIcon, Receipt, Save, UserCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { BillPreviewModal, ModalShowRes } from "./sub components/modal-bill";
@@ -134,7 +126,7 @@ export default function ModalCreateBill() {
                     placeholder: "Chọn mã phòng",
                     options: [
                       ...(rooms?.map((item) => ({
-                        label: item.code,
+                        label: item.room_code,
                         value: item.room_id,
                       })) || []),
                     ],

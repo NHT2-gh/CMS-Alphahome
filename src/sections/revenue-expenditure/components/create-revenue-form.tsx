@@ -188,7 +188,7 @@ export default function CreateRevenueForm() {
             },
             ...(rooms?.map((room) => ({
               value: room.room_id,
-              label: room.code,
+              label: room.room_code,
             })) || []),
           ],
         }}

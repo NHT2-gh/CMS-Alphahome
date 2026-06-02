@@ -43,6 +43,8 @@ export default function ImagesDropzone({
       status: "idle" as UploadStatus,
     }));
 
+    console.log(newImages[0].previewUrl);
+
     onChange([...(images || []), ...newImages]);
   };
 

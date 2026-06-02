@@ -16,14 +16,14 @@ interface MultiSelectProps {
   id?: string;
 }
 
-const MultiSelect: React.FC<MultiSelectProps> = ({
+export default function MultiSelect({
   id,
   options,
   defaultSelected = [],
   placeholder,
   handleOnChange,
   disabled = false,
-}) => {
+}: MultiSelectProps) {
   const [selectedOptions, setSelectedOptions] =
     useState<string[]>(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
@@ -184,6 +184,4 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       </div>
     </div>
   );
-};
-
-export default MultiSelect;
+}

@@ -13,15 +13,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export default function useAllRooms(
   buildingId?: string,
   params?: GetWithFilterParams,
-  options?: { enabled?: boolean },
 ) {
   return useQuery({
-    queryKey: queryKeys.rooms.list(buildingId!, params!),
+    queryKey: queryKeys.rooms.list(buildingId, params),
     queryFn: () => {
-      return roomService.getRooms(buildingId!, params);
+      return roomService.getRooms(buildingId, params);
     },
-
-    enabled: options?.enabled ?? !!buildingId,
   });
 }
 
@@ -35,7 +32,7 @@ export function useCreateRoom() {
     onSuccess: (data, payload) => {
       if (payload) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.rooms.list(payload?.building_id!),
+          queryKey: queryKeys.rooms.list(payload.building_id),
         });
       }
       return data;

@@ -15,7 +15,7 @@ export const queryKeys = {
   },
   rooms: {
     detail: (id: string) => ["rooms", id],
-    list: (buildingId: string, params?: GetWithFilterParams) => [
+    list: (buildingId?: string, params?: GetWithFilterParams) => [
       "rooms",
       buildingId,
       params,

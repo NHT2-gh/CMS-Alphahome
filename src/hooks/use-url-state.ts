@@ -1,5 +1,5 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 /**
  * Serialize value to string for URL
@@ -89,9 +89,8 @@ export function useUrlState(key: string, defaultValue: string = "") {
   const searchParams = useSearchParams();
 
   const value = searchParams.get(key) || defaultValue;
-
   const setValue = useCallback(
-    (newValue: string) => {
+    (newValue: string | undefined) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (newValue === defaultValue || !newValue) {
@@ -101,9 +100,10 @@ export function useUrlState(key: string, defaultValue: string = "") {
       }
 
       const newUrl = params.toString() ? `?${params.toString()}` : "";
-      router.push(`${window.location.pathname}${newUrl}`, { scroll: false });
+      const finalUrl = `${window.location.pathname}${newUrl}`;
+      router.push(finalUrl, { scroll: false });
     },
-    [key, defaultValue, router, searchParams]
+    [key, defaultValue, router, searchParams],
   );
 
   return [value, setValue] as const;
@@ -119,30 +119,33 @@ export function useUrlParams(defaultParams: Record<string, unknown> = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const params = Object.keys(defaultParams).reduce((acc, key) => {
-    const urlValue = searchParams.get(key);
+  const params = Object.keys(defaultParams).reduce(
+    (acc, key) => {
+      const urlValue = searchParams.get(key);
 
-    if (urlValue) {
-      // Determine the hint based on the default value type
-      let hint: string | undefined;
-      const defaultValue = defaultParams[key];
-      
-      if (Array.isArray(defaultValue)) {
-        hint = "array";
-      } else if (typeof defaultValue === "number") {
-        hint = "number";
-      } else if (typeof defaultValue === "boolean") {
-        hint = "boolean";
-      } else if (typeof defaultValue === "object" && defaultValue !== null) {
-        hint = "json";
+      if (urlValue) {
+        // Determine the hint based on the default value type
+        let hint: string | undefined;
+        const defaultValue = defaultParams[key];
+
+        if (Array.isArray(defaultValue)) {
+          hint = "array";
+        } else if (typeof defaultValue === "number") {
+          hint = "number";
+        } else if (typeof defaultValue === "boolean") {
+          hint = "boolean";
+        } else if (typeof defaultValue === "object" && defaultValue !== null) {
+          hint = "json";
+        }
+
+        acc[key] = deserializeValue(urlValue, hint);
+      } else {
+        acc[key] = defaultParams[key];
       }
-      
-      acc[key] = deserializeValue(urlValue, hint);
-    } else {
-      acc[key] = defaultParams[key];
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
+      return acc;
+    },
+    {} as Record<string, unknown>,
+  );
 
   const updateParams = useCallback(
     (updates: Record<string, unknown>) => {
@@ -167,8 +170,11 @@ export function useUrlParams(defaultParams: Record<string, unknown> = {}) {
       const newUrl = newParams.toString() ? `?${newParams.toString()}` : "";
       router.push(`${window.location.pathname}${newUrl}`, { scroll: false });
     },
-    [defaultParams, router, searchParams]
+    [defaultParams, router, searchParams],
   );
 
   return [params, updateParams] as const;
+}
+function setActiveTab(value: string) {
+  throw new Error("Function not implemented.");
 }

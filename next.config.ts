@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     domains: ["jioeyqgkaazhqeanehtt.supabase.co"],
   },
 
-  allowedDevOrigins: ["http://[IP_ADDRESS]", "http://localhost:3000"],
+  allowedDevOrigins: ["http://192.168.1.33", "http://localhost:3000"],
 };
 
 export default nextConfig;

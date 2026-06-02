@@ -163,7 +163,10 @@ export default function RoomsTable() {
               <TableRow
                 onDoubleClick={() => {
                   router.push(
-                    APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(room.code),
+                    APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(
+                      room.room_code,
+                      room.building_code,
+                    ),
                   );
                 }}
                 className={cn(
@@ -178,7 +181,7 @@ export default function RoomsTable() {
                 <TableCell>
                   <Checkbox
                     id={room.room_id}
-                    label={room.code}
+                    label={room.room_code}
                     checked={selectedRooms[room.room_id] !== undefined}
                     onChange={() => {
                       setSelectedRooms((prev) => {
@@ -238,7 +241,7 @@ export default function RoomsTable() {
                       onClick={() =>
                         router.push(
                           APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.ID(
-                            room.code,
+                            room.room_code,
                             building.code,
                           ),
                         )

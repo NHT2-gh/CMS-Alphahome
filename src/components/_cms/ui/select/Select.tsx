@@ -15,18 +15,18 @@ interface SelectProps {
   handleOnChange?: (value: string) => void;
 }
 
-const Select: React.FC<SelectProps> = ({
+export default function Select({
   id,
   name,
   options,
-  placeholder = "Select an option",
-  className = "",
-  defaultValue = "",
-  disabled = false,
+  className,
   value,
+  disabled = false,
+  defaultValue,
+  placeholder = "Select an option",
   readOnly = false,
   handleOnChange,
-}) => {
+}: SelectProps) {
   const [valueSelected, setValueSelected] = React.useState(
     defaultValue || value,
   );
@@ -84,6 +84,4 @@ const Select: React.FC<SelectProps> = ({
       )}
     </div>
   );
-};
-
-export default Select;
+}

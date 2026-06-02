@@ -14,8 +14,12 @@ export enum RoomStatus {
 
 export interface RoomOverview {
   room_id: string;
-  code: string;
+  building_id: string;
+  building_code: string;
+  building_address: string;
+  room_code: string;
   occupants_count: number;
+  description: string;
   deposit_amount: number;
   current_rent: number;
   status: keyof typeof RoomStatus;
@@ -25,6 +29,7 @@ export interface RoomOverview {
   contract_id: string;
   start_date: string;
   end_date: string;
+  available_from: string;
   updated_at: string;
 }
 

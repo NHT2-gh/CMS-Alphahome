@@ -1,6 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
-
+import React, { useCallback, useEffect, useState } from "react";
 import { Eye, FilterIcon, RefreshCcwIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import { useFilter } from "@/hooks/use-filter";
@@ -30,6 +29,7 @@ import {
 } from "@/components/_cms/ui/table";
 import { Badge } from "@/components/_cms/ui/badge";
 import { Button } from "@/components/_cms/ui/button";
+import { useUrlState } from "@/hooks/use-url-state";
 
 const columns: TableHeaderColumn[] = [
   {
@@ -78,7 +78,8 @@ export default function PaymentsListTable() {
   const modalDeleteBill = useModal();
   const updateStatusBill = useUpdateStatusBill();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentBill, setCurrentBill] = useState<Bill | null>(null);
+  const [viewBillCode, setViewBillCode] = useUrlState("view");
+  const [currentBillView, setCurrentBillView] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const {
     filterValues,
@@ -104,6 +105,12 @@ export default function PaymentsListTable() {
   const [selectedBills, setSelectedBills] = useState<Map<string, Bill>>(
     new Map(),
   );
+  useEffect(() => {
+    if (viewBillCode) {
+      setCurrentBillView(viewBillCode);
+      modalViewBill.openModal();
+    }
+  }, [viewBillCode]);
 
   const { data: bills } = billsData || {};
 
@@ -272,7 +279,8 @@ export default function PaymentsListTable() {
               <TableRow
                 key={bill.id}
                 onDoubleClick={() => {
-                  setCurrentBill(bill);
+                  setCurrentBillView(bill.tracking_code);
+                  setViewBillCode(bill.tracking_code);
                   modalViewBill.openModal();
                 }}
               >
@@ -350,7 +358,8 @@ export default function PaymentsListTable() {
                 <TableCell className="hidden md:table-cell">
                   <button
                     onClick={() => {
-                      setCurrentBill(bill);
+                      setCurrentBillView(bill.tracking_code);
+                      setViewBillCode(bill.tracking_code);
                       modalViewBill.openModal();
                     }}
                   >
@@ -397,10 +406,14 @@ export default function PaymentsListTable() {
         />
       )}
 
-      {currentBill && modalViewBill.isOpen && (
+      {currentBillView && modalViewBill.isOpen && (
         <ModalViewBill
-          currentBill={currentBill}
-          closeModal={modalViewBill.closeModal}
+          currentBillCode={currentBillView}
+          closeModal={() => {
+            setViewBillCode(undefined);
+            modalViewBill.closeModal();
+            setCurrentBillView(null);
+          }}
         />
       )}
 

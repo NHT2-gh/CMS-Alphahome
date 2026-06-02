@@ -3,7 +3,6 @@
 
 import { APP_ROUTES } from "@/config/app-routes";
 import { Menu, NavItem } from "@/types/nav";
-import { SystemRole } from "@/types/profile";
 
 // Main navigation items for CMS
 const NavItems: NavItem[] = [
@@ -23,16 +22,18 @@ const NavItems: NavItem[] = [
     ],
     role: ["super_admin", "admin"],
   },
-  // {
-  //   icon: "userCircle",
-  //   name: "Quản lý Sale Phòng",
-  //   path: APP_ROUTES.ADMIN.USERS.BASE,
-  //   subItems: [
-  //     { name: "Danh sách phòng đang sale", path: APP_ROUTES.ADMIN.USERS.BASE },
-  //     // { name: "Thêm mới", path: APP_ROUTES.ADMIN.USERS.ADD() },
-  //   ],
-  //   role: ["super_admin"],
-  // },
+  {
+    icon: "userCircle",
+    name: "Quản lý Sale Phòng",
+    path: APP_ROUTES.SALE.BASE,
+    subItems: [
+      {
+        name: "Danh sách phòng",
+        path: APP_ROUTES.SALE.AVAILABLE_ROOMS(),
+      },
+    ],
+    role: ["super_admin", "admin", "user"],
+  },
 ];
 
 // CMS Sidebar Configuration

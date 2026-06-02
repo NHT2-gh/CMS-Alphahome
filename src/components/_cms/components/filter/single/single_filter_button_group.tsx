@@ -51,7 +51,7 @@ export default function SingleFilterButtonGroup({
             setCurrentValue(item.value);
           }}
           className={cn(
-            "text-theme-sm h-10 shrink-0 w-fit rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white",
+            "text-theme-sm h-10 shrink-0 w-fit min-w-[80px] rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white",
             {
               "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800":
                 currentValue === item.value,

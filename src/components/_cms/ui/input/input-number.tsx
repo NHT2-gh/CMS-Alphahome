@@ -1,4 +1,5 @@
-import React, { ReactNode, useMemo, useState } from "react";
+"use client";
+import React, { useMemo, useState } from "react";
 import { cn, debounce } from "@/lib/utils";
 import { formatCurrency as formatCurrencyUtil } from "@/utils/format-data";
 import { NumberFieldConfig } from "@/types/form";

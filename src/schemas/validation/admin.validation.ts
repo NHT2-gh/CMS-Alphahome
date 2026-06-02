@@ -45,6 +45,7 @@ export const updateRoomInfoSchema = z.object({
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
   current_rent: z.number().min(1, "Current rent is required").optional(),
+  available_from: z.string().nullable().optional(),
   status: z.enum(Array.from(Object.entries(RoomStatus)).map(([key, _]) => key)),
 });
 

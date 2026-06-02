@@ -15,14 +15,14 @@ class RoomService {
   }
 
   async getRooms(
-    buildingId: string,
+    buildingId?: string,
     params?: GetWithFilterParams,
   ): Promise<RoomOverview[]> {
-    const query = supabase
-      .from("room_overview")
-      .select("*")
-      .eq("building_id", buildingId)
-      .order("code", { ascending: true });
+    const query = supabase.from("room_overview").select("*");
+
+    if (buildingId) {
+      query.eq("building_id", buildingId);
+    }
 
     if (params?.filters) {
       Object.entries(params.filters).forEach(([key, value]) => {
@@ -36,7 +36,9 @@ class RoomService {
       });
     }
 
-    const { data: rooms, error } = await query;
+    const { data: rooms, error } = await query.order("room_code", {
+      ascending: true,
+    });
 
     if (error) {
       handlePostgresError(error);

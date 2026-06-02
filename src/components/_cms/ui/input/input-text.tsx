@@ -1,3 +1,4 @@
+"use client";
 import React, { memo, useMemo, useState } from "react";
 
 import { cn, debounce } from "@/lib/utils";

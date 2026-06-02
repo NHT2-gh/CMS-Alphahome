@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   FurnitureStatus,
@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilding } from "@/context/BuildingContext";
 import { useGetRoomDetail, useUpdateRoom } from "@/hooks/queries/use-room";
 import { FormField } from "@/components/_cms/components/form";
-import { deleteImage, uploadImage } from "@/supabase/storage/storageClinets";
+import { uploadImage } from "@/supabase/storage/storageClinets";
 import {
   Table,
   TableBody,
@@ -33,6 +33,7 @@ import { ComponentCard } from "@/components/_cms/common/component-card";
 import ImagesDropzone, {
   ImageItem,
 } from "@/components/_cms/components/dropzone/images-dropzone";
+import { useUrlState } from "@/hooks/use-url-state";
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
@@ -74,6 +75,7 @@ export default function ViewEditRoomInfo({
       description: roomInfo!.description || "",
       images: roomInfo!.images || [],
       current_rent: Number(rentHistory?.[0]?.rent_price) || 0,
+      available_from: null,
       status: currentRoom.status,
     },
   });
@@ -88,17 +90,11 @@ export default function ViewEditRoomInfo({
           .filter((img) => img.status === "success")
           .map((img) => img.uploadedUrl!),
       );
-
-      console.log(images);
     } else {
       return;
     }
   }, [images]);
-  const {
-    handleSubmit,
-    setValue,
-    formState: { isDirty },
-  } = editRoomInfoForm;
+  const { handleSubmit, setValue } = editRoomInfoForm;
 
   const handleUploadImages = async (images: ImageItem[]) => {
     setIsUploading(true);
@@ -177,6 +173,7 @@ export default function ViewEditRoomInfo({
               label: "Mã phòng",
               type: "text",
               placeholder: "Nhập mã phòng",
+              required: true,
             }}
           />
 
@@ -197,6 +194,7 @@ export default function ViewEditRoomInfo({
               label: "Nội thất",
               type: "select",
               placeholder: "Chọn nội thất",
+              required: true,
 
               options: Array.from(Object.entries(FurnitureStatus)).map(
                 ([key, value]) => {
@@ -224,6 +222,17 @@ export default function ViewEditRoomInfo({
                   };
                 },
               ),
+            }}
+          />
+
+          <FormField
+            form={editRoomInfoForm}
+            field={{
+              id: "room_available_from",
+              name: "available_from",
+              label: "Ngày dự kiến trống",
+              placeholder: "Chọn ngày dự kiến trống",
+              type: "date",
             }}
           />
 

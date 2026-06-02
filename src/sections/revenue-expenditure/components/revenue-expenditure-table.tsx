@@ -118,7 +118,7 @@ export default function RevenueExpenditureTable() {
             Danh sách thu chi
           </h3>
         </div>
-        <div className="w-full flex flex-col md:flex-row gap-3.5 md:items-center">
+        <div className="w-full flex flex-col md:flex-row gap-3.5 md:items-center md:justify-end">
           <SingleFilterButtonGroup
             items={Object.entries(TransactionType).map(([value, label]) => ({
               label,
@@ -136,7 +136,7 @@ export default function RevenueExpenditureTable() {
             debounceTime={500}
           />
 
-          <div className="w-full flex items-center justify-end gap-2">
+          <div className="w-full flex items-center justify-end gap-2 md:w-fit">
             <Button
               variant="outline"
               disabled={isLoading || !transcriptions}
@@ -151,7 +151,7 @@ export default function RevenueExpenditureTable() {
                 refetch();
               }}
             >
-              <RefreshCcwIcon className="size-4" />
+              <RefreshCcwIcon className="size-5" />
             </Button>
           </div>
         </div>

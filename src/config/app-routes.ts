@@ -13,6 +13,7 @@ export const APP_ROUTES = {
       BASE: "/users",
       ADD: () => `${APP_ROUTES.ADMIN.USERS.BASE}/add`,
     },
+
     BUILDINGS: {
       BASE: () => `${APP_ROUTES.ADMIN.BASE}/buildings`,
       CREATE: () => `${APP_ROUTES.ADMIN.BUILDINGS.BASE()}/create`,
@@ -24,8 +25,8 @@ export const APP_ROUTES = {
         ROOMS: {
           BASE: (buildingId?: string) =>
             `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(buildingId) + `/rooms` : `rooms`}`,
-          ID: (roomId: string, buildingId?: string) =>
-            `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(buildingId) + `/${roomId}` : `rooms/${roomId}`}`,
+          ID: (roomCode: string, buildingCode?: string) =>
+            `${buildingCode ? APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(buildingCode) + `/${roomCode}` : `rooms/${roomCode}`}`,
           CREATE: (buildingId?: string) =>
             `${buildingId ? APP_ROUTES.ADMIN.BUILDINGS.ID.ROOMS.BASE(buildingId) + `/create` : `rooms/create`}`,
         },
@@ -41,5 +42,10 @@ export const APP_ROUTES = {
           `${APP_ROUTES.ADMIN.BUILDINGS.ID.DETAIL(id)}/revenue-expenditure`,
       },
     },
+  },
+
+  SALE: {
+    BASE: "/sale",
+    AVAILABLE_ROOMS: () => `${APP_ROUTES.SALE.BASE}/available-rooms`,
   },
 };

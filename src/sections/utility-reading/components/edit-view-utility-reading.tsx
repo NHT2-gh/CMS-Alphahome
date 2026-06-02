@@ -344,7 +344,7 @@ export default function EditViewReading({
             ) : (
               rooms?.map((room) => (
                 <TableRow key={room.room_id}>
-                  <TableCell key={room.room_id}>{room.code}</TableCell>
+                  <TableCell key={room.room_id}>{room.room_code}</TableCell>
                   <TableCell key="previous_reading_electricity">
                     <Input
                       disabled={isFirstReading}
