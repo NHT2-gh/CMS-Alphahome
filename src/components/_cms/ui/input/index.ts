@@ -1,7 +1,7 @@
 export { default as Radio } from "./Radio";
 export { default as Input } from "./Input";
 export { default as Checkbox } from "./Checkbox";
-export { default as Textarea } from "./textarea";
+export { default as TextArea } from "./Textarea";
 export { default as FileInput } from "./FileInput";
 export { default as CopyInput } from "./CopyInput";
 export { default as PhoneInput } from "./PhoneInput";

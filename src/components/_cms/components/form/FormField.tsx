@@ -11,7 +11,7 @@ import {
   PasswordInput,
   PhoneInput,
   Radio,
-  Textarea,
+  TextArea,
   UrlPrefixInput,
 } from "../../ui/input";
 import { Switch } from "../../ui/switch";
@@ -23,7 +23,7 @@ const fieldComponents: Record<FieldType, React.ComponentType<any>> = {
   url: UrlPrefixInput,
   tel: PhoneInput,
   number: Input,
-  textarea: Textarea,
+  textarea: TextArea,
   select: Select,
   multiselect: MultiSelect,
   radio: Radio,

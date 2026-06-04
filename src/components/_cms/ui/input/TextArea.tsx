@@ -11,7 +11,7 @@ interface TextareaProps {
   id?: string;
 }
 
-export default function Textarea({
+export default function TextArea({
   id,
   placeholder = "Enter your message", // Default placeholder
   rows = 3, // Default number of rows
