@@ -8,7 +8,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableRow,
 } from "@/components/_cms/ui/table";
 import { APP_ROUTES } from "@/config/app-routes";
