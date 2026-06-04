@@ -12,7 +12,7 @@ import { BillDetailTable } from "./sub components/modal-bill";
 import { BillPreviewModal } from "./sub components/modal-bill";
 import { Contract } from "@/types/contract";
 import { showToast } from "@/lib/toast";
-import { Modal } from "@/components/_cms/ui/modal/modal";
+import Modal from "@/components/_cms/ui/modal/modal";
 import { Badge } from "@/components/_cms/ui/badge";
 import { Button } from "@/components/_cms/ui/button";
 

@@ -10,7 +10,7 @@ import { BillDetailTable } from ".";
 import { useCopyImage } from "@/hooks/us-copy-image";
 import Image from "next/image";
 import { Button } from "@/components/_cms/ui/button";
-import { Modal } from "@/components/_cms/ui/modal/modal";
+import Modal from "@/components/_cms/ui/modal/modal";
 
 interface BillPreviewModalProps {
   bill: Bill;

@@ -10,8 +10,8 @@ import {
 import { showToast } from "@/lib/toast";
 import { useForm } from "react-hook-form";
 import {
-  updateRoomInfoSchema,
-  UpdateRoomInfoType,
+  RoomInfoType,
+  roomInfoSchema,
 } from "@/schemas/validation/admin.validation";
 
 import { Button } from "@/components/_cms/ui/button";
@@ -34,6 +34,7 @@ import ImagesDropzone, {
   ImageItem,
 } from "@/components/_cms/components/dropzone/images-dropzone";
 import { useUrlState } from "@/hooks/use-url-state";
+import RoomInfoForm from "./room-info-form";
 
 interface ViewEditRoomInfoProps {
   currentRoom: Room;
@@ -65,8 +66,8 @@ export default function ViewEditRoomInfo({
         };
       }),
     ) || [];
-  const editRoomInfoForm = useForm<UpdateRoomInfoType>({
-    resolver: zodResolver(updateRoomInfoSchema),
+  const editRoomInfoForm = useForm<RoomInfoType>({
+    resolver: zodResolver(roomInfoSchema),
     defaultValues: {
       id: roomInfo!.id,
       code_room: roomInfo!.code,
@@ -149,7 +150,7 @@ export default function ViewEditRoomInfo({
     }
   };
 
-  const onSubmit = async (data: UpdateRoomInfoType) => {
+  const onSubmit = async (data: RoomInfoType) => {
     const result = await updateRoom.mutateAsync(data);
 
     if (result.success) {
@@ -162,93 +163,7 @@ export default function ViewEditRoomInfo({
   return (
     <>
       <ComponentCard title="Thông tin phòng" className="space-y-3 md:space-y-5">
-        <form
-          className="grid grid-cols-2 gap-4"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <FormField
-            form={editRoomInfoForm}
-            field={{
-              name: "code_room",
-              label: "Mã phòng",
-              type: "text",
-              placeholder: "Nhập mã phòng",
-              required: true,
-            }}
-          />
-
-          <FormField
-            form={editRoomInfoForm}
-            field={{
-              name: "area",
-              label: "Diện tích (m²)",
-              type: "number",
-              placeholder: "Nhập diện tích",
-            }}
-          />
-
-          <FormField
-            form={editRoomInfoForm}
-            field={{
-              name: "furniture_status",
-              label: "Nội thất",
-              type: "select",
-              placeholder: "Chọn nội thất",
-              required: true,
-
-              options: Array.from(Object.entries(FurnitureStatus)).map(
-                ([key, value]) => {
-                  return {
-                    value: key,
-                    label: value,
-                  };
-                },
-              ),
-            }}
-          />
-
-          <FormField
-            form={editRoomInfoForm}
-            field={{
-              name: "status",
-              label: "Trạng thái",
-              type: "select",
-              readOnly: true,
-              options: Array.from(Object.entries(RoomStatus)).map(
-                ([key, value]) => {
-                  return {
-                    value: key,
-                    label: value,
-                  };
-                },
-              ),
-            }}
-          />
-
-          <FormField
-            form={editRoomInfoForm}
-            field={{
-              id: "room_available_from",
-              name: "available_from",
-              label: "Ngày dự kiến trống",
-              placeholder: "Chọn ngày dự kiến trống",
-              type: "date",
-            }}
-          />
-
-          <FormField
-            form={editRoomInfoForm}
-            className="col-span-2"
-            field={{
-              name: "description",
-              label: "Mô tả",
-              type: "textarea",
-              placeholder: "Nhập mô tả",
-              rows: 4,
-            }}
-          />
-        </form>
-
+        <RoomInfoForm roomInfoForm={editRoomInfoForm} />
         <ImagesDropzone
           className="col-span-2"
           images={images}
@@ -258,7 +173,6 @@ export default function ViewEditRoomInfo({
           }}
           onUpload={handleUploadImages}
         />
-
         <Button
           onClick={handleSubmit(onSubmit)}
           disabled={isUploading}

@@ -34,7 +34,7 @@ export const createRoomFormSchema = z.object({
   images: z.array(z.string()),
 });
 
-export const updateRoomInfoSchema = z.object({
+export const roomInfoSchema = z.object({
   id: z.string().min(1, "Room ID is required"),
   code_room: z.string().min(1, "Code room is required").optional(),
   area: z.number().optional(),
@@ -145,7 +145,7 @@ export type UpsertUsersBuildingType = z.infer<typeof upsertUsersBuildingSchema>;
 
 export type CreateTransactionType = z.infer<typeof createTransactionSchema>;
 
-export type UpdateRoomInfoType = z.infer<typeof updateRoomInfoSchema>;
+export type RoomInfoType = z.infer<typeof roomInfoSchema>;
 
 export type CreateRoomFormType = z.infer<typeof createRoomFormSchema>;
 

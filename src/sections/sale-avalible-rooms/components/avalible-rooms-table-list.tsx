@@ -15,7 +15,7 @@ import { APP_ROUTES } from "@/config/app-routes";
 import useAllRooms from "@/hooks/queries/use-room";
 import { FurnitureStatus, RoomOverview } from "@/types/room";
 import { formatCurrency, formatDateTime } from "@/utils/format-data";
-import { EllipsisVertical, Eye } from "lucide-react";
+import { EllipsisVertical, Eye, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 

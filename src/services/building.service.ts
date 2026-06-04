@@ -38,7 +38,7 @@ class BuildingService {
     }
 
     if (searchText) {
-      query.ilike("address", `%${searchText}%`);
+      query.or(`address.ilike.%${searchText}%,code.ilike.%${searchText}%`);
     }
 
     const { data, error } = await query;

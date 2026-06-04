@@ -24,11 +24,11 @@ const NavItems: NavItem[] = [
   },
   {
     icon: "userCircle",
-    name: "Quản lý Sale Phòng",
+    name: "Quản lý sale phòng",
     path: APP_ROUTES.SALE.BASE,
     subItems: [
       {
-        name: "Danh sách phòng",
+        name: "Danh sách phòng trống",
         path: APP_ROUTES.SALE.AVAILABLE_ROOMS(),
       },
     ],

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Modal } from "@/components/_cms/ui/modal/modal";
+import Modal from "@/components/_cms/ui/modal/modal";
 import { Button } from "@/components/_cms/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useModal } from "@/hooks/useModal";

@@ -52,7 +52,7 @@ export default function ViewEditRoomServiceExtra({
             {roomServiceExtras.length === 0 ? (
               <DataEmpty
                 message={"Hiện tại không có dịch vụ nào"}
-                colSpan={5}
+                colSpan={6}
               />
             ) : (
               servicesExtra?.map((item) => (

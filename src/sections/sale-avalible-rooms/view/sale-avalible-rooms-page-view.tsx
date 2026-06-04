@@ -12,7 +12,7 @@ export default function SaleAvalibleRoomsPageView() {
           href: APP_ROUTES.SALE.BASE,
           label: "Quản lý sale phòng",
         },
-        { label: "Danh sách phòng trống" },
+        { label: "Danh sách phòng" },
       ]}
     >
       <AvalibleRoomsTableList />

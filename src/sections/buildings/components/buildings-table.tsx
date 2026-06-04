@@ -37,14 +37,11 @@ export default function DataTable() {
     searchText,
   });
 
-  const [filterStatus, setFilterStatus] = useState<string>("All");
-
   const handleSearch = useCallback((value: string) => {
     if (value.trim() === "") {
       setSearchText(undefined);
       return;
     }
-
     setSearchText(value);
   }, []);
   return (
@@ -61,7 +58,7 @@ export default function DataTable() {
         <div className="flex gap-3.5">
           <div className="hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center">
             <SearchBar
-              placeholder="Tìm kiếm"
+              placeholder="Tìm kiếm theo mã hoặc địa chỉ..."
               className="ml-auto"
               handleKeyDown={handleSearch}
               handleOnChange={handleSearch}

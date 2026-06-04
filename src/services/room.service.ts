@@ -1,7 +1,7 @@
 import { handlePostgresError } from "@/lib/error/postgres-error";
 import {
   CreateRoomFormType,
-  UpdateRoomInfoType,
+  RoomInfoType,
 } from "@/schemas/validation/admin.validation";
 import { supabase } from "@/supabase/supabaseClients";
 import { RoomServiceExtra } from "@/types/bill";
@@ -81,7 +81,7 @@ class RoomService {
     return room;
   }
 
-  async updateRoom(room: UpdateRoomInfoType): Promise<MutationResult> {
+  async updateRoom(room: RoomInfoType): Promise<MutationResult> {
     const { error } = await supabase
       .from(this.tableName)
       .update({

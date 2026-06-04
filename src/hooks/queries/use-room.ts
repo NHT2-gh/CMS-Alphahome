@@ -3,7 +3,7 @@ import { useBuilding } from "@/context/BuildingContext";
 import { mapErrorToMessage } from "@/lib/error/app-error";
 import {
   CreateRoomFormType,
-  UpdateRoomInfoType,
+  RoomInfoType,
 } from "@/schemas/validation/admin.validation";
 import { roomService } from "@/services/room.service";
 import { GetWithFilterParams } from "@/types/common";
@@ -49,8 +49,7 @@ export function useCreateRoom() {
 export function useUpdateRoom() {
   return useMutation({
     mutationKey: queryKeys.rooms.update(),
-    mutationFn: (payload: UpdateRoomInfoType) =>
-      roomService.updateRoom(payload),
+    mutationFn: (payload: RoomInfoType) => roomService.updateRoom(payload),
     onSuccess: (data) => {
       return data;
     },
