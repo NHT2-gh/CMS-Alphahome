@@ -7,6 +7,5 @@ export { default as CopyInput } from "./CopyInput";
 export { default as PhoneInput } from "./PhoneInput";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as UrlPrefixInput } from "./UrlPrefixInput";
-
 export { default as TextInput } from "./input-text";
 export { default as NumberInput } from "./input-number";
